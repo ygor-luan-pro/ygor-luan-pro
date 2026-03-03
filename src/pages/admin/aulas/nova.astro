@@ -8,12 +8,13 @@ const { session } = Astro.locals;
 <DashboardLayout title="Nova Aula" session={session!}>
   <div class="max-w-2xl">
     <div class="mb-6">
-      <a href="/admin/aulas" class="text-sm text-zinc-400 hover:text-white transition-colors">
+      <a href="/admin/aulas" class="font-sans text-sm transition-colors" style="color: var(--fade);"
+        onmouseover="this.style.color='var(--parchment)'" onmouseout="this.style.color='var(--fade)'">
         ← Voltar
       </a>
     </div>
-    <h1 class="text-2xl font-display font-bold mb-6">Nova Aula</h1>
-    <div class="card">
+    <h1 class="font-display font-light text-3xl mb-8" style="color: var(--cream);">Nova Aula</h1>
+    <div style="background-color: var(--mahogany); border: 1px solid var(--ink); padding: 2rem;">
       <AdminLessonForm mode="create" client:load />
     </div>
   </div>

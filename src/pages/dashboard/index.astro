@@ -12,12 +12,12 @@ const [lessons, completedCount] = await Promise.all([
 ---
 
 <DashboardLayout title="Meu Progresso" session={session!}>
-  <h1 class="text-2xl font-display font-bold mb-6">
-    Olá! 👋
+  <h1 class="font-display font-light text-3xl mb-8" style="color: var(--cream);">
+    Olá, bem-vindo.
   </h1>
 
-  <div class="card mb-6">
-    <h2 class="font-semibold mb-4">Seu progresso</h2>
+  <div class="mb-8" style="background-color: var(--mahogany); border: 1px solid var(--ink); padding: 1.5rem;">
+    <h2 class="font-sans font-medium text-sm tracking-wide uppercase mb-4" style="color: var(--fade);">Seu progresso</h2>
     <ProgressTracker
       totalLessons={lessons.length}
       completedLessons={completedCount}
@@ -26,13 +26,15 @@ const [lessons, completedCount] = await Promise.all([
   </div>
 
   <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-    <a href="/dashboard/aulas" class="card hover:border-zinc-600 transition-colors">
-      <h3 class="font-semibold mb-1">Continuar assistindo</h3>
-      <p class="text-sm text-zinc-400">{lessons.length} aulas disponíveis</p>
+    <a href="/dashboard/aulas" class="transition-colors" style="background-color: var(--mahogany); border: 1px solid var(--ink); padding: 1.5rem; display: block;"
+      onmouseover="this.style.borderColor='var(--blade)'" onmouseout="this.style.borderColor='var(--ink)'">
+      <h3 class="font-sans font-medium mb-1" style="color: var(--cream);">Continuar assistindo</h3>
+      <p class="font-sans text-sm" style="color: var(--fade);">{lessons.length} aulas disponíveis</p>
     </a>
-    <a href="/dashboard/mentoria" class="card hover:border-zinc-600 transition-colors">
-      <h3 class="font-semibold mb-1">Agendar mentoria</h3>
-      <p class="text-sm text-zinc-400">Sessão 1:1 com Ygor Luan</p>
+    <a href="/dashboard/mentoria" class="transition-colors" style="background-color: var(--mahogany); border: 1px solid var(--ink); padding: 1.5rem; display: block;"
+      onmouseover="this.style.borderColor='var(--blade)'" onmouseout="this.style.borderColor='var(--ink)'">
+      <h3 class="font-sans font-medium mb-1" style="color: var(--cream);">Agendar mentoria</h3>
+      <p class="font-sans text-sm" style="color: var(--fade);">Sessão 1:1 com Ygor Luan</p>
     </a>
   </div>
 </DashboardLayout>

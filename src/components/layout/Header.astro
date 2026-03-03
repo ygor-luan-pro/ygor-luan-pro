@@ -5,23 +5,26 @@ interface Props {
 const { transparent = false } = Astro.props;
 ---
 
-<header class:list={[
-  'fixed top-0 left-0 right-0 z-50 transition-colors',
-  transparent ? 'bg-transparent' : 'bg-zinc-950/90 backdrop-blur border-b border-zinc-800',
-]}>
-  <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-    <a href="/" class="text-xl font-display font-bold text-white">
-      Ygor Luan <span class="text-brand-400">Academy</span>
+<header
+  class:list={[
+    'fixed top-0 left-0 right-0 z-50 transition-colors',
+    transparent ? 'bg-transparent' : 'header-bg',
+  ]}
+  style={transparent ? '' : 'background-color: rgba(24,19,14,0.92); backdrop-filter: blur(8px); border-bottom: 1px solid rgba(201,133,58,0.20);'}
+>
+  <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+    <a href="/" class="font-display text-xl font-semibold tracking-wide" style="color: var(--cream);">
+      Ygor Luan <span style="color: var(--copper);">Academy</span>
     </a>
 
-    <nav class="flex items-center gap-4">
-      <a href="#beneficios" class="text-sm text-zinc-400 hover:text-white transition-colors hidden md:block">
+    <nav class="flex items-center gap-6">
+      <a href="#beneficios" class="text-sm hidden md:block transition-colors" style="color: var(--fade);" onmouseover="this.style.color='var(--cream)'" onmouseout="this.style.color='var(--fade)'">
         Benefícios
       </a>
-      <a href="#faq" class="text-sm text-zinc-400 hover:text-white transition-colors hidden md:block">
+      <a href="#faq" class="text-sm hidden md:block transition-colors" style="color: var(--fade);" onmouseover="this.style.color='var(--cream)'" onmouseout="this.style.color='var(--fade)'">
         FAQ
       </a>
-      <a href="/login" class="btn-secondary text-sm px-4 py-2">
+      <a href="/login" class="btn-ghost text-sm px-4 py-2">
         Entrar
       </a>
     </nav>

@@ -18,24 +18,30 @@ const testimonials = [
 ];
 ---
 
-<section class="py-20 px-4 bg-zinc-900/50">
-  <div class="max-w-5xl mx-auto">
-    <h2 class="text-3xl md:text-4xl font-display font-bold text-center mb-12">
+<section class="py-24 px-6" style="background-color: var(--mahogany); border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink);">
+  <div class="max-w-6xl mx-auto">
+    <p class="font-sans text-sm tracking-[0.2em] uppercase mb-3" style="color: var(--copper);">
+      Depoimentos
+    </p>
+    <h2 class="font-display font-light mb-16" style="font-size: clamp(2rem, 5vw, 3.5rem); color: var(--cream);">
       O que dizem os alunos
     </h2>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      {testimonials.map((t) => (
-        <div class="card">
-          <div class="flex mb-3">
-            {Array(5).fill(null).map(() => (
-              <span class="text-brand-400 text-sm">★</span>
-            ))}
-          </div>
-          <p class="text-zinc-300 text-sm leading-relaxed mb-4">"{t.text}"</p>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-0">
+      {testimonials.map((t, i) => (
+        <div class:list={['py-8', i > 0 ? 'md:pl-10 md:border-l' : '']} style={i > 0 ? 'border-left-color: var(--ink);' : ''}>
+          {i > 0 && <div class="hidden md:block" style={`border-left: 1px solid var(--ink); margin-left: -1px;`}></div>}
+          <span class="font-display font-light block mb-4" style="font-size: 4rem; line-height: 1; color: var(--copper); opacity: 0.4;">"</span>
+          <p class="font-sans text-base leading-relaxed mb-6" style="color: var(--parchment);">
+            {t.text}
+          </p>
           <div>
-            <p class="font-medium text-sm">{t.name}</p>
-            <p class="text-zinc-500 text-xs">{t.city}</p>
+            <p class="font-sans font-semibold text-sm tracking-wide uppercase" style="color: var(--cream);">
+              {t.name}
+            </p>
+            <p class="font-sans text-xs mt-0.5" style="color: var(--fade);">
+              {t.city}
+            </p>
           </div>
         </div>
       ))}

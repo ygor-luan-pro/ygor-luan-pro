@@ -6,26 +6,29 @@ const calcomLink = import.meta.env.PUBLIC_CALCOM_LINK ?? 'https://cal.com/ygorlu
 ---
 
 <DashboardLayout title="Mentoria 1:1" session={session!}>
-  <h1 class="text-2xl font-display font-bold mb-2">Mentoria 1:1</h1>
-  <p class="text-zinc-400 mb-8">
+  <h1 class="font-display font-light text-3xl mb-2" style="color: var(--cream);">Mentoria 1:1</h1>
+  <p class="font-sans text-sm mb-8" style="color: var(--fade);">
     Agende sua sessão personalizada com Ygor Luan.
   </p>
 
-  <div class="card max-w-lg">
-    <div class="text-center py-4">
-      <div class="text-4xl mb-4">📅</div>
-      <p class="text-zinc-300 mb-6 leading-relaxed">
-        Sessão de 60 minutos diretamente no calendário de Ygor Luan. Escolha o melhor horário para você.
+  <div class="max-w-md" style="background-color: var(--mahogany); border: 1px solid var(--ink);">
+    <div class="p-8">
+      <p class="font-sans font-medium text-xs tracking-[0.15em] uppercase mb-4" style="color: var(--copper);">
+        Sessão de 60 minutos
       </p>
+      <p class="font-sans text-sm leading-relaxed mb-8" style="color: var(--parchment);">
+        Escolha o melhor horário no calendário de Ygor Luan. Sessão realizada por videoconferência.
+      </p>
+      <div class="blade mb-8"></div>
       <a
         href={calcomLink}
         target="_blank"
         rel="noopener noreferrer"
         class="btn-primary"
       >
-        Agendar Mentoria
+        Agendar Mentoria →
       </a>
-      <p class="text-xs text-zinc-600 mt-4">
+      <p class="font-sans text-xs mt-4" style="color: var(--fade);">
         Você será redirecionado para Cal.com
       </p>
     </div>

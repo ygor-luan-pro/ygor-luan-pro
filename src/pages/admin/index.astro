@@ -14,35 +14,40 @@ const [totalRevenue, totalStudents, lessons] = await Promise.all([
 ---
 
 <DashboardLayout title="Admin" session={session!}>
-  <h1 class="text-2xl font-display font-bold mb-6">Painel Administrativo</h1>
+  <h1 class="font-display font-light text-3xl mb-8" style="color: var(--cream);">Painel Administrativo</h1>
 
   <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-    <div class="card text-center">
-      <p class="text-3xl font-bold text-brand-400">{formatCurrency(totalRevenue)}</p>
-      <p class="text-sm text-zinc-400 mt-1">Receita Total</p>
+    <div style="background-color: var(--mahogany); border: 1px solid var(--ink); padding: 1.5rem;">
+      <p class="font-mono font-medium leading-none mb-2" style="font-size: 2rem; color: var(--copper);">{formatCurrency(totalRevenue)}</p>
+      <p class="font-sans text-xs tracking-[0.1em] uppercase" style="color: var(--fade);">Receita Total</p>
     </div>
-    <div class="card text-center">
-      <p class="text-3xl font-bold text-white">{totalStudents}</p>
-      <p class="text-sm text-zinc-400 mt-1">Alunos</p>
+    <div style="background-color: var(--mahogany); border: 1px solid var(--ink); padding: 1.5rem;">
+      <p class="font-mono font-medium leading-none mb-2" style="font-size: 2rem; color: var(--cream);">{totalStudents}</p>
+      <p class="font-sans text-xs tracking-[0.1em] uppercase" style="color: var(--fade);">Alunos</p>
     </div>
-    <div class="card text-center">
-      <p class="text-3xl font-bold text-white">{lessons.length}</p>
-      <p class="text-sm text-zinc-400 mt-1">Aulas</p>
+    <div style="background-color: var(--mahogany); border: 1px solid var(--ink); padding: 1.5rem;">
+      <p class="font-mono font-medium leading-none mb-2" style="font-size: 2rem; color: var(--cream);">{lessons.length}</p>
+      <p class="font-sans text-xs tracking-[0.1em] uppercase" style="color: var(--fade);">Aulas</p>
     </div>
   </div>
 
+  <div class="blade mb-8"></div>
+
   <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-    <a href="/admin/aulas" class="card hover:border-zinc-600 transition-colors">
-      <h2 class="font-semibold mb-1">Aulas</h2>
-      <p class="text-sm text-zinc-400">Criar, editar e publicar aulas</p>
+    <a href="/admin/aulas" class="transition-colors" style="background-color: var(--mahogany); border: 1px solid var(--ink); padding: 1.5rem; display: block;"
+      onmouseover="this.style.borderColor='var(--blade)'" onmouseout="this.style.borderColor='var(--ink)'">
+      <h2 class="font-sans font-medium mb-1" style="color: var(--cream);">Aulas</h2>
+      <p class="font-sans text-sm" style="color: var(--fade);">Criar, editar e publicar aulas</p>
     </a>
-    <a href="/admin/alunos" class="card hover:border-zinc-600 transition-colors">
-      <h2 class="font-semibold mb-1">Alunos</h2>
-      <p class="text-sm text-zinc-400">Lista de alunos cadastrados</p>
+    <a href="/admin/alunos" class="transition-colors" style="background-color: var(--mahogany); border: 1px solid var(--ink); padding: 1.5rem; display: block;"
+      onmouseover="this.style.borderColor='var(--blade)'" onmouseout="this.style.borderColor='var(--ink)'">
+      <h2 class="font-sans font-medium mb-1" style="color: var(--cream);">Alunos</h2>
+      <p class="font-sans text-sm" style="color: var(--fade);">Lista de alunos cadastrados</p>
     </a>
-    <a href="/admin/vendas" class="card hover:border-zinc-600 transition-colors">
-      <h2 class="font-semibold mb-1">Vendas</h2>
-      <p class="text-sm text-zinc-400">Relatório de pedidos</p>
+    <a href="/admin/vendas" class="transition-colors" style="background-color: var(--mahogany); border: 1px solid var(--ink); padding: 1.5rem; display: block;"
+      onmouseover="this.style.borderColor='var(--blade)'" onmouseout="this.style.borderColor='var(--ink)'">
+      <h2 class="font-sans font-medium mb-1" style="color: var(--cream);">Vendas</h2>
+      <p class="font-sans text-sm" style="color: var(--fade);">Relatório de pedidos</p>
     </a>
   </div>
 </DashboardLayout>

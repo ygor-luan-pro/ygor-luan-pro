@@ -7,35 +7,35 @@ const lessons = await LessonsService.getAllAdmin();
 ---
 
 <DashboardLayout title="Aulas" session={session!}>
-  <div class="flex items-center justify-between mb-6">
-    <h1 class="text-2xl font-display font-bold">Aulas</h1>
+  <div class="flex items-center justify-between mb-8">
+    <h1 class="font-display font-light text-3xl" style="color: var(--cream);">Aulas</h1>
     <a href="/admin/aulas/nova" class="btn-primary text-sm px-4 py-2">+ Nova Aula</a>
   </div>
 
-  <div class="space-y-2">
+  <div>
     {lessons.map((lesson) => (
-      <div class="card flex items-center gap-4">
-        <div class:list={[
-          'w-2 h-2 rounded-full flex-shrink-0',
-          lesson.is_published ? 'bg-green-500' : 'bg-zinc-600',
-        ]} />
+      <div class="flex items-center gap-5 py-4" style="border-top: 1px solid var(--ink);">
+        <div class="w-1.5 h-1.5 rounded-full flex-shrink-0"
+          style={lesson.is_published ? 'background-color: var(--copper);' : 'background-color: var(--fade);'} />
         <div class="flex-1 min-w-0">
-          <p class="font-medium truncate">{lesson.title}</p>
-          <p class="text-xs text-zinc-500">
+          <p class="font-sans font-medium text-sm truncate" style="color: var(--cream);">{lesson.title}</p>
+          <p class="font-sans text-xs mt-0.5" style="color: var(--fade);">
             Módulo {lesson.module_number} · Aula {lesson.order_number}
             {!lesson.is_published && ' · Rascunho'}
           </p>
         </div>
-        <a href={`/admin/aulas/${lesson.id}/editar`} class="text-sm text-brand-400 hover:underline flex-shrink-0">
+        <a href={`/admin/aulas/${lesson.id}/editar`} class="font-sans text-sm transition-colors flex-shrink-0" style="color: var(--copper);"
+          onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">
           Editar
         </a>
       </div>
     ))}
+    <div style="border-top: 1px solid var(--ink);"></div>
 
     {lessons.length === 0 && (
-      <div class="card text-center text-zinc-400 py-12">
-        Nenhuma aula ainda.
-        <a href="/admin/aulas/nova" class="text-brand-400 hover:underline ml-1">Criar primeira aula</a>
+      <div class="py-16 text-center">
+        <p class="font-sans text-sm mb-2" style="color: var(--fade);">Nenhuma aula ainda.</p>
+        <a href="/admin/aulas/nova" class="font-sans text-sm" style="color: var(--copper);">Criar primeira aula</a>
       </div>
     )}
   </div>

@@ -2,32 +2,42 @@
 import CheckoutButton from '../../islands/CheckoutButton';
 ---
 
-<section class="relative min-h-screen flex items-center justify-center pt-16 px-4">
-  <div class="max-w-4xl mx-auto text-center">
-    <span class="inline-block px-4 py-1.5 bg-brand-500/10 text-brand-400 text-sm font-medium rounded-full border border-brand-500/20 mb-6">
-      Mentoria exclusiva para barbeiros
-    </span>
+<section class="relative min-h-screen flex flex-col justify-end pt-16" style="background-color: var(--espresso);">
+  <div class="max-w-6xl mx-auto px-6 pb-20 w-full">
+    <div class="flex gap-8 items-start">
+      <!-- Blade vertical accent -->
+      <div class="hidden md:block w-px self-stretch mt-2" style="background-color: var(--copper); opacity: 0.6;"></div>
 
-    <h1 class="text-4xl md:text-6xl font-display font-black leading-tight mb-6">
-      Domine a barbearia e
-      <span class="text-brand-400"> aumente seus ganhos</span>
-    </h1>
+      <div class="flex-1 max-w-3xl">
+        <p class="font-sans text-sm tracking-[0.2em] uppercase mb-6" style="color: var(--copper);">
+          Mentoria exclusiva para barbeiros
+        </p>
 
-    <p class="text-lg md:text-xl text-zinc-400 max-w-2xl mx-auto mb-10">
-      Aprenda com Ygor Luan as técnicas que transformaram sua carreira. Curso completo em vídeo + mentoria 1:1 personalizada.
-    </p>
+        <h1 class="font-display font-light leading-[0.92] mb-6" style="font-size: clamp(3.5rem, 9vw, 7rem); color: var(--cream);">
+          Domine<br/>
+          <span style="font-weight: 600;">sua arte.</span>
+        </h1>
 
-    <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
-      <CheckoutButton client:load />
-      <a href="#beneficios" class="btn-secondary">
-        Ver conteúdo
-      </a>
-    </div>
+        <div class="blade mb-8" style="max-width: 24rem;"></div>
 
-    <div class="flex flex-wrap justify-center gap-8 text-sm text-zinc-500">
-      <span>✓ Acesso vitalício</span>
-      <span>✓ Suporte via mentoria 1:1</span>
-      <span>✓ Atualizações inclusas</span>
+        <p class="font-sans text-lg leading-relaxed mb-10 max-w-xl" style="color: var(--parchment);">
+          Aprenda com Ygor Luan as técnicas que transformaram sua carreira.
+          Curso completo em vídeo + mentoria 1:1 personalizada.
+        </p>
+
+        <div class="flex flex-col sm:flex-row gap-4 items-start mb-12">
+          <CheckoutButton client:load />
+          <a href="#beneficios" class="btn-ghost">
+            Ver conteúdo
+          </a>
+        </div>
+
+        <div class="flex flex-wrap gap-8 font-sans text-sm" style="color: var(--fade);">
+          <span>— Acesso vitalício</span>
+          <span>— Suporte via mentoria 1:1</span>
+          <span>— Atualizações inclusas</span>
+        </div>
+      </div>
     </div>
   </div>
 </section>

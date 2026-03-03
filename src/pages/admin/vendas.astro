@@ -9,47 +9,49 @@ const totalRevenue = orders
   .filter((o) => o.status === 'approved')
   .reduce((sum, o) => sum + o.amount, 0);
 
-const statusClass: Record<string, string> = {
-  approved: 'bg-green-500/20 text-green-400',
-  pending: 'bg-yellow-500/20 text-yellow-400',
-  refunded: 'bg-blue-500/20 text-blue-400',
-  rejected: 'bg-red-500/20 text-red-400',
+const statusStyle: Record<string, string> = {
+  approved: 'background-color: rgba(201,133,58,0.12); color: var(--copper);',
+  pending:  'background-color: rgba(201,133,58,0.08); color: var(--parchment);',
+  refunded: 'background-color: rgba(100,120,150,0.10); color: var(--fade);',
+  rejected: 'background-color: rgba(239,68,68,0.10); color: #f87171;',
 };
 ---
 
 <DashboardLayout title="Vendas" session={session!}>
-  <div class="flex items-center justify-between mb-6">
-    <h1 class="text-2xl font-display font-bold">Vendas</h1>
-    <div class="card px-4 py-2 text-right">
-      <p class="text-xs text-zinc-400">Total aprovado</p>
-      <p class="text-xl font-bold text-brand-400">{formatCurrency(totalRevenue)}</p>
+  <div class="flex items-start justify-between mb-8">
+    <h1 class="font-display font-light text-3xl" style="color: var(--cream);">Vendas</h1>
+    <div style="background-color: var(--mahogany); border: 1px solid var(--blade); padding: 0.75rem 1.25rem; text-align: right;">
+      <p class="font-sans text-xs tracking-[0.1em] uppercase mb-1" style="color: var(--fade);">Total aprovado</p>
+      <p class="font-mono font-medium text-xl" style="color: var(--copper);">{formatCurrency(totalRevenue)}</p>
     </div>
   </div>
 
-  <div class="card overflow-x-auto">
-    <table class="w-full text-sm">
-      <thead>
-        <tr class="border-b border-zinc-800 text-left">
-          <th class="pb-3 pr-4 font-medium text-zinc-400">Payment ID</th>
-          <th class="pb-3 pr-4 font-medium text-zinc-400">Valor</th>
-          <th class="pb-3 pr-4 font-medium text-zinc-400">Status</th>
-          <th class="pb-3 font-medium text-zinc-400">Data</th>
-        </tr>
-      </thead>
-      <tbody class="divide-y divide-zinc-800">
-        {orders.map((order) => (
-          <tr>
-            <td class="py-3 pr-4 font-mono text-xs text-zinc-400">{order.payment_id}</td>
-            <td class="py-3 pr-4 font-medium text-white">{formatCurrency(order.amount)}</td>
-            <td class="py-3 pr-4">
-              <span class:list={['px-2 py-0.5 rounded-full text-xs font-medium', statusClass[order.status] ?? '']}>
-                {order.status}
-              </span>
-            </td>
-            <td class="py-3 text-zinc-400">{formatDate(order.created_at)}</td>
+  <div style="background-color: var(--mahogany); border: 1px solid var(--ink);">
+    <div class="overflow-x-auto">
+      <table class="w-full font-sans text-sm">
+        <thead>
+          <tr style="border-bottom: 1px solid var(--ink);">
+            <th class="text-left px-6 py-3 font-medium text-xs tracking-[0.1em] uppercase" style="color: var(--fade);">Payment ID</th>
+            <th class="text-left px-6 py-3 font-medium text-xs tracking-[0.1em] uppercase" style="color: var(--fade);">Valor</th>
+            <th class="text-left px-6 py-3 font-medium text-xs tracking-[0.1em] uppercase" style="color: var(--fade);">Status</th>
+            <th class="text-left px-6 py-3 font-medium text-xs tracking-[0.1em] uppercase" style="color: var(--fade);">Data</th>
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {orders.map((order) => (
+            <tr style="border-bottom: 1px solid var(--ink);">
+              <td class="px-6 py-4 font-mono text-xs" style="color: var(--fade);">{order.payment_id}</td>
+              <td class="px-6 py-4 font-medium" style="color: var(--cream);">{formatCurrency(order.amount)}</td>
+              <td class="px-6 py-4">
+                <span class="px-2 py-0.5 font-sans text-xs" style={statusStyle[order.status] ?? ''}>
+                  {order.status}
+                </span>
+              </td>
+              <td class="px-6 py-4" style="color: var(--fade);">{formatDate(order.created_at)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   </div>
 </DashboardLayout>

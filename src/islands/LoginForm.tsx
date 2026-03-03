@@ -55,41 +55,40 @@ export default function LoginForm() {
     }
   };
 
-  const inputClass = 'input-field';
-  const labelClass = 'block text-sm font-medium text-zinc-300 mb-1';
+  const labelStyle = { color: 'var(--parchment)', fontSize: '0.75rem', letterSpacing: '0.1em', textTransform: 'uppercase' as const, display: 'block', marginBottom: '0.375rem' };
+  const linkStyle = { color: 'var(--fade)', fontSize: '0.875rem', background: 'none', border: 'none', cursor: 'pointer', width: '100%', textAlign: 'center' as const, padding: '0.25rem 0' };
 
   if (mode === 'reset') {
     return (
       <form onSubmit={handleReset} className="space-y-4">
         {resetSent ? (
-          <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-4 text-green-400 text-sm text-center">
-            Link enviado! Verifique seu e-mail.
+          <div style={{ background: 'rgba(201,133,58,0.10)', border: '1px solid rgba(201,133,58,0.25)', padding: '1rem', color: 'var(--copper)', fontSize: '0.875rem', textAlign: 'center' }}>
+            Link enviado. Verifique seu e-mail.
           </div>
         ) : (
           <>
             <div>
-              <label className={labelClass}>E-mail</label>
+              <label style={labelStyle}>E-mail</label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className={inputClass}
+                className="input-field"
                 placeholder="seu@email.com"
               />
             </div>
             {error && (
-              <p className="text-red-400 text-sm">{error}</p>
+              <p style={{ color: '#f87171', fontSize: '0.875rem' }}>{error}</p>
             )}
             <button type="submit" disabled={loading} className="btn-primary w-full">
               {loading ? 'Enviando...' : 'Enviar link de redefinição'}
             </button>
           </>
         )}
-        <button
-          type="button"
-          onClick={() => setMode('login')}
-          className="text-sm text-zinc-400 hover:text-white w-full text-center"
+        <button type="button" onClick={() => setMode('login')} style={linkStyle}
+          onMouseOver={(e) => { (e.target as HTMLButtonElement).style.color = 'var(--parchment)'; }}
+          onMouseOut={(e) => { (e.target as HTMLButtonElement).style.color = 'var(--fade)'; }}
         >
           Voltar ao login
         </button>
@@ -100,39 +99,38 @@ export default function LoginForm() {
   return (
     <form onSubmit={handleLogin} className="space-y-4">
       <div>
-        <label className={labelClass}>E-mail</label>
+        <label style={labelStyle}>E-mail</label>
         <input
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          className={inputClass}
+          className="input-field"
           placeholder="seu@email.com"
         />
       </div>
 
       <div>
-        <label className={labelClass}>Senha</label>
+        <label style={labelStyle}>Senha</label>
         <input
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
-          className={inputClass}
+          className="input-field"
           placeholder="••••••••"
         />
       </div>
 
-      {error && <p className="text-red-400 text-sm">{error}</p>}
+      {error && <p style={{ color: '#f87171', fontSize: '0.875rem' }}>{error}</p>}
 
       <button type="submit" disabled={loading} className="btn-primary w-full">
         {loading ? 'Entrando...' : 'Entrar'}
       </button>
 
-      <button
-        type="button"
-        onClick={() => setMode('reset')}
-        className="text-sm text-zinc-400 hover:text-white w-full text-center"
+      <button type="button" onClick={() => setMode('reset')} style={linkStyle}
+        onMouseOver={(e) => { (e.target as HTMLButtonElement).style.color = 'var(--parchment)'; }}
+        onMouseOut={(e) => { (e.target as HTMLButtonElement).style.color = 'var(--fade)'; }}
       >
         Esqueceu a senha?
       </button>

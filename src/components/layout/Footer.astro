@@ -2,12 +2,14 @@
 const year = new Date().getFullYear();
 ---
 
-<footer class="border-t border-zinc-800 py-8 mt-16">
-  <div class="max-w-6xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-zinc-500">
-    <p>© {year} Ygor Luan Academy. Todos os direitos reservados.</p>
-    <div class="flex gap-6">
-      <a href="/termos" class="hover:text-white transition-colors">Termos de Uso</a>
-      <a href="/privacidade" class="hover:text-white transition-colors">Privacidade</a>
+<footer class="mt-20 py-10" style="border-top: 1px solid var(--blade);">
+  <div class="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4">
+    <p class="text-sm font-sans" style="color: var(--fade);">
+      © {year} Ygor Luan Academy. Todos os direitos reservados.
+    </p>
+    <div class="flex gap-8">
+      <a href="/termos" class="text-sm transition-colors" style="color: var(--fade);" onmouseover="this.style.color='var(--parchment)'" onmouseout="this.style.color='var(--fade)'">Termos de Uso</a>
+      <a href="/privacidade" class="text-sm transition-colors" style="color: var(--fade);" onmouseover="this.style.color='var(--parchment)'" onmouseout="this.style.color='var(--fade)'">Privacidade</a>
     </div>
   </div>
 </footer>

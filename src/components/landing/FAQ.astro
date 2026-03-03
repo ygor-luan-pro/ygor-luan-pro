@@ -23,22 +23,28 @@ const faqs = [
 ];
 ---
 
-<section id="faq" class="py-20 px-4">
+<section id="faq" class="py-24 px-6">
   <div class="max-w-2xl mx-auto">
-    <h2 class="text-3xl md:text-4xl font-display font-bold text-center mb-12">
+    <p class="font-sans text-sm tracking-[0.2em] uppercase mb-3" style="color: var(--copper);">
+      FAQ
+    </p>
+    <h2 class="font-display font-light mb-16" style="font-size: clamp(2rem, 5vw, 3rem); color: var(--cream);">
       Dúvidas frequentes
     </h2>
 
-    <div class="space-y-4">
+    <div>
       {faqs.map((faq) => (
-        <details class="card group cursor-pointer">
-          <summary class="font-medium text-sm flex justify-between items-center list-none">
+        <details class="group cursor-pointer" style="border-top: 1px solid var(--ink);">
+          <summary class="flex justify-between items-center py-5 font-sans font-medium text-sm list-none" style="color: var(--cream);">
             {faq.q}
-            <span class="text-zinc-500 group-open:rotate-45 transition-transform">+</span>
+            <span class="font-light text-xl flex-shrink-0 ml-4 transition-transform group-open:rotate-45" style="color: var(--copper);">+</span>
           </summary>
-          <p class="text-zinc-400 text-sm mt-3 leading-relaxed">{faq.a}</p>
+          <p class="pb-5 font-sans text-sm leading-relaxed" style="color: var(--parchment);">
+            {faq.a}
+          </p>
         </details>
       ))}
+      <div style="border-top: 1px solid var(--ink);"></div>
     </div>
   </div>
 </section>

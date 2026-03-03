@@ -67,89 +67,95 @@ export default function AdminLessonForm({ mode, lesson }: AdminLessonFormProps) 
     }
   };
 
-  const inputClass = 'input-field';
-  const labelClass = 'block text-sm font-medium text-zinc-300 mb-1';
+  const labelStyle = {
+    display: 'block',
+    fontSize: '0.75rem',
+    letterSpacing: '0.1em',
+    textTransform: 'uppercase' as const,
+    color: 'var(--fade)',
+    marginBottom: '0.375rem',
+  };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       <div>
-        <label className={labelClass}>Título *</label>
+        <label style={labelStyle}>Título *</label>
         <input
           type="text"
           value={title}
           onChange={(e) => handleTitleChange(e.target.value)}
           required
-          className={inputClass}
+          className="input-field"
           placeholder="Ex: Técnicas de Navalha"
         />
       </div>
 
       <div>
-        <label className={labelClass}>Slug *</label>
+        <label style={labelStyle}>Slug *</label>
         <input
           type="text"
           value={slug}
           onChange={(e) => setSlug(e.target.value)}
           required
-          className={inputClass}
+          className="input-field"
           placeholder="tecnicas-de-navalha"
         />
       </div>
 
       <div>
-        <label className={labelClass}>URL do Vídeo (Vimeo) *</label>
+        <label style={labelStyle}>URL do Vídeo (Vimeo) *</label>
         <input
           type="url"
           value={videoUrl}
           onChange={(e) => setVideoUrl(e.target.value)}
           required
-          className={inputClass}
+          className="input-field"
           placeholder="https://vimeo.com/123456789"
         />
       </div>
 
       <div>
-        <label className={labelClass}>Descrição</label>
+        <label style={labelStyle}>Descrição</label>
         <textarea
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           rows={3}
-          className={inputClass}
+          className="input-field"
           placeholder="Descrição da aula..."
         />
       </div>
 
       <div className="grid grid-cols-3 gap-4">
         <div>
-          <label className={labelClass}>Módulo</label>
+          <label style={labelStyle}>Módulo</label>
           <input
             type="number"
             value={moduleNumber}
             onChange={(e) => setModuleNumber(Number(e.target.value))}
             min={1}
             required
-            className={inputClass}
+            className="input-field"
           />
         </div>
         <div>
-          <label className={labelClass}>Ordem</label>
+          <label style={labelStyle}>Ordem</label>
           <input
             type="number"
             value={orderNumber}
             onChange={(e) => setOrderNumber(Number(e.target.value))}
             min={1}
             required
-            className={inputClass}
+            className="input-field"
           />
         </div>
         <div>
-          <label className={labelClass}>Duração (min)</label>
+          <label style={labelStyle}>Duração (min)</label>
           <input
             type="number"
             value={durationMinutes}
             onChange={(e) => setDurationMinutes(Number(e.target.value))}
             min={0}
-            className={inputClass}
+            className="input-field"
           />
         </div>
       </div>
@@ -159,20 +165,23 @@ export default function AdminLessonForm({ mode, lesson }: AdminLessonFormProps) 
           type="checkbox"
           checked={isPublished}
           onChange={(e) => setIsPublished(e.target.checked)}
-          className="w-4 h-4 accent-brand-500"
+          className="w-4 h-4"
+          style={{ accentColor: 'var(--copper)' }}
         />
-        <span className="text-sm text-zinc-300">Publicar aula (visível para alunos)</span>
+        <span className="font-sans text-sm" style={{ color: 'var(--parchment)' }}>
+          Publicar aula (visível para alunos)
+        </span>
       </label>
 
       {error && (
-        <div className="bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-3 text-red-400 text-sm">
+        <div style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.20)', padding: '0.75rem 1rem', color: '#f87171', fontSize: '0.875rem' }}>
           {error}
         </div>
       )}
 
       {success && (
-        <div className="bg-green-500/10 border border-green-500/20 rounded-lg px-4 py-3 text-green-400 text-sm">
-          Aula atualizada com sucesso!
+        <div style={{ background: 'rgba(201,133,58,0.10)', border: '1px solid var(--blade)', padding: '0.75rem 1rem', color: 'var(--copper)', fontSize: '0.875rem' }}>
+          Aula atualizada com sucesso.
         </div>
       )}
 
@@ -180,7 +189,7 @@ export default function AdminLessonForm({ mode, lesson }: AdminLessonFormProps) 
         <button type="submit" disabled={loading} className="btn-primary">
           {loading ? 'Salvando...' : mode === 'create' ? 'Criar Aula' : 'Salvar Alterações'}
         </button>
-        <a href="/admin/aulas" className="btn-secondary">
+        <a href="/admin/aulas" className="btn-ghost">
           Cancelar
         </a>
       </div>

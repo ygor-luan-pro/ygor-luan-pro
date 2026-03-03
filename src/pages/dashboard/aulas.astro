@@ -12,7 +12,6 @@ const [lessons, progressList] = await Promise.all([
 
 const progressMap = new Map(progressList.map((p) => [p.lesson_id, p]));
 
-// Agrupa por módulo
 const modules = lessons.reduce<Map<number, typeof lessons>>(
   (acc, lesson) => {
     const mod = acc.get(lesson.module_number) ?? [];
@@ -25,15 +24,15 @@ const modules = lessons.reduce<Map<number, typeof lessons>>(
 ---
 
 <DashboardLayout title="Aulas" session={session!}>
-  <h1 class="text-2xl font-display font-bold mb-6">Aulas</h1>
+  <h1 class="font-display font-light text-3xl mb-8" style="color: var(--cream);">Aulas</h1>
 
-  <div class="space-y-8">
+  <div class="space-y-10">
     {[...modules.entries()].map(([moduleNum, moduleLessons]) => (
       <div>
-        <h2 class="text-sm font-medium text-zinc-500 uppercase tracking-wider mb-3">
+        <p class="font-sans text-xs tracking-[0.15em] uppercase mb-4" style="color: var(--copper);">
           Módulo {moduleNum}
-        </h2>
-        <div class="space-y-2">
+        </p>
+        <div>
           {moduleLessons.map((lesson) => {
             const progress = progressMap.get(lesson.id);
             const done = progress?.completed ?? false;
@@ -41,27 +40,28 @@ const modules = lessons.reduce<Map<number, typeof lessons>>(
             return (
               <a
                 href={`/dashboard/aula/${lesson.id}`}
-                class:list={[
-                  'card flex items-center gap-4 hover:border-zinc-600 transition-colors',
-                  done && 'border-green-500/20',
-                ]}
+                class="flex items-center gap-5 py-4 transition-colors"
+                style={`border-top: 1px solid var(--ink); ${done ? 'opacity: 0.7;' : ''}`}
+                onmouseover="this.style.backgroundColor='var(--tobacco)'; this.style.paddingLeft='0.5rem'; this.style.paddingRight='0.5rem';"
+                onmouseout="this.style.backgroundColor=''; this.style.paddingLeft=''; this.style.paddingRight='';"
               >
-                <div class:list={[
-                  'w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold',
-                  done ? 'bg-green-500/20 text-green-400' : 'bg-zinc-800 text-zinc-400',
-                ]}>
+                <div class="w-7 h-7 flex items-center justify-center flex-shrink-0 font-mono text-xs"
+                  style={done
+                    ? 'background-color: rgba(201,133,58,0.15); color: var(--copper); border: 1px solid var(--blade);'
+                    : 'background-color: var(--tobacco); color: var(--fade); border: 1px solid var(--ink);'}>
                   {done ? '✓' : lesson.order_number}
                 </div>
                 <div class="flex-1 min-w-0">
-                  <p class="font-medium truncate">{lesson.title}</p>
+                  <p class="font-sans font-medium text-sm truncate" style="color: var(--cream);">{lesson.title}</p>
                   {lesson.duration_minutes && (
-                    <p class="text-xs text-zinc-500">{formatDuration(lesson.duration_minutes)}</p>
+                    <p class="font-sans text-xs mt-0.5" style="color: var(--fade);">{formatDuration(lesson.duration_minutes)}</p>
                   )}
                 </div>
-                <span class="text-zinc-600 text-sm flex-shrink-0">→</span>
+                <span class="font-sans text-sm flex-shrink-0" style="color: var(--blade);">→</span>
               </a>
             );
           })}
+          <div style="border-top: 1px solid var(--ink);"></div>
         </div>
       </div>
     ))}

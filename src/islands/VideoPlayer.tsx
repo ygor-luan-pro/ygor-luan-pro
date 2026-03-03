@@ -7,7 +7,6 @@ interface VideoPlayerProps {
   onComplete?: () => void;
 }
 
-// Extracts Vimeo ID from URL like https://vimeo.com/123456789
 function extractVimeoId(url: string): string | null {
   const match = url.match(/vimeo\.com\/(\d+)/);
   return match ? match[1] : null;
@@ -25,7 +24,7 @@ export default function VideoPlayer({
 
   const vimeoId = extractVimeoId(videoUrl);
   const embedUrl = vimeoId
-    ? `https://player.vimeo.com/video/${vimeoId}?autoplay=0&color=D97706&title=0&byline=0&portrait=0`
+    ? `https://player.vimeo.com/video/${vimeoId}?autoplay=0&color=C9853A&title=0&byline=0&portrait=0`
     : null;
 
   const saveWatchTime = async (time: number) => {
@@ -62,15 +61,16 @@ export default function VideoPlayer({
 
   if (!embedUrl) {
     return (
-      <div className="aspect-video bg-zinc-800 rounded-xl flex items-center justify-center text-zinc-500">
+      <div className="aspect-video flex items-center justify-center font-sans text-sm"
+        style={{ backgroundColor: 'var(--tobacco)', color: 'var(--fade)' }}>
         URL de vídeo inválida
       </div>
     );
   }
 
   return (
-    <div className="space-y-3">
-      <div className="aspect-video rounded-xl overflow-hidden bg-zinc-900">
+    <div className="space-y-4">
+      <div className="aspect-video overflow-hidden" style={{ backgroundColor: 'var(--mahogany)' }}>
         <iframe
           src={embedUrl}
           className="w-full h-full"
@@ -83,17 +83,16 @@ export default function VideoPlayer({
       {!completed && (
         <button
           onClick={markComplete}
-          className="btn-secondary text-sm px-4 py-2"
+          className="btn-ghost text-sm px-4 py-2"
         >
-          ✓ Marcar como concluída
+          Marcar como concluída
         </button>
       )}
 
       {completed && (
-        <div className="flex items-center gap-2 text-green-400 text-sm">
-          <span>✓</span>
-          <span>Aula concluída!</span>
-        </div>
+        <p className="font-sans text-sm" style={{ color: 'var(--copper)' }}>
+          — Aula concluída
+        </p>
       )}
     </div>
   );

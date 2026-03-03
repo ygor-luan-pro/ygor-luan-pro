@@ -20,13 +20,14 @@ const progress = await ProgressService.getLessonProgress(session!.user.id, id);
 ---
 
 <DashboardLayout title={lesson.title} session={session!}>
-  <div class="mb-4">
-    <a href="/dashboard/aulas" class="text-sm text-zinc-400 hover:text-white transition-colors">
+  <div class="mb-6">
+    <a href="/dashboard/aulas" class="font-sans text-sm transition-colors" style="color: var(--fade);"
+      onmouseover="this.style.color='var(--parchment)'" onmouseout="this.style.color='var(--fade)'">
       ← Voltar para aulas
     </a>
   </div>
 
-  <h1 class="text-2xl font-display font-bold mb-6">{lesson.title}</h1>
+  <h1 class="font-display font-light text-3xl mb-6" style="color: var(--cream);">{lesson.title}</h1>
 
   <VideoPlayer
     lessonId={lesson.id}
@@ -36,9 +37,9 @@ const progress = await ProgressService.getLessonProgress(session!.user.id, id);
   />
 
   {lesson.description && (
-    <div class="card mt-6">
-      <h2 class="font-semibold mb-2">Sobre esta aula</h2>
-      <p class="text-zinc-400 text-sm leading-relaxed">{lesson.description}</p>
+    <div class="mt-6" style="background-color: var(--mahogany); border: 1px solid var(--ink); padding: 1.5rem;">
+      <h2 class="font-sans font-medium text-xs tracking-[0.15em] uppercase mb-3" style="color: var(--fade);">Sobre esta aula</h2>
+      <p class="font-sans text-sm leading-relaxed" style="color: var(--parchment);">{lesson.description}</p>
     </div>
   )}
 </DashboardLayout>

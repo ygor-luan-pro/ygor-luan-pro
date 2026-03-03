@@ -34,8 +34,27 @@ export default function CheckoutButton({ fullWidth = false }: CheckoutButtonProp
     }
   };
 
+  if (fullWidth) {
+    return (
+      <form onSubmit={handleSubmit} className="w-full">
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+          placeholder="Seu melhor e-mail"
+          className="input-field mb-3"
+        />
+        <button type="submit" disabled={loading} className="btn-primary w-full">
+          {loading ? 'Aguarde...' : 'Quero começar →'}
+        </button>
+        {error && <p style={{ color: '#f87171', fontSize: '0.75rem', marginTop: '0.5rem' }}>{error}</p>}
+      </form>
+    );
+  }
+
   return (
-    <form onSubmit={handleSubmit} className={fullWidth ? 'w-full' : 'flex gap-2'}>
+    <form onSubmit={handleSubmit} className="flex gap-2">
       <input
         type="email"
         value={email}
@@ -43,16 +62,12 @@ export default function CheckoutButton({ fullWidth = false }: CheckoutButtonProp
         required
         placeholder="Seu melhor e-mail"
         className="input-field"
-        style={{ flex: fullWidth ? undefined : '1' }}
+        style={{ flex: '1' }}
       />
-      <button
-        type="submit"
-        disabled={loading}
-        className={`btn-primary whitespace-nowrap ${fullWidth ? 'w-full mt-3' : ''}`}
-      >
+      <button type="submit" disabled={loading} className="btn-primary whitespace-nowrap">
         {loading ? 'Aguarde...' : 'Quero começar →'}
       </button>
-      {error && <p className="text-red-400 text-xs mt-2 col-span-full">{error}</p>}
+      {error && <p style={{ color: '#f87171', fontSize: '0.75rem', marginTop: '0.5rem', width: '100%' }}>{error}</p>}
     </form>
   );
 }

@@ -3,34 +3,88 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --espresso:   #18130E;
+    --mahogany:   #221A12;
+    --tobacco:    #2E2015;
+    --cream:      #F2E8DA;
+    --parchment:  #C4B49A;
+    --fade:       #7A6B57;
+    --copper:     #C9853A;
+    --copper-dim: rgba(201,133,58,0.15);
+    --ink:        rgba(201,133,58,0.12);
+    --blade:      rgba(201,133,58,0.30);
+  }
+
+  html {
+    background-color: var(--espresso);
+    color: var(--cream);
+    font-family: "DM Sans", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
   body {
-    @apply bg-zinc-950 text-white antialiased;
+    background-color: var(--espresso);
+    color: var(--cream);
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-display;
+    font-family: "Cormorant Garamond", Georgia, serif;
   }
 }
 
 @layer components {
   .card {
-    @apply bg-zinc-900 border border-zinc-800 rounded-xl p-6;
+    background-color: var(--mahogany);
+    border: 1px solid var(--ink);
+    padding: 1.5rem;
   }
 
   .btn-primary {
-    @apply inline-flex items-center justify-center px-6 py-3 bg-brand-500 hover:bg-brand-600
-           text-white font-semibold rounded-lg transition-colors
-           disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply inline-flex items-center justify-center px-6 py-3 font-sans font-semibold text-sm
+           tracking-wide transition-colors
+           disabled:opacity-40 disabled:cursor-not-allowed;
+    background-color: var(--copper);
+    color: var(--espresso);
+    border-radius: 2px;
   }
 
-  .btn-secondary {
-    @apply inline-flex items-center justify-center px-6 py-3 bg-zinc-800 hover:bg-zinc-700
-           text-white font-medium rounded-lg transition-colors;
+  .btn-primary:hover:not(:disabled) {
+    background-color: #d9903f;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center px-6 py-3 font-sans font-medium text-sm
+           tracking-wide transition-colors;
+    border: 1px solid var(--blade);
+    color: var(--parchment);
+    border-radius: 2px;
+  }
+
+  .btn-ghost:hover {
+    color: var(--cream);
+    border-color: var(--copper);
   }
 
   .input-field {
-    @apply w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-3 text-white
-           placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-400
-           focus:border-transparent transition;
+    @apply w-full px-4 py-3 text-sm font-sans transition
+           focus:outline-none;
+    background-color: var(--tobacco);
+    border: 1px solid var(--ink);
+    color: var(--cream);
+    border-radius: 2px;
+  }
+
+  .input-field::placeholder {
+    color: var(--fade);
+  }
+
+  .input-field:focus {
+    border-color: var(--blade);
+  }
+
+  .blade {
+    height: 1px;
+    background-color: var(--blade);
   }
 }

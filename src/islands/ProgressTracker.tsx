@@ -12,23 +12,23 @@ export default function ProgressTracker({
 
   return (
     <div className="space-y-2">
-      <div className="flex justify-between text-sm">
-        <span className="text-zinc-400">
+      <div className="flex justify-between font-sans text-sm">
+        <span style={{ color: 'var(--parchment)' }}>
           {completedLessons} de {totalLessons} aulas concluídas
         </span>
-        <span className="font-medium text-white">{percentage}%</span>
+        <span className="font-medium" style={{ color: 'var(--cream)' }}>{percentage}%</span>
       </div>
 
-      <div className="h-2 bg-zinc-800 rounded-full overflow-hidden">
+      <div className="h-1" style={{ backgroundColor: 'var(--tobacco)' }}>
         <div
-          className="h-full bg-brand-500 rounded-full transition-all duration-700"
-          style={{ width: `${percentage}%` }}
+          className="h-full transition-all duration-700"
+          style={{ width: `${percentage}%`, backgroundColor: 'var(--copper)' }}
         />
       </div>
 
       {percentage === 100 && (
-        <p className="text-green-400 text-sm font-medium">
-          🎉 Parabéns! Você concluiu o curso!
+        <p className="font-sans text-sm font-medium" style={{ color: 'var(--copper)' }}>
+          Parabéns. Você concluiu o curso.
         </p>
       )}
     </div>

@@ -8,30 +8,32 @@ const students = (await UsersService.getAllAdmin()).filter((u) => u.role === 'st
 ---
 
 <DashboardLayout title="Alunos" session={session!}>
-  <h1 class="text-2xl font-display font-bold mb-6">Alunos ({students.length})</h1>
+  <h1 class="font-display font-light text-3xl mb-8" style="color: var(--cream);">Alunos ({students.length})</h1>
 
-  <div class="card overflow-x-auto">
-    <table class="w-full text-sm">
-      <thead>
-        <tr class="border-b border-zinc-800 text-left">
-          <th class="pb-3 pr-4 font-medium text-zinc-400">Nome</th>
-          <th class="pb-3 pr-4 font-medium text-zinc-400">E-mail</th>
-          <th class="pb-3 font-medium text-zinc-400">Cadastro</th>
-        </tr>
-      </thead>
-      <tbody class="divide-y divide-zinc-800">
-        {students.map((s) => (
-          <tr>
-            <td class="py-3 pr-4 text-white">{s.full_name ?? '—'}</td>
-            <td class="py-3 pr-4 text-zinc-300">{s.email}</td>
-            <td class="py-3 text-zinc-400">{formatDate(s.created_at)}</td>
+  <div style="background-color: var(--mahogany); border: 1px solid var(--ink);">
+    <div class="overflow-x-auto">
+      <table class="w-full font-sans text-sm">
+        <thead>
+          <tr style="border-bottom: 1px solid var(--ink);">
+            <th class="text-left px-6 py-3 font-medium text-xs tracking-[0.1em] uppercase" style="color: var(--fade);">Nome</th>
+            <th class="text-left px-6 py-3 font-medium text-xs tracking-[0.1em] uppercase" style="color: var(--fade);">E-mail</th>
+            <th class="text-left px-6 py-3 font-medium text-xs tracking-[0.1em] uppercase" style="color: var(--fade);">Cadastro</th>
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {students.map((s) => (
+            <tr style="border-bottom: 1px solid var(--ink);">
+              <td class="px-6 py-4" style="color: var(--cream);">{s.full_name ?? '—'}</td>
+              <td class="px-6 py-4" style="color: var(--parchment);">{s.email}</td>
+              <td class="px-6 py-4" style="color: var(--fade);">{formatDate(s.created_at)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
 
-    {students.length === 0 && (
-      <p class="text-center text-zinc-400 py-8">Nenhum aluno cadastrado.</p>
-    )}
+      {students.length === 0 && (
+        <p class="text-center font-sans text-sm py-10" style="color: var(--fade);">Nenhum aluno cadastrado.</p>
+      )}
+    </div>
   </div>
 </DashboardLayout>
