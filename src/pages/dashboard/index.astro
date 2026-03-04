@@ -3,20 +3,24 @@ import DashboardLayout from '../../components/layout/DashboardLayout.astro';
 import ProgressTracker from '../../islands/ProgressTracker';
 import { LessonsService } from '../../services/lessons.service';
 import { ProgressService } from '../../services/progress.service';
+import { AuthService } from '../../services/auth.service';
 
 const { session } = Astro.locals;
-const [lessons, completedCount] = await Promise.all([
+const [lessons, completedCount, profile] = await Promise.all([
   LessonsService.getAll(),
   ProgressService.getCompletedCount(session!.user.id),
+  AuthService.getProfile(session!.user.id),
 ]);
+
+const displayName = profile?.full_name?.split(' ')[0] ?? session!.user.email?.split('@')[0] ?? 'Artesão';
 ---
 
 <DashboardLayout title="Meu Progresso" session={session!}>
-  <h1 class="font-display font-light text-3xl mb-8" style="color: var(--cream);">
-    Olá, bem-vindo.
-  </h1>
+  <p class="section-eyebrow">Bem-vindo de volta</p>
+  <h1 class="font-display font-light text-4xl mt-1" style="color: var(--cream);">Olá, {displayName}.</h1>
+  <div class="page-divider"></div>
 
-  <div class="mb-8" style="background-color: var(--mahogany); border: 1px solid var(--ink); padding: 1.5rem;">
+  <div class="mb-6 card" style="border-color: var(--blade);">
     <h2 class="font-sans font-medium text-sm tracking-wide uppercase mb-4" style="color: var(--fade);">Seu progresso</h2>
     <ProgressTracker
       totalLessons={lessons.length}
@@ -25,16 +29,27 @@ const [lessons, completedCount] = await Promise.all([
     />
   </div>
 
-  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-    <a href="/dashboard/aulas" class="transition-colors" style="background-color: var(--mahogany); border: 1px solid var(--ink); padding: 1.5rem; display: block;"
-      onmouseover="this.style.borderColor='var(--blade)'" onmouseout="this.style.borderColor='var(--ink)'">
-      <h3 class="font-sans font-medium mb-1" style="color: var(--cream);">Continuar assistindo</h3>
-      <p class="font-sans text-sm" style="color: var(--fade);">{lessons.length} aulas disponíveis</p>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <a
+      href="/dashboard/aulas"
+      class="card transition-colors block"
+      onmouseover="this.style.borderColor='var(--copper)'" onmouseout="this.style.borderColor='var(--ink)'"
+    >
+      <p class="section-eyebrow mb-2">Aulas</p>
+      <h3 class="font-display font-semibold text-xl mb-1" style="color: var(--cream);">Continuar assistindo</h3>
+      <p class="font-sans text-sm" style="color: var(--fade);">{completedCount} de {lessons.length} aulas concluídas</p>
+      <p class="font-sans text-sm mt-4" style="color: var(--copper);">Continuar →</p>
     </a>
-    <a href="/dashboard/mentoria" class="transition-colors" style="background-color: var(--mahogany); border: 1px solid var(--ink); padding: 1.5rem; display: block;"
-      onmouseover="this.style.borderColor='var(--blade)'" onmouseout="this.style.borderColor='var(--ink)'">
-      <h3 class="font-sans font-medium mb-1" style="color: var(--cream);">Agendar mentoria</h3>
-      <p class="font-sans text-sm" style="color: var(--fade);">Sessão 1:1 com Ygor Luan</p>
+
+    <a
+      href="/dashboard/mentoria"
+      class="card transition-colors block"
+      onmouseover="this.style.borderColor='var(--copper)'" onmouseout="this.style.borderColor='var(--ink)'"
+    >
+      <p class="section-eyebrow mb-2">Mentoria</p>
+      <h3 class="font-display font-semibold text-xl mb-1" style="color: var(--cream);">Agendar sessão 1:1</h3>
+      <p class="font-sans text-sm" style="color: var(--fade);">60 min · Sessão personalizada com Ygor Luan</p>
+      <p class="font-sans text-sm mt-4" style="color: var(--copper);">Agendar →</p>
     </a>
   </div>
 </DashboardLayout>

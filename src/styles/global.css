@@ -87,4 +87,41 @@
     height: 1px;
     background-color: var(--blade);
   }
+
+  .section-eyebrow {
+    font-family: "DM Sans", sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--copper);
+  }
+
+  .page-divider {
+    height: 1px;
+    background-color: var(--blade);
+    max-width: 20rem;
+    margin-top: 0.5rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .lesson-timeline {
+    border-left: 2px solid rgba(201,133,58,0.20);
+    padding-left: 1.5rem;
+  }
+
+  .lesson-timeline--completed {
+    border-left-color: rgba(201,133,58,0.50);
+  }
+
+  .avatar-circle {
+    width: 4rem;
+    height: 4rem;
+    background-color: var(--copper-dim);
+    border: 1px solid var(--blade);
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
 }

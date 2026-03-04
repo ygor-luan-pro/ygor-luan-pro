@@ -6,31 +6,44 @@ const calcomLink = import.meta.env.PUBLIC_CALCOM_LINK ?? 'https://cal.com/ygorlu
 ---
 
 <DashboardLayout title="Mentoria 1:1" session={session!}>
-  <h1 class="font-display font-light text-3xl mb-2" style="color: var(--cream);">Mentoria 1:1</h1>
-  <p class="font-sans text-sm mb-8" style="color: var(--fade);">
-    Agende sua sessão personalizada com Ygor Luan.
-  </p>
+  <p class="section-eyebrow">Sessão exclusiva</p>
+  <h1 class="font-display font-light text-4xl mt-1" style="color: var(--cream);">Mentoria 1:1</h1>
+  <div class="page-divider"></div>
 
-  <div class="max-w-md" style="background-color: var(--mahogany); border: 1px solid var(--ink);">
-    <div class="p-8">
-      <p class="font-sans font-medium text-xs tracking-[0.15em] uppercase mb-4" style="color: var(--copper);">
-        Sessão de 60 minutos
+  <div class="grid md:grid-cols-2 gap-8 max-w-3xl">
+    <div>
+      <h2 class="font-display font-semibold text-xl mb-4" style="color: var(--cream);">O que esperar</h2>
+      <ul class="space-y-3">
+        {[
+          'Análise do seu trabalho atual e pontos de melhoria',
+          'Técnicas exclusivas de corte e acabamento',
+          'Estratégias para posicionamento e precificação',
+          'Plano de ação personalizado para os próximos 30 dias',
+        ].map((item) => (
+          <li class="flex gap-3 font-sans text-sm" style="color: var(--parchment);">
+            <span style="color: var(--copper); flex-shrink: 0;">—</span>
+            {item}
+          </li>
+        ))}
+      </ul>
+      <p class="font-sans text-xs mt-6" style="color: var(--fade);">Realizada por videoconferência</p>
+    </div>
+
+    <div class="card" style="border-color: var(--blade);">
+      <p class="section-eyebrow">Sessão de 60 minutos</p>
+      <div class="blade my-4"></div>
+      <p class="font-sans text-sm leading-relaxed mb-6" style="color: var(--parchment);">
+        Escolha o melhor horário no calendário de Ygor Luan e garanta sua sessão personalizada.
       </p>
-      <p class="font-sans text-sm leading-relaxed mb-8" style="color: var(--parchment);">
-        Escolha o melhor horário no calendário de Ygor Luan. Sessão realizada por videoconferência.
-      </p>
-      <div class="blade mb-8"></div>
       <a
         href={calcomLink}
         target="_blank"
         rel="noopener noreferrer"
-        class="btn-primary"
+        class="btn-primary w-full"
       >
         Agendar Mentoria →
       </a>
-      <p class="font-sans text-xs mt-4" style="color: var(--fade);">
-        Você será redirecionado para Cal.com
-      </p>
+      <p class="font-sans text-xs mt-4" style="color: var(--fade);">Você será redirecionado para Cal.com</p>
     </div>
   </div>
 </DashboardLayout>

@@ -5,21 +5,34 @@ import { formatDate } from '../../lib/utils';
 
 const { session } = Astro.locals;
 const profile = await AuthService.getProfile(session!.user.id);
+
+const initials = profile?.full_name
+  ?.split(' ')
+  .map((n) => n[0])
+  .slice(0, 2)
+  .join('')
+  .toUpperCase() ?? '?';
 ---
 
 <DashboardLayout title="Meu Perfil" session={session!}>
-  <h1 class="font-display font-light text-3xl mb-8" style="color: var(--cream);">Meu Perfil</h1>
+  <h1 class="font-display font-light text-4xl" style="color: var(--cream);">Meu Perfil</h1>
+  <div class="page-divider"></div>
 
-  <div class="max-w-md" style="background-color: var(--mahogany); border: 1px solid var(--ink);">
-    <div class="p-8 space-y-6">
+  <div class="card max-w-md" style="border-color: var(--blade);">
+    <div class="flex items-center gap-4 pb-6" style="border-bottom: 1px solid var(--ink);">
+      <div class="avatar-circle">
+        <span class="font-display text-2xl" style="color: var(--copper);">{initials}</span>
+      </div>
+      <div>
+        <p class="font-display font-semibold text-xl" style="color: var(--cream);">{profile?.full_name ?? session!.user.email}</p>
+        <span class="font-sans text-xs tracking-wide uppercase" style="color: var(--fade);">Aluno</span>
+      </div>
+    </div>
+
+    <div class="space-y-5 py-6">
       <div>
         <p class="font-sans text-xs tracking-[0.15em] uppercase mb-1" style="color: var(--fade);">E-mail</p>
         <p class="font-sans text-sm" style="color: var(--cream);">{session!.user.email}</p>
-      </div>
-
-      <div>
-        <p class="font-sans text-xs tracking-[0.15em] uppercase mb-1" style="color: var(--fade);">Nome</p>
-        <p class="font-sans text-sm" style="color: var(--cream);">{profile?.full_name ?? '—'}</p>
       </div>
 
       <div>
@@ -29,11 +42,11 @@ const profile = await AuthService.getProfile(session!.user.id);
         </p>
       </div>
 
-      <div class="pt-4" style="border-top: 1px solid var(--ink);">
-        <a href="/api/auth/reset-password" class="btn-ghost text-sm px-4 py-2">
-          Alterar senha
-        </a>
-      </div>
+      <div class="blade"></div>
     </div>
+
+    <a href="/api/auth/reset-password" class="btn-ghost text-sm px-4 py-2">
+      Alterar senha
+    </a>
   </div>
 </DashboardLayout>

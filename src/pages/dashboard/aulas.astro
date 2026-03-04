@@ -24,46 +24,51 @@ const modules = lessons.reduce<Map<number, typeof lessons>>(
 ---
 
 <DashboardLayout title="Aulas" session={session!}>
-  <h1 class="font-display font-light text-3xl mb-8" style="color: var(--cream);">Aulas</h1>
+  <p class="section-eyebrow">Seu conteúdo</p>
+  <h1 class="font-display font-light text-4xl mt-1" style="color: var(--cream);">Aulas</h1>
+  <div class="page-divider"></div>
 
-  <div class="space-y-10">
-    {[...modules.entries()].map(([moduleNum, moduleLessons]) => (
-      <div>
-        <p class="font-sans text-xs tracking-[0.15em] uppercase mb-4" style="color: var(--copper);">
-          Módulo {moduleNum}
-        </p>
+  <div class="space-y-12">
+    {[...modules.entries()].map(([moduleNum, moduleLessons]) => {
+      const allDone = moduleLessons.every((l) => progressMap.get(l.id)?.completed);
+      return (
         <div>
-          {moduleLessons.map((lesson) => {
-            const progress = progressMap.get(lesson.id);
-            const done = progress?.completed ?? false;
-
-            return (
-              <a
-                href={`/dashboard/aula/${lesson.id}`}
-                class="flex items-center gap-5 py-4 transition-colors"
-                style={`border-top: 1px solid var(--ink); ${done ? 'opacity: 0.7;' : ''}`}
-                onmouseover="this.style.backgroundColor='var(--tobacco)'; this.style.paddingLeft='0.5rem'; this.style.paddingRight='0.5rem';"
-                onmouseout="this.style.backgroundColor=''; this.style.paddingLeft=''; this.style.paddingRight='';"
-              >
-                <div class="w-7 h-7 flex items-center justify-center flex-shrink-0 font-mono text-xs"
-                  style={done
-                    ? 'background-color: rgba(201,133,58,0.15); color: var(--copper); border: 1px solid var(--blade);'
-                    : 'background-color: var(--tobacco); color: var(--fade); border: 1px solid var(--ink);'}>
-                  {done ? '✓' : lesson.order_number}
-                </div>
-                <div class="flex-1 min-w-0">
-                  <p class="font-sans font-medium text-sm truncate" style="color: var(--cream);">{lesson.title}</p>
-                  {lesson.duration_minutes && (
-                    <p class="font-sans text-xs mt-0.5" style="color: var(--fade);">{formatDuration(lesson.duration_minutes)}</p>
-                  )}
-                </div>
-                <span class="font-sans text-sm flex-shrink-0" style="color: var(--blade);">→</span>
-              </a>
-            );
-          })}
-          <div style="border-top: 1px solid var(--ink);"></div>
+          <p class="section-eyebrow mb-4">Módulo {moduleNum}</p>
+          <div class={`lesson-timeline${allDone ? ' lesson-timeline--completed' : ''}`}>
+            {moduleLessons.map((lesson) => {
+              const progress = progressMap.get(lesson.id);
+              const done = progress?.completed ?? false;
+              return (
+                <a
+                  href={`/dashboard/aula/${lesson.id}`}
+                  class="flex items-center gap-3 py-3 transition-colors"
+                  style={`border-bottom: 1px solid var(--ink);${done ? ' opacity: 0.65;' : ''}`}
+                  onmouseover="this.style.paddingLeft='0.25rem'; this.style.paddingRight='0.25rem';"
+                  onmouseout="this.style.paddingLeft=''; this.style.paddingRight='';"
+                >
+                  <div
+                    class="w-6 h-6 flex items-center justify-center flex-shrink-0 font-mono text-xs"
+                    style={done
+                      ? 'background-color: var(--copper-dim); color: var(--copper); border: 1px solid var(--blade); border-radius: 2px;'
+                      : 'background-color: var(--tobacco); color: var(--fade); border: 1px solid var(--ink); border-radius: 2px;'}
+                  >
+                    {done ? '✓' : lesson.order_number}
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <p class="font-sans font-medium text-sm truncate" style={done ? 'color: var(--parchment);' : 'color: var(--cream);'}>
+                      {lesson.title}
+                    </p>
+                    {lesson.duration_minutes && (
+                      <p class="font-sans text-xs mt-0.5" style="color: var(--fade);">{formatDuration(lesson.duration_minutes)}</p>
+                    )}
+                  </div>
+                  <span class="font-sans text-sm flex-shrink-0" style="color: var(--fade);">→</span>
+                </a>
+              );
+            })}
+          </div>
         </div>
-      </div>
-    ))}
+      );
+    })}
   </div>
 </DashboardLayout>
