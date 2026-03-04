@@ -1,8 +1,24 @@
 import type { APIRoute } from 'astro';
 import { preference } from '../../lib/mercadopago';
+import type { ProductId } from '../../types';
+
+const isLaunchMode = import.meta.env.IS_LAUNCH_MODE === 'true';
+
+const PRODUCT_CATALOG: Record<ProductId, { title: string; description: string; price: number }> = {
+  'videoaulas': {
+    title: 'Videoaulas – Ygor Luan Pro',
+    description: 'Acesso completo às videoaulas',
+    price: 297,
+  },
+  'mentoria-completa': {
+    title: 'Mentoria Completa – Ygor Luan Pro',
+    description: 'Videoaulas + 4 sessões de mentoria 1:1',
+    price: isLaunchMode ? 997 : 1497,
+  },
+};
 
 export const POST: APIRoute = async ({ request }) => {
-  const { email } = await request.json() as { email?: string };
+  const { email, productId } = await request.json() as { email?: string; productId?: ProductId };
 
   if (!email) {
     return new Response(JSON.stringify({ error: 'E-mail obrigatório' }), {
@@ -11,17 +27,35 @@ export const POST: APIRoute = async ({ request }) => {
     });
   }
 
-  const siteUrl = import.meta.env.PUBLIC_SITE_URL;
+  const resolvedProductId: ProductId = productId ?? 'mentoria-completa';
+
+  if (!(resolvedProductId in PRODUCT_CATALOG)) {
+    return new Response(JSON.stringify({ error: 'Produto inválido' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  const product = PRODUCT_CATALOG[resolvedProductId];
+  const siteUrl = import.meta.env.PUBLIC_SITE_URL ?? 'http://localhost:4321';
+  const isMock = (import.meta.env.MERCADOPAGO_ACCESS_TOKEN ?? '').startsWith('APP_USR_xxx');
+
+  if (isMock) {
+    return new Response(
+      JSON.stringify({ checkoutUrl: `${siteUrl}/obrigado?mock=true`, preferenceId: 'mock' }),
+      { status: 200, headers: { 'Content-Type': 'application/json' } },
+    );
+  }
 
   const response = await preference.create({
     body: {
       items: [
         {
-          id: 'mentoria-completa',
-          title: 'Mentoria Completa – Ygor Luan Academy',
-          description: 'Acesso completo ao curso + sessão de mentoria 1:1',
+          id: resolvedProductId,
+          title: product.title,
+          description: product.description,
           quantity: 1,
-          unit_price: 997,
+          unit_price: product.price,
           currency_id: 'BRL',
         },
       ],
@@ -33,7 +67,7 @@ export const POST: APIRoute = async ({ request }) => {
       },
       auto_return: 'approved',
       notification_url: `${siteUrl}/api/webhook/pagamento`,
-      metadata: { buyer_email: email },
+      metadata: { buyer_email: email, product_id: resolvedProductId },
     },
   });
 

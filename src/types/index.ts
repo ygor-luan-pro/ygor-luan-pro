@@ -17,3 +17,22 @@ export type LessonWithProgress = Lesson & {
 export type ModuleWithLessons = Module & {
   lessons: LessonWithProgress[];
 };
+
+export type StudentStats = {
+  total_lessons: number;
+  completed_count: number;
+  total_watch_time: number;
+};
+
+export type ProductId = 'videoaulas' | 'mentoria-completa';
+
+export interface PricingProduct {
+  id: ProductId;
+  eyebrow: string;
+  title: string;
+  features: string[];
+  price: number;
+  originalPrice?: number;
+  cta: string;
+  highlighted: boolean;
+}

@@ -1,45 +1,74 @@
 ---
-import CheckoutButton from '../../islands/CheckoutButton';
+import PricingSection from '../../islands/PricingSection';
+import type { PricingProduct } from '../../types';
+
+interface Props {
+  checkoutFailed?: boolean;
+}
+
+const isLaunchMode = import.meta.env.PUBLIC_IS_LAUNCH_MODE === 'true';
+const spotsRemaining = parseInt(import.meta.env.PUBLIC_LAUNCH_SPOTS_REMAINING ?? '15', 10);
+const premiumPrice = isLaunchMode ? 997 : 1497;
+
+const products: PricingProduct[] = [
+  {
+    id: 'videoaulas',
+    eyebrow: 'Começo',
+    title: 'Videoaulas',
+    features: [
+      'Acesso vitalício ao curso',
+      'Todas as aulas gravadas',
+      'Atualizações incluídas',
+      'Suporte por email',
+    ],
+    price: 297,
+    cta: 'Começar agora',
+    highlighted: false,
+  },
+  {
+    id: 'mentoria-completa',
+    eyebrow: 'Completo',
+    title: 'Mentoria Completa',
+    features: [
+      'Tudo do plano Videoaulas',
+      '4 sessões de mentoria 1:1',
+      'Plano de ação personalizado',
+      'Análise do seu trabalho',
+      'Estratégia de precificação',
+      'Acesso a grupo exclusivo',
+    ],
+    price: premiumPrice,
+    originalPrice: isLaunchMode ? 2500 : undefined,
+    cta: 'Garantir vaga',
+    highlighted: true,
+  },
+];
 ---
 
 <section id="comprar" class="py-24 px-6">
   <div class="max-w-5xl mx-auto">
-    <div class="flex flex-col lg:flex-row gap-16 items-start">
-      <div class="flex-1">
-        <p class="font-sans text-sm tracking-[0.2em] uppercase mb-3" style="color: var(--copper);">
-          Investimento
-        </p>
-        <h2 class="font-display font-light leading-tight mb-4" style="font-size: clamp(2rem, 5vw, 3.5rem); color: var(--cream);">
-          Pronto para transformar<br/>
-          <span style="font-weight: 600;">sua carreira?</span>
-        </h2>
-        <p class="font-sans leading-relaxed mb-8" style="color: var(--parchment);">
-          Junte-se a centenas de barbeiros que já evoluíram com o método Ygor Luan.
-        </p>
-        <p class="font-sans text-xs" style="color: var(--fade);">
-          Pagamento seguro via Mercado Pago · Parcele em até 12x
-        </p>
-      </div>
-
-      <div class="w-full lg:w-80 flex-shrink-0" style="background-color: var(--mahogany); border: 1px solid var(--blade);">
-        <div class="p-8">
-          <p class="font-sans text-sm line-through mb-1" style="color: var(--fade);">De R$ 1.997</p>
-          <p class="font-mono font-medium leading-none mb-1" style="font-size: 3.5rem; color: var(--cream);">R$ 997</p>
-          <p class="font-sans text-sm mb-8" style="color: var(--fade);">pagamento único</p>
-
-          <div class="blade mb-8"></div>
-
-          <ul class="space-y-3 font-sans text-sm mb-8" style="color: var(--parchment);">
-            <li><span style="color: var(--copper);">—</span> +40 aulas em vídeo HD</li>
-            <li><span style="color: var(--copper);">—</span> 1 sessão de mentoria 1:1</li>
-            <li><span style="color: var(--copper);">—</span> Materiais complementares</li>
-            <li><span style="color: var(--copper);">—</span> Acesso vitalício</li>
-            <li><span style="color: var(--copper);">—</span> Garantia de 7 dias</li>
-          </ul>
-
-          <CheckoutButton client:load fullWidth />
-        </div>
-      </div>
+    <div class="text-center mb-12">
+      <p class="font-sans text-sm tracking-[0.2em] uppercase mb-3" style="color: var(--copper);">
+        Investimento
+      </p>
+      <h2 class="font-display font-light leading-tight mb-4" style="font-size: clamp(2rem, 5vw, 3.5rem); color: var(--cream);">
+        Pronto para transformar<br/>
+        <span style="font-weight: 600;">sua carreira?</span>
+      </h2>
+      <p class="font-sans leading-relaxed max-w-xl mx-auto" style="color: var(--parchment);">
+        Junte-se a centenas de barbeiros que já evoluíram com o método Ygor Luan.
+      </p>
     </div>
+
+    <PricingSection
+      isLaunchMode={isLaunchMode}
+      spotsRemaining={spotsRemaining}
+      products={products}
+      client:load
+    />
+
+    <p class="font-sans text-xs text-center mt-8" style="color: var(--fade);">
+      Pagamento seguro via Mercado Pago · Parcele em até 12x
+    </p>
   </div>
 </section>
