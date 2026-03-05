@@ -1,4 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
+import { config } from 'dotenv';
+
+config({ path: '.env.local' });
 
 export default defineConfig({
   testDir: './tests/e2e',
@@ -8,7 +11,7 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: 'html',
   use: {
-    baseURL: process.env.PUBLIC_SITE_URL ?? 'http://localhost:4321',
+    baseURL: 'http://localhost:4321',
     trace: 'on-first-retry',
   },
   projects: [

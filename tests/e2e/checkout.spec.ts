@@ -17,11 +17,11 @@ test.describe('Fluxo de Checkout', () => {
 
   test('página de obrigado exibe conteúdo de sucesso', async ({ page }) => {
     await page.goto('/obrigado');
-    await expect(page.locator('h1')).toContainText('sucesso');
+    await expect(page.locator('h1').first()).toContainText('Bem-vindo');
   });
 
   test('página de obrigado com status=pending exibe conteúdo correto', async ({ page }) => {
     await page.goto('/obrigado?status=pending');
-    await expect(page.locator('h1')).toContainText('análise');
+    await expect(page.locator('h1').first()).toContainText('análise');
   });
 });

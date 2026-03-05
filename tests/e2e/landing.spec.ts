@@ -6,7 +6,7 @@ test.describe('Landing Page', () => {
   });
 
   test('exibe o título principal', async ({ page }) => {
-    await expect(page.locator('h1')).toBeVisible();
+    await expect(page.locator('h1').first()).toBeVisible();
   });
 
   test('exibe seção de benefícios', async ({ page }) => {

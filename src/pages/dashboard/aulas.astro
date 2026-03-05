@@ -1,14 +1,28 @@
 ---
 import DashboardLayout from '../../components/layout/DashboardLayout.astro';
-import { LessonsService } from '../../services/lessons.service';
-import { ProgressService } from '../../services/progress.service';
+import { createClient } from '@supabase/supabase-js';
+import type { Database } from '../../types/database.types';
 import { formatDuration } from '../../lib/utils';
 
 const { session } = Astro.locals;
-const [lessons, progressList] = await Promise.all([
-  LessonsService.getAll(),
-  ProgressService.getUserProgress(session!.user.id),
+
+// Use per-request authenticated client so RLS can resolve auth.uid()
+const userClient = createClient<Database>(
+  import.meta.env.PUBLIC_SUPABASE_URL,
+  import.meta.env.PUBLIC_SUPABASE_ANON_KEY,
+  {
+    auth: { persistSession: false },
+    global: { headers: { Authorization: `Bearer ${session!.access_token}` } },
+  },
+);
+
+const [lessonsResult, progressResult] = await Promise.all([
+  userClient.from('lessons').select('*').eq('is_published', true).order('module_number').order('order_number'),
+  userClient.from('user_progress').select('*').eq('user_id', session!.user.id),
 ]);
+
+const lessons = lessonsResult.data ?? [];
+const progressList = progressResult.data ?? [];
 
 const progressMap = new Map(progressList.map((p) => [p.lesson_id, p]));
 
