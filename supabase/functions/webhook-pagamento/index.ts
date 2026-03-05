@@ -7,7 +7,7 @@ const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SUPABASE_SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const MP_ACCESS_TOKEN = Deno.env.get('MERCADOPAGO_ACCESS_TOKEN')!;
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')!;
-const SITE_URL = Deno.env.get('PUBLIC_SITE_URL') ?? 'https://ygorluanacademy.com.br';
+const SITE_URL = Deno.env.get('PUBLIC_SITE_URL') ?? 'https://ygorluanpro.com.br';
 
 serve(async (req) => {
   const notification = await req.json();
@@ -53,8 +53,12 @@ serve(async (req) => {
   let userId = authData?.user?.id;
 
   if (createError?.message?.includes('already registered')) {
-    const { data: usersData } = await supabase.auth.admin.listUsers();
-    userId = usersData.users.find((u: { email: string }) => u.email === email)?.id;
+    const { data: profileData } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('email', email)
+      .single();
+    userId = profileData?.id;
   }
 
   if (!userId) return new Response('Could not resolve user', { status: 500 });
@@ -77,9 +81,9 @@ serve(async (req) => {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      from: 'noreply@ygorluanacademy.com.br',
+      from: 'noreply@ygorluanpro.com.br',
       to: email,
-      subject: 'Seu acesso à Ygor Luan Academy está pronto!',
+      subject: 'Seu acesso ao Ygor Luan Pro está pronto!',
       html: `<h1>Parabéns!</h1><p>Senha temporária: <strong>${tempPassword}</strong></p><p><a href="${SITE_URL}/login">Acessar agora</a></p>`,
     }),
   });

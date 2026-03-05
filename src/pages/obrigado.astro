@@ -2,6 +2,7 @@
 import '../styles/global.css';
 
 const status = Astro.url.searchParams.get('status');
+const isMock = Astro.url.searchParams.get('mock') === 'true';
 const isPending = status === 'pending';
 ---
 
@@ -11,29 +12,86 @@ const isPending = status === 'pending';
     <meta charset="utf-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width" />
-    <title>Obrigado – Ygor Luan Academy</title>
+    <title>{isPending ? 'Pagamento em análise' : 'Bem-vindo'} – Ygor Luan Pro</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
   </head>
-  <body class="min-h-screen flex items-center justify-center px-6">
-    <div class="max-w-md mx-auto text-center">
+  <body class="min-h-screen flex flex-col items-center justify-center px-6 py-16">
+
+    {isMock && (
+      <div class="w-full max-w-lg mb-8 px-4 py-3 font-mono text-xs text-center" style="background-color: rgba(201,133,58,0.12); border: 1px solid rgba(201,133,58,0.35); color: var(--copper);">
+        Modo desenvolvimento — Mercado Pago não foi chamado
+      </div>
+    )}
+
+    <div class="max-w-lg w-full">
       <div class="blade mx-auto mb-10" style="max-width: 4rem;"></div>
 
-      <h1 class="font-display font-light leading-tight mb-4" style="font-size: clamp(2rem, 5vw, 3rem); color: var(--cream);">
-        {isPending ? 'Pagamento em análise' : 'Bem-vindo à Academy.'}
+      <h1 class="font-display font-light leading-tight mb-4 text-center" style="font-size: clamp(2rem, 5vw, 3rem); color: var(--cream);">
+        {isPending ? 'Pagamento em análise' : 'Bem-vindo ao Ygor Luan Pro.'}
       </h1>
 
-      <p class="font-sans text-sm leading-relaxed mb-8" style="color: var(--parchment);">
-        {isPending
-          ? 'Seu pagamento está sendo processado. Você receberá um e-mail assim que for aprovado.'
-          : 'Você receberá um e-mail com seus dados de acesso em breve. Fique de olho na caixa de entrada.'}
-      </p>
+      {isPending ? (
+        <div>
+          <p class="font-sans text-sm leading-relaxed mb-6 text-center" style="color: var(--parchment);">
+            Seu pagamento está sendo processado. Assim que confirmado, você receberá um e-mail com seus dados de acesso.
+          </p>
+          <ul class="font-sans text-sm space-y-2 mb-8" style="color: var(--fade);">
+            <li style="color: var(--parchment);"><span style="color: var(--copper);">—</span> Boleto bancário: até 3 dias úteis para compensar</li>
+            <li style="color: var(--parchment);"><span style="color: var(--copper);">—</span> Pix: confirmação em minutos</li>
+            <li style="color: var(--parchment);"><span style="color: var(--copper);">—</span> Verifique também a pasta de spam</li>
+          </ul>
+        </div>
+      ) : (
+        <div>
+          <p class="font-sans text-sm leading-relaxed mb-10 text-center" style="color: var(--parchment);">
+            Seu acesso está sendo preparado. Veja abaixo o que acontece agora.
+          </p>
 
-      {!isPending && (
-        <a href="/login" class="btn-primary">
-          Acessar a plataforma →
-        </a>
+          <ol class="space-y-6 mb-10">
+            <li class="flex gap-4 items-start">
+              <span class="font-mono text-xs flex-shrink-0 w-6 h-6 flex items-center justify-center border" style="color: var(--copper); border-color: rgba(201,133,58,0.4);">1</span>
+              <div>
+                <p class="font-sans text-sm font-medium mb-1" style="color: var(--cream);">E-mail com dados de acesso</p>
+                <p class="font-sans text-xs leading-relaxed" style="color: var(--fade);">
+                  Você receberá login e senha em breve. Verifique a caixa de entrada e a pasta de spam.
+                </p>
+              </div>
+            </li>
+            <li class="flex gap-4 items-start">
+              <span class="font-mono text-xs flex-shrink-0 w-6 h-6 flex items-center justify-center border" style="color: var(--copper); border-color: rgba(201,133,58,0.4);">2</span>
+              <div>
+                <p class="font-sans text-sm font-medium mb-1" style="color: var(--cream);">Primeiro acesso à plataforma</p>
+                <p class="font-sans text-xs leading-relaxed" style="color: var(--fade);">
+                  Use as credenciais do e-mail para entrar e começar as aulas imediatamente.
+                </p>
+              </div>
+            </li>
+            <li class="flex gap-4 items-start">
+              <span class="font-mono text-xs flex-shrink-0 w-6 h-6 flex items-center justify-center border" style="color: var(--copper); border-color: rgba(201,133,58,0.4);">3</span>
+              <div>
+                <p class="font-sans text-sm font-medium mb-1" style="color: var(--cream);">Agendar sua mentoria 1:1</p>
+                <p class="font-sans text-xs leading-relaxed" style="color: var(--fade);">
+                  Dentro da plataforma você encontrará o link para agendar sua sessão com o Ygor Luan.
+                </p>
+              </div>
+            </li>
+          </ol>
+
+          <a href="/login" class="btn-primary w-full text-center block mb-10">
+            Acessar a plataforma →
+          </a>
+
+          <div class="blade mb-6"></div>
+
+          <p class="font-sans text-xs text-center" style="color: var(--fade);">
+            E-mail não chegou? Entre em contato:{' '}
+            <a href="mailto:suporte@ygorluanpro.com.br" style="color: var(--copper); text-decoration: underline;">
+              suporte@ygorluanpro.com.br
+            </a>
+          </p>
+        </div>
       )}
 
       <div class="blade mx-auto mt-10" style="max-width: 4rem;"></div>

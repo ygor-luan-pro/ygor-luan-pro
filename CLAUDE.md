@@ -44,7 +44,7 @@ REFACTOR ─ Limpar código sem alterar comportamento. Rodar `pnpm test` → dev
 
 ---
 
-# Ygor Luan Academy - Plataforma de Mentoria para Barbeiros
+# Ygor Luan Pro - Plataforma de Mentoria para Barbeiros
 
 ## 📋 Visão Geral do Projeto
 
@@ -642,7 +642,7 @@ test.describe('Fluxo de Compra', () => {
   test('deve completar compra com sucesso', async ({ page }) => {
     // 1. Acessa landing
     await page.goto('/');
-    await expect(page.locator('h1')).toContainText('Ygor Luan Academy');
+    await expect(page.locator('h1')).toContainText('Ygor Luan Pro');
     
     // 2. Clica em comprar
     await page.click('button:has-text("Comprar Agora")');
@@ -773,7 +773,7 @@ MERCADOPAGO_ACCESS_TOKEN=APP_USR_xxx  # Apenas backend
 VIMEO_ACCESS_TOKEN=xxx
 RESEND_API_KEY=re_xxx
 
-SITE_URL=https://ygorluanacademy.com.br
+SITE_URL=https://ygorluanpro.com.br
 ```
 
 ---
@@ -864,7 +864,7 @@ git push origin feature/nome-da-feature
 
 ## 📝 Licença
 
-Projeto proprietário - Todos os direitos reservados © 2025 Ygor Luan Academy
+Projeto proprietário - Todos os direitos reservados © 2025 Ygor Luan Pro
 
 ---
 

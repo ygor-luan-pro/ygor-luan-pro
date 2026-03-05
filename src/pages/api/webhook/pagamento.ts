@@ -78,7 +78,7 @@ export const POST: APIRoute = async ({ request }) => {
   await resend.emails.send({
     from: FROM_EMAIL,
     to: email,
-    subject: 'Seu acesso à Ygor Luan Academy está pronto!',
+    subject: 'Seu acesso ao Ygor Luan Pro está pronto!',
     html: `
       <h1>Parabéns! Seu acesso está liberado.</h1>
       <p>Acesse a plataforma com as credenciais abaixo:</p>

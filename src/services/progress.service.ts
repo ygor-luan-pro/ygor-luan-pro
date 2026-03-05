@@ -1,5 +1,5 @@
 import { supabase } from '../lib/supabase';
-import type { UserProgress } from '../types';
+import type { StudentStats, UserProgress } from '../types';
 
 export class ProgressService {
   static async getUserProgress(userId: string): Promise<UserProgress[]> {
@@ -60,5 +60,14 @@ export class ProgressService {
 
     if (error) throw new Error(error.message);
     return count ?? 0;
+  }
+
+  static async getStudentStats(userId: string): Promise<StudentStats> {
+    const { data, error } = await supabase.rpc('get_student_stats', { p_user_id: userId });
+
+    if (error) throw new Error(error.message);
+
+    const [row] = data as StudentStats[];
+    return row;
   }
 }

@@ -7,6 +7,8 @@ import Testimonials from '../components/landing/Testimonials.astro';
 import FAQ from '../components/landing/FAQ.astro';
 import CTA from '../components/landing/CTA.astro';
 import '../styles/global.css';
+
+const checkoutFailed = Astro.url.searchParams.get('checkout') === 'failed';
 ---
 
 <!doctype html>
@@ -16,7 +18,7 @@ import '../styles/global.css';
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
-    <title>Ygor Luan Academy – Mentoria para Barbeiros</title>
+    <title>Ygor Luan Pro – Mentoria para Barbeiros</title>
     <meta name="description" content="Aprenda barbearia profissional com Ygor Luan. Curso completo em vídeo + mentoria 1:1 personalizada." />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -24,10 +26,10 @@ import '../styles/global.css';
   </head>
   <body>
     <Header />
-    <Hero />
+    <Hero checkoutFailed={checkoutFailed} />
     <Benefits />
     <Testimonials />
-    <CTA />
+    <CTA checkoutFailed={checkoutFailed} />
     <FAQ />
     <Footer />
   </body>

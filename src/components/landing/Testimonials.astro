@@ -4,16 +4,19 @@ const testimonials = [
     name: 'Carlos M.',
     city: 'São Paulo, SP',
     text: 'Depois da mentoria com o Ygor, dobrei minha clientela em 3 meses. O método dele é cirúrgico.',
+    avatar: '/images/testimonials/carlos-m.jpg',
   },
   {
     name: 'Rafael S.',
     city: 'Belo Horizonte, MG',
     text: 'As aulas de técnica de barba mudaram completamente meu trabalho. Vale cada centavo.',
+    avatar: '/images/testimonials/rafael-s.jpg',
   },
   {
     name: 'Diego F.',
     city: 'Curitiba, PR',
     text: 'A sessão 1:1 me ajudou a precificar meus serviços corretamente. Hoje ganho 40% mais.',
+    avatar: '/images/testimonials/diego-f.jpg',
   },
 ];
 ---
@@ -35,13 +38,23 @@ const testimonials = [
           <p class="font-sans text-base leading-relaxed mb-6" style="color: var(--parchment);">
             {t.text}
           </p>
-          <div>
-            <p class="font-sans font-semibold text-sm tracking-wide uppercase" style="color: var(--cream);">
-              {t.name}
-            </p>
-            <p class="font-sans text-xs mt-0.5" style="color: var(--fade);">
-              {t.city}
-            </p>
+          <div class="flex items-center gap-3">
+            <img
+              src={t.avatar}
+              alt={t.name}
+              width="40"
+              height="40"
+              class="rounded-full object-cover flex-shrink-0"
+              style="width:40px;height:40px;border:1px solid rgba(201,133,58,0.40);"
+            />
+            <div>
+              <p class="font-sans font-semibold text-sm tracking-wide uppercase" style="color: var(--cream);">
+                {t.name}
+              </p>
+              <p class="font-sans text-xs mt-0.5" style="color: var(--fade);">
+                {t.city}
+              </p>
+            </div>
           </div>
         </div>
       ))}

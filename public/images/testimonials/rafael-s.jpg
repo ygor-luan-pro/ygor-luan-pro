@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80">
+  <circle cx="40" cy="40" r="40" fill="#2E2015"/>
+  <circle cx="40" cy="40" r="39.5" fill="none" stroke="#C9853A" stroke-opacity="0.40"/>
+  <circle cx="40" cy="30" r="14" fill="#7A6B57" opacity="0.45"/>
+  <path d="M8 74 C8 54 22 46 40 46 C58 46 72 54 72 74" fill="#7A6B57" opacity="0.45"/>
+  <text x="40" y="79" text-anchor="middle" font-family="serif" font-size="8" fill="#7A6B57" opacity="0.6">RS</text>
+</svg>

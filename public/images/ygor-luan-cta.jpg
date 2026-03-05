@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" viewBox="0 0 160 160">
+  <rect width="160" height="160" fill="#2E2015"/>
+  <rect x="0" y="0" width="160" height="160" fill="none" stroke="#C9853A" stroke-width="1" stroke-opacity="0.30"/>
+  <ellipse cx="80" cy="62" rx="28" ry="28" fill="#7A6B57" opacity="0.35"/>
+  <path d="M24 148 C24 110 52 96 80 96 C108 96 136 110 136 148" fill="#7A6B57" opacity="0.35"/>
+  <text x="80" y="156" text-anchor="middle" font-family="serif" font-size="9" fill="#7A6B57" opacity="0.7" letter-spacing="1">FOTO</text>
+</svg>

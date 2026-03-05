@@ -30,6 +30,7 @@ vi.mock('../src/lib/supabase', () => {
       })),
       upsert: vi.fn(() => Promise.resolve({ data: null, error: null })),
     })),
+    rpc: vi.fn(() => Promise.resolve({ data: null, error: null })),
     auth: {
       signInWithPassword: vi.fn(),
       signOut: vi.fn(),
