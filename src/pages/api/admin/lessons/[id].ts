@@ -1,9 +1,23 @@
 import type { APIRoute } from 'astro';
 import { LessonsService } from '../../../../services/lessons.service';
+import { supabaseAdmin } from '../../../../lib/supabase';
+
+async function isAdmin(userId: string): Promise<boolean> {
+  const { data } = await supabaseAdmin
+    .from('profiles')
+    .select('role')
+    .eq('id', userId)
+    .single();
+  return data?.role === 'admin';
+}
 
 export const PUT: APIRoute = async ({ params, request, locals }) => {
   if (!locals.session) {
     return new Response(JSON.stringify({ error: 'Não autenticado' }), { status: 401 });
+  }
+
+  if (!(await isAdmin(locals.session.user.id))) {
+    return new Response(JSON.stringify({ error: 'Acesso negado' }), { status: 403 });
   }
 
   const { id } = params;
@@ -23,6 +37,10 @@ export const PUT: APIRoute = async ({ params, request, locals }) => {
 export const DELETE: APIRoute = async ({ params, locals }) => {
   if (!locals.session) {
     return new Response(JSON.stringify({ error: 'Não autenticado' }), { status: 401 });
+  }
+
+  if (!(await isAdmin(locals.session.user.id))) {
+    return new Response(JSON.stringify({ error: 'Acesso negado' }), { status: 403 });
   }
 
   const { id } = params;

@@ -1,10 +1,9 @@
-import { supabase } from '../lib/supabase';
+import { supabaseAdmin } from '../lib/supabase';
 import type { Lesson } from '../types';
 
 export class LessonsService {
-  /** Aulas publicadas – para alunos com acesso */
   static async getAll(): Promise<Lesson[]> {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('lessons')
       .select('*')
       .eq('is_published', true)
@@ -15,9 +14,8 @@ export class LessonsService {
     return data ?? [];
   }
 
-  /** Todas as aulas (incluindo rascunhos) – para admin */
   static async getAllAdmin(): Promise<Lesson[]> {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('lessons')
       .select('*')
       .order('module_number')
@@ -28,7 +26,7 @@ export class LessonsService {
   }
 
   static async getById(id: string): Promise<Lesson> {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('lessons')
       .select('*')
       .eq('id', id)
@@ -39,7 +37,7 @@ export class LessonsService {
   }
 
   static async getBySlug(slug: string): Promise<Lesson> {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('lessons')
       .select('*')
       .eq('slug', slug)
@@ -52,7 +50,7 @@ export class LessonsService {
   static async create(
     input: Omit<Lesson, 'id' | 'created_at' | 'updated_at'>,
   ): Promise<Lesson> {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('lessons')
       .insert(input)
       .select()
@@ -63,7 +61,7 @@ export class LessonsService {
   }
 
   static async update(id: string, input: Partial<Omit<Lesson, 'id' | 'created_at'>>): Promise<Lesson> {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('lessons')
       .update({ ...input, updated_at: new Date().toISOString() })
       .eq('id', id)
@@ -75,7 +73,7 @@ export class LessonsService {
   }
 
   static async togglePublish(id: string, published: boolean): Promise<void> {
-    const { error } = await supabase
+    const { error } = await supabaseAdmin
       .from('lessons')
       .update({ is_published: published, updated_at: new Date().toISOString() })
       .eq('id', id);

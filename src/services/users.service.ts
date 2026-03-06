@@ -1,10 +1,9 @@
-import { supabase } from '../lib/supabase';
+import { supabaseAdmin } from '../lib/supabase';
 import type { Profile } from '../types';
 
 export class UsersService {
-  /** Admin only */
   static async getAllAdmin(): Promise<Profile[]> {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('profiles')
       .select('*')
       .order('created_at', { ascending: false });
@@ -14,7 +13,7 @@ export class UsersService {
   }
 
   static async countStudents(): Promise<number> {
-    const { count, error } = await supabase
+    const { count, error } = await supabaseAdmin
       .from('profiles')
       .select('*', { count: 'exact', head: true })
       .eq('role', 'student');

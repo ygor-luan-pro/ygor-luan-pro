@@ -8,7 +8,6 @@ test.describe('Fluxo de Checkout', () => {
     await emailInput.fill('nao-e-email');
     await emailInput.press('Enter');
 
-    // O browser valida o campo e-mail nativamente
     const validationMessage = await emailInput.evaluate(
       (el: HTMLInputElement) => el.validationMessage,
     );

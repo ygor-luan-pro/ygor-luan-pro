@@ -32,8 +32,7 @@ const displayName = profile?.full_name?.split(' ')[0] ?? session!.user.email?.sp
   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
     <a
       href="/dashboard/aulas"
-      class="card transition-colors block"
-      onmouseover="this.style.borderColor='var(--copper)'" onmouseout="this.style.borderColor='var(--ink)'"
+      class="card hover:border-copper transition-colors block"
     >
       <p class="section-eyebrow mb-2">Aulas</p>
       <h3 class="font-display font-semibold text-xl mb-1" style="color: var(--cream);">Continuar assistindo</h3>
@@ -43,8 +42,7 @@ const displayName = profile?.full_name?.split(' ')[0] ?? session!.user.email?.sp
 
     <a
       href="/dashboard/mentoria"
-      class="card transition-colors block"
-      onmouseover="this.style.borderColor='var(--copper)'" onmouseout="this.style.borderColor='var(--ink)'"
+      class="card hover:border-copper transition-colors block"
     >
       <p class="section-eyebrow mb-2">Mentoria</p>
       <h3 class="font-display font-semibold text-xl mb-1" style="color: var(--cream);">Agendar sessão 1:1</h3>

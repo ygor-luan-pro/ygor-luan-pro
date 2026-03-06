@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { OrdersService } from '../../../src/services/orders.service';
-import { supabase, supabaseAdmin } from '../../../src/lib/supabase';
+import { supabaseAdmin } from '../../../src/lib/supabase';
 
 const mockOrder = {
   id: 'order-1',
@@ -20,7 +20,7 @@ describe('OrdersService', () => {
 
   describe('getByUserId', () => {
     it('retorna lista de pedidos do usuário', async () => {
-      vi.mocked(supabase.from).mockReturnValueOnce({
+      vi.mocked(supabaseAdmin.from).mockReturnValueOnce({
         select: vi.fn().mockReturnValue({
           eq: vi.fn().mockReturnValue({
             order: vi.fn().mockResolvedValue({ data: [mockOrder], error: null }),
@@ -35,7 +35,7 @@ describe('OrdersService', () => {
     });
 
     it('retorna array vazio quando usuário não tem pedidos', async () => {
-      vi.mocked(supabase.from).mockReturnValueOnce({
+      vi.mocked(supabaseAdmin.from).mockReturnValueOnce({
         select: vi.fn().mockReturnValue({
           eq: vi.fn().mockReturnValue({
             order: vi.fn().mockResolvedValue({ data: null, error: null }),
@@ -48,7 +48,7 @@ describe('OrdersService', () => {
     });
 
     it('lança erro quando Supabase retorna erro', async () => {
-      vi.mocked(supabase.from).mockReturnValueOnce({
+      vi.mocked(supabaseAdmin.from).mockReturnValueOnce({
         select: vi.fn().mockReturnValue({
           eq: vi.fn().mockReturnValue({
             order: vi.fn().mockResolvedValue({ data: null, error: { message: 'DB error' } }),
@@ -62,7 +62,7 @@ describe('OrdersService', () => {
 
   describe('hasActiveAccess', () => {
     it('retorna true quando usuário tem pedido aprovado', async () => {
-      vi.mocked(supabase.from).mockReturnValueOnce({
+      vi.mocked(supabaseAdmin.from).mockReturnValueOnce({
         select: vi.fn().mockReturnValue({
           eq: vi.fn().mockReturnValue({
             eq: vi.fn().mockReturnValue({
@@ -79,7 +79,7 @@ describe('OrdersService', () => {
     });
 
     it('retorna false quando usuário não tem pedido aprovado', async () => {
-      vi.mocked(supabase.from).mockReturnValueOnce({
+      vi.mocked(supabaseAdmin.from).mockReturnValueOnce({
         select: vi.fn().mockReturnValue({
           eq: vi.fn().mockReturnValue({
             eq: vi.fn().mockReturnValue({
@@ -103,7 +103,7 @@ describe('OrdersService', () => {
         { ...mockOrder, id: 'order-2', amount: 297 },
       ];
 
-      vi.mocked(supabase.from).mockReturnValueOnce({
+      vi.mocked(supabaseAdmin.from).mockReturnValueOnce({
         select: vi.fn().mockReturnValue({
           eq: vi.fn().mockResolvedValue({ data: orders, error: null }),
         }),
@@ -114,7 +114,7 @@ describe('OrdersService', () => {
     });
 
     it('retorna 0 quando não há pedidos aprovados', async () => {
-      vi.mocked(supabase.from).mockReturnValueOnce({
+      vi.mocked(supabaseAdmin.from).mockReturnValueOnce({
         select: vi.fn().mockReturnValue({
           eq: vi.fn().mockResolvedValue({ data: null, error: null }),
         }),
@@ -125,7 +125,7 @@ describe('OrdersService', () => {
     });
 
     it('lança erro quando Supabase retorna erro', async () => {
-      vi.mocked(supabase.from).mockReturnValueOnce({
+      vi.mocked(supabaseAdmin.from).mockReturnValueOnce({
         select: vi.fn().mockReturnValue({
           eq: vi.fn().mockResolvedValue({ data: null, error: { message: 'permission denied' } }),
         }),
@@ -137,7 +137,7 @@ describe('OrdersService', () => {
 
   describe('getAllAdmin', () => {
     it('retorna todos os pedidos', async () => {
-      vi.mocked(supabase.from).mockReturnValueOnce({
+      vi.mocked(supabaseAdmin.from).mockReturnValueOnce({
         select: vi.fn().mockReturnValue({
           order: vi.fn().mockResolvedValue({ data: [mockOrder], error: null }),
         }),
@@ -149,7 +149,7 @@ describe('OrdersService', () => {
     });
 
     it('lança erro quando Supabase retorna erro', async () => {
-      vi.mocked(supabase.from).mockReturnValueOnce({
+      vi.mocked(supabaseAdmin.from).mockReturnValueOnce({
         select: vi.fn().mockReturnValue({
           order: vi.fn().mockResolvedValue({ data: null, error: { message: 'forbidden' } }),
         }),

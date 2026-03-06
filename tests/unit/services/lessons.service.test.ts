@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { LessonsService } from '../../../src/services/lessons.service';
-import { supabase } from '../../../src/lib/supabase';
+import { supabaseAdmin } from '../../../src/lib/supabase';
 
 const mockLesson = {
   id: 'lesson-1',
@@ -24,7 +24,7 @@ describe('LessonsService', () => {
 
   describe('getAll', () => {
     it('retorna aulas publicadas', async () => {
-      vi.mocked(supabase.from).mockReturnValueOnce({
+      vi.mocked(supabaseAdmin.from).mockReturnValueOnce({
         select: vi.fn().mockReturnValue({
           eq: vi.fn().mockReturnValue({
             order: vi.fn().mockReturnValue({
@@ -40,7 +40,7 @@ describe('LessonsService', () => {
     });
 
     it('retorna array vazio quando não há aulas', async () => {
-      vi.mocked(supabase.from).mockReturnValueOnce({
+      vi.mocked(supabaseAdmin.from).mockReturnValueOnce({
         select: vi.fn().mockReturnValue({
           eq: vi.fn().mockReturnValue({
             order: vi.fn().mockReturnValue({
@@ -55,7 +55,7 @@ describe('LessonsService', () => {
     });
 
     it('lança erro quando Supabase retorna erro', async () => {
-      vi.mocked(supabase.from).mockReturnValueOnce({
+      vi.mocked(supabaseAdmin.from).mockReturnValueOnce({
         select: vi.fn().mockReturnValue({
           eq: vi.fn().mockReturnValue({
             order: vi.fn().mockReturnValue({
@@ -74,7 +74,7 @@ describe('LessonsService', () => {
 
   describe('getById', () => {
     it('retorna a aula pelo ID', async () => {
-      vi.mocked(supabase.from).mockReturnValueOnce({
+      vi.mocked(supabaseAdmin.from).mockReturnValueOnce({
         select: vi.fn().mockReturnValue({
           eq: vi.fn().mockReturnValue({
             single: vi.fn().mockResolvedValue({ data: mockLesson, error: null }),
@@ -87,7 +87,7 @@ describe('LessonsService', () => {
     });
 
     it('lança erro quando aula não existe', async () => {
-      vi.mocked(supabase.from).mockReturnValueOnce({
+      vi.mocked(supabaseAdmin.from).mockReturnValueOnce({
         select: vi.fn().mockReturnValue({
           eq: vi.fn().mockReturnValue({
             single: vi.fn().mockResolvedValue({ data: null, error: { message: 'Not found' } }),
@@ -103,7 +103,7 @@ describe('LessonsService', () => {
     it('retorna todas as aulas incluindo rascunhos', async () => {
       const mockDraft = { ...mockLesson, id: 'lesson-2', is_published: false };
 
-      vi.mocked(supabase.from).mockReturnValueOnce({
+      vi.mocked(supabaseAdmin.from).mockReturnValueOnce({
         select: vi.fn().mockReturnValue({
           order: vi.fn().mockReturnValue({
             order: vi.fn().mockResolvedValue({ data: [mockLesson, mockDraft], error: null }),
@@ -117,7 +117,7 @@ describe('LessonsService', () => {
     });
 
     it('lança erro quando Supabase retorna erro', async () => {
-      vi.mocked(supabase.from).mockReturnValueOnce({
+      vi.mocked(supabaseAdmin.from).mockReturnValueOnce({
         select: vi.fn().mockReturnValue({
           order: vi.fn().mockReturnValue({
             order: vi.fn().mockResolvedValue({ data: null, error: { message: 'forbidden' } }),
@@ -131,7 +131,7 @@ describe('LessonsService', () => {
 
   describe('create', () => {
     it('cria e retorna a nova aula', async () => {
-      vi.mocked(supabase.from).mockReturnValueOnce({
+      vi.mocked(supabaseAdmin.from).mockReturnValueOnce({
         insert: vi.fn().mockReturnValue({
           select: vi.fn().mockReturnValue({
             single: vi.fn().mockResolvedValue({ data: mockLesson, error: null }),
@@ -153,11 +153,11 @@ describe('LessonsService', () => {
 
       const lesson = await LessonsService.create(input);
       expect(lesson.title).toBe('Técnicas de Navalha');
-      expect(supabase.from).toHaveBeenCalledWith('lessons');
+      expect(supabaseAdmin.from).toHaveBeenCalledWith('lessons');
     });
 
     it('lança erro quando insert falha', async () => {
-      vi.mocked(supabase.from).mockReturnValueOnce({
+      vi.mocked(supabaseAdmin.from).mockReturnValueOnce({
         insert: vi.fn().mockReturnValue({
           select: vi.fn().mockReturnValue({
             single: vi.fn().mockResolvedValue({ data: null, error: { message: 'duplicate key' } }),
@@ -175,7 +175,7 @@ describe('LessonsService', () => {
     it('atualiza e retorna a aula modificada', async () => {
       const updated = { ...mockLesson, title: 'Título Atualizado' };
 
-      vi.mocked(supabase.from).mockReturnValueOnce({
+      vi.mocked(supabaseAdmin.from).mockReturnValueOnce({
         update: vi.fn().mockReturnValue({
           eq: vi.fn().mockReturnValue({
             select: vi.fn().mockReturnValue({
@@ -190,7 +190,7 @@ describe('LessonsService', () => {
     });
 
     it('lança erro quando update falha', async () => {
-      vi.mocked(supabase.from).mockReturnValueOnce({
+      vi.mocked(supabaseAdmin.from).mockReturnValueOnce({
         update: vi.fn().mockReturnValue({
           eq: vi.fn().mockReturnValue({
             select: vi.fn().mockReturnValue({
@@ -206,7 +206,7 @@ describe('LessonsService', () => {
 
   describe('togglePublish', () => {
     it('publica a aula sem lançar erro', async () => {
-      vi.mocked(supabase.from).mockReturnValueOnce({
+      vi.mocked(supabaseAdmin.from).mockReturnValueOnce({
         update: vi.fn().mockReturnValue({
           eq: vi.fn().mockResolvedValue({ data: null, error: null }),
         }),
@@ -216,7 +216,7 @@ describe('LessonsService', () => {
     });
 
     it('despublica a aula sem lançar erro', async () => {
-      vi.mocked(supabase.from).mockReturnValueOnce({
+      vi.mocked(supabaseAdmin.from).mockReturnValueOnce({
         update: vi.fn().mockReturnValue({
           eq: vi.fn().mockResolvedValue({ data: null, error: null }),
         }),
@@ -226,7 +226,7 @@ describe('LessonsService', () => {
     });
 
     it('lança erro quando update falha', async () => {
-      vi.mocked(supabase.from).mockReturnValueOnce({
+      vi.mocked(supabaseAdmin.from).mockReturnValueOnce({
         update: vi.fn().mockReturnValue({
           eq: vi.fn().mockResolvedValue({ data: null, error: { message: 'DB error' } }),
         }),

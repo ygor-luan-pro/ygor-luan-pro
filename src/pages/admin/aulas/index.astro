@@ -6,7 +6,7 @@ const { session } = Astro.locals;
 const lessons = await LessonsService.getAllAdmin();
 ---
 
-<DashboardLayout title="Aulas" session={session!}>
+<DashboardLayout title="Aulas" session={session!} isAdmin={true}>
   <div class="flex items-center justify-between mb-8">
     <h1 class="font-display font-light text-3xl" style="color: var(--cream);">Aulas</h1>
     <a href="/admin/aulas/nova" class="btn-primary text-sm px-4 py-2">+ Nova Aula</a>
@@ -24,8 +24,7 @@ const lessons = await LessonsService.getAllAdmin();
             {!lesson.is_published && ' · Rascunho'}
           </p>
         </div>
-        <a href={`/admin/aulas/${lesson.id}/editar`} class="font-sans text-sm transition-colors flex-shrink-0" style="color: var(--copper);"
-          onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">
+        <a href={`/admin/aulas/${lesson.id}/editar`} class="font-sans text-sm transition-colors flex-shrink-0 hover:underline" style="color: var(--copper);">
           Editar
         </a>
       </div>

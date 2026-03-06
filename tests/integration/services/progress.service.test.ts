@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { supabase } from '../../../src/lib/supabase';
+import { supabaseAdmin } from '../../../src/lib/supabase';
 import { ProgressService } from '../../../src/services/progress.service';
 
 describe('ProgressService', () => {
@@ -9,16 +9,16 @@ describe('ProgressService', () => {
 
   describe('markComplete', () => {
     it('faz upsert com completed=true e completed_at', async () => {
-      vi.mocked(supabase.from).mockReturnValueOnce({
+      vi.mocked(supabaseAdmin.from).mockReturnValueOnce({
         upsert: vi.fn().mockResolvedValue({ data: null, error: null }),
       } as never);
 
       await expect(ProgressService.markComplete('user-1', 'lesson-1')).resolves.toBeUndefined();
-      expect(supabase.from).toHaveBeenCalledWith('user_progress');
+      expect(supabaseAdmin.from).toHaveBeenCalledWith('user_progress');
     });
 
     it('lança erro quando upsert falha', async () => {
-      vi.mocked(supabase.from).mockReturnValueOnce({
+      vi.mocked(supabaseAdmin.from).mockReturnValueOnce({
         upsert: vi.fn().mockResolvedValue({ data: null, error: { message: 'constraint violation' } }),
       } as never);
 
@@ -32,7 +32,7 @@ describe('ProgressService', () => {
     it('persiste watch_time via upsert', async () => {
       const upsertMock = vi.fn().mockResolvedValue({ data: null, error: null });
 
-      vi.mocked(supabase.from).mockReturnValueOnce({
+      vi.mocked(supabaseAdmin.from).mockReturnValueOnce({
         upsert: upsertMock,
       } as never);
 
@@ -44,7 +44,7 @@ describe('ProgressService', () => {
     });
 
     it('lança erro quando upsert falha', async () => {
-      vi.mocked(supabase.from).mockReturnValueOnce({
+      vi.mocked(supabaseAdmin.from).mockReturnValueOnce({
         upsert: vi.fn().mockResolvedValue({ data: null, error: { message: 'DB error' } }),
       } as never);
 
@@ -56,7 +56,7 @@ describe('ProgressService', () => {
 
   describe('getCompletedCount', () => {
     it('retorna contagem de aulas concluídas', async () => {
-      vi.mocked(supabase.from).mockReturnValueOnce({
+      vi.mocked(supabaseAdmin.from).mockReturnValueOnce({
         select: vi.fn().mockReturnValue({
           eq: vi.fn().mockReturnValue({
             eq: vi.fn().mockResolvedValue({ count: 5, error: null }),
@@ -69,7 +69,7 @@ describe('ProgressService', () => {
     });
 
     it('retorna 0 quando aluno não concluiu nenhuma aula', async () => {
-      vi.mocked(supabase.from).mockReturnValueOnce({
+      vi.mocked(supabaseAdmin.from).mockReturnValueOnce({
         select: vi.fn().mockReturnValue({
           eq: vi.fn().mockReturnValue({
             eq: vi.fn().mockResolvedValue({ count: null, error: null }),
@@ -82,7 +82,7 @@ describe('ProgressService', () => {
     });
 
     it('lança erro quando Supabase retorna erro', async () => {
-      vi.mocked(supabase.from).mockReturnValueOnce({
+      vi.mocked(supabaseAdmin.from).mockReturnValueOnce({
         select: vi.fn().mockReturnValue({
           eq: vi.fn().mockReturnValue({
             eq: vi.fn().mockResolvedValue({ count: null, error: { message: 'permission denied' } }),
@@ -98,19 +98,19 @@ describe('ProgressService', () => {
 
   describe('getStudentStats', () => {
     it('retorna stats do aluno quando há progresso', async () => {
-      vi.mocked(supabase.rpc).mockResolvedValueOnce({
+      vi.mocked(supabaseAdmin.rpc).mockResolvedValueOnce({
         data: [{ total_lessons: 10, completed_count: 4, total_watch_time: 180 }],
         error: null,
       } as never);
 
       const stats = await ProgressService.getStudentStats('user-1');
 
-      expect(supabase.rpc).toHaveBeenCalledWith('get_student_stats', { p_user_id: 'user-1' });
+      expect(supabaseAdmin.rpc).toHaveBeenCalledWith('get_student_stats', { p_user_id: 'user-1' });
       expect(stats).toEqual({ total_lessons: 10, completed_count: 4, total_watch_time: 180 });
     });
 
     it('retorna zeros quando aluno não tem progresso', async () => {
-      vi.mocked(supabase.rpc).mockResolvedValueOnce({
+      vi.mocked(supabaseAdmin.rpc).mockResolvedValueOnce({
         data: [{ total_lessons: 5, completed_count: 0, total_watch_time: 0 }],
         error: null,
       } as never);
@@ -122,7 +122,7 @@ describe('ProgressService', () => {
     });
 
     it('lança erro quando Supabase retorna erro', async () => {
-      vi.mocked(supabase.rpc).mockResolvedValueOnce({
+      vi.mocked(supabaseAdmin.rpc).mockResolvedValueOnce({
         data: null,
         error: { message: 'permission denied' },
       } as never);

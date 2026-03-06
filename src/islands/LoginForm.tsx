@@ -56,7 +56,7 @@ export default function LoginForm() {
   };
 
   const labelStyle = { color: 'var(--parchment)', fontSize: '0.75rem', letterSpacing: '0.1em', textTransform: 'uppercase' as const, display: 'block', marginBottom: '0.375rem' };
-  const linkStyle = { color: 'var(--fade)', fontSize: '0.875rem', background: 'none', border: 'none', cursor: 'pointer', width: '100%', textAlign: 'center' as const, padding: '0.25rem 0' };
+  const linkStyle = { fontSize: '0.875rem', background: 'none', border: 'none', cursor: 'pointer', width: '100%', textAlign: 'center' as const, padding: '0.25rem 0' };
 
   if (mode === 'reset') {
     return (
@@ -86,10 +86,7 @@ export default function LoginForm() {
             </button>
           </>
         )}
-        <button type="button" onClick={() => setMode('login')} style={linkStyle}
-          onMouseOver={(e) => { (e.target as HTMLButtonElement).style.color = 'var(--parchment)'; }}
-          onMouseOut={(e) => { (e.target as HTMLButtonElement).style.color = 'var(--fade)'; }}
-        >
+        <button type="button" onClick={() => setMode('login')} style={linkStyle} className="link-btn">
           Voltar ao login
         </button>
       </form>
@@ -128,10 +125,7 @@ export default function LoginForm() {
         {loading ? 'Entrando...' : 'Entrar'}
       </button>
 
-      <button type="button" onClick={() => setMode('reset')} style={linkStyle}
-        onMouseOver={(e) => { (e.target as HTMLButtonElement).style.color = 'var(--parchment)'; }}
-        onMouseOut={(e) => { (e.target as HTMLButtonElement).style.color = 'var(--fade)'; }}
-      >
+      <button type="button" onClick={() => setMode('reset')} style={linkStyle} className="link-btn">
         Esqueceu a senha?
       </button>
     </form>

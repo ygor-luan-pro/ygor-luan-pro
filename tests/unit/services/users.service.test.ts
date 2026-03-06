@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { UsersService } from '../../../src/services/users.service';
-import { supabase } from '../../../src/lib/supabase';
+import { supabaseAdmin } from '../../../src/lib/supabase';
 
 const mockProfile = {
   id: 'user-1',
@@ -19,7 +19,7 @@ describe('UsersService', () => {
 
   describe('getAllAdmin', () => {
     it('retorna todos os perfis ordenados por data de criação', async () => {
-      vi.mocked(supabase.from).mockReturnValueOnce({
+      vi.mocked(supabaseAdmin.from).mockReturnValueOnce({
         select: vi.fn().mockReturnValue({
           order: vi.fn().mockResolvedValue({ data: [mockProfile], error: null }),
         }),
@@ -29,11 +29,11 @@ describe('UsersService', () => {
 
       expect(profiles).toHaveLength(1);
       expect(profiles[0].email).toBe('aluno@test.com');
-      expect(supabase.from).toHaveBeenCalledWith('profiles');
+      expect(supabaseAdmin.from).toHaveBeenCalledWith('profiles');
     });
 
     it('retorna array vazio quando não há perfis', async () => {
-      vi.mocked(supabase.from).mockReturnValueOnce({
+      vi.mocked(supabaseAdmin.from).mockReturnValueOnce({
         select: vi.fn().mockReturnValue({
           order: vi.fn().mockResolvedValue({ data: null, error: null }),
         }),
@@ -44,7 +44,7 @@ describe('UsersService', () => {
     });
 
     it('lança erro quando Supabase retorna erro', async () => {
-      vi.mocked(supabase.from).mockReturnValueOnce({
+      vi.mocked(supabaseAdmin.from).mockReturnValueOnce({
         select: vi.fn().mockReturnValue({
           order: vi.fn().mockResolvedValue({ data: null, error: { message: 'forbidden' } }),
         }),
@@ -56,7 +56,7 @@ describe('UsersService', () => {
 
   describe('countStudents', () => {
     it('retorna contagem de alunos', async () => {
-      vi.mocked(supabase.from).mockReturnValueOnce({
+      vi.mocked(supabaseAdmin.from).mockReturnValueOnce({
         select: vi.fn().mockReturnValue({
           eq: vi.fn().mockResolvedValue({ count: 5, error: null }),
         }),
@@ -67,7 +67,7 @@ describe('UsersService', () => {
     });
 
     it('retorna 0 quando não há alunos', async () => {
-      vi.mocked(supabase.from).mockReturnValueOnce({
+      vi.mocked(supabaseAdmin.from).mockReturnValueOnce({
         select: vi.fn().mockReturnValue({
           eq: vi.fn().mockResolvedValue({ count: null, error: null }),
         }),
@@ -78,7 +78,7 @@ describe('UsersService', () => {
     });
 
     it('lança erro quando Supabase retorna erro', async () => {
-      vi.mocked(supabase.from).mockReturnValueOnce({
+      vi.mocked(supabaseAdmin.from).mockReturnValueOnce({
         select: vi.fn().mockReturnValue({
           eq: vi.fn().mockResolvedValue({ count: null, error: { message: 'permission denied' } }),
         }),

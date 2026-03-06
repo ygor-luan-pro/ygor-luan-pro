@@ -16,11 +16,10 @@ try {
 }
 ---
 
-<DashboardLayout title="Editar Aula" session={session!}>
+<DashboardLayout title="Editar Aula" session={session!} isAdmin={true}>
   <div class="max-w-2xl">
     <div class="mb-6">
-      <a href="/admin/aulas" class="font-sans text-sm transition-colors" style="color: var(--fade);"
-        onmouseover="this.style.color='var(--parchment)'" onmouseout="this.style.color='var(--fade)'">
+      <a href="/admin/aulas" class="font-sans text-sm link-btn">
         ← Voltar
       </a>
     </div>

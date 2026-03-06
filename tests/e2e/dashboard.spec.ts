@@ -34,7 +34,6 @@ test.describe('Fluxo do aluno autenticado', () => {
   test.skip(!E2E_EMAIL || !E2E_PASSWORD, 'E2E_TEST_EMAIL e E2E_TEST_PASSWORD não definidos');
 
   test.beforeEach(async ({ page }) => {
-    // Authenticate via API to avoid race conditions with React hydration
     await page.goto('/login');
     const response = await page.request.post('/api/auth/login', {
       data: { email: E2E_EMAIL, password: E2E_PASSWORD },

@@ -1,7 +1,6 @@
 /// <reference path="../.astro/types.d.ts" />
 /// <reference types="astro/client" />
 
-// Augmenta App.Locals com a sessão do Supabase (sem top-level import para manter como ambient file)
 declare namespace App {
   interface Locals {
     session: import('@supabase/supabase-js').Session | null;
@@ -14,6 +13,7 @@ interface ImportMetaEnv {
   readonly SUPABASE_SERVICE_ROLE_KEY: string;
   readonly MERCADOPAGO_ACCESS_TOKEN: string;
   readonly MERCADOPAGO_PUBLIC_KEY: string;
+  readonly MERCADOPAGO_WEBHOOK_SECRET?: string;
   readonly VIMEO_ACCESS_TOKEN: string;
   readonly RESEND_API_KEY: string;
   readonly RESEND_FROM_EMAIL: string;

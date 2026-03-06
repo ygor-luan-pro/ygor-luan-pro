@@ -6,7 +6,6 @@ import { formatDuration } from '../../lib/utils';
 
 const { session } = Astro.locals;
 
-// Use per-request authenticated client so RLS can resolve auth.uid()
 const userClient = createClient<Database>(
   import.meta.env.PUBLIC_SUPABASE_URL,
   import.meta.env.PUBLIC_SUPABASE_ANON_KEY,
@@ -55,10 +54,8 @@ const modules = lessons.reduce<Map<number, typeof lessons>>(
               return (
                 <a
                   href={`/dashboard/aula/${lesson.id}`}
-                  class="flex items-center gap-3 py-3 transition-colors"
+                  class="flex items-center gap-3 py-3 transition-all hover:px-1"
                   style={`border-bottom: 1px solid var(--ink);${done ? ' opacity: 0.65;' : ''}`}
-                  onmouseover="this.style.paddingLeft='0.25rem'; this.style.paddingRight='0.25rem';"
-                  onmouseout="this.style.paddingLeft=''; this.style.paddingRight='';"
                 >
                   <div
                     class="w-6 h-6 flex items-center justify-center flex-shrink-0 font-mono text-xs"

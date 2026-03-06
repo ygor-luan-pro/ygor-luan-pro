@@ -4,6 +4,13 @@ import { AuthService } from '../../services/auth.service';
 import { formatDate } from '../../lib/utils';
 
 const { session } = Astro.locals;
+
+if (Astro.request.method === 'POST') {
+  await AuthService.resetPassword(session!.user.email!);
+  return Astro.redirect('/dashboard/perfil?reset=sent');
+}
+
+const resetSent = Astro.url.searchParams.get('reset') === 'sent';
 const profile = await AuthService.getProfile(session!.user.id);
 
 const initials = profile?.full_name
@@ -45,8 +52,14 @@ const initials = profile?.full_name
       <div class="blade"></div>
     </div>
 
-    <a href="/api/auth/reset-password" class="btn-ghost text-sm px-4 py-2">
-      Alterar senha
-    </a>
+    {resetSent && (
+      <p class="font-sans text-sm mb-4" style="color: var(--copper);">Link de redefinição enviado para seu e-mail.</p>
+    )}
+
+    <form method="post">
+      <button type="submit" class="btn-ghost text-sm px-4 py-2">
+        Alterar senha
+      </button>
+    </form>
   </div>
 </DashboardLayout>

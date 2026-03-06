@@ -9,7 +9,6 @@ const { id } = Astro.params;
 
 if (!id) return Astro.redirect('/dashboard/aulas');
 
-// Per-request authenticated client so RLS can resolve auth.uid()
 const userClient = createClient<Database>(
   import.meta.env.PUBLIC_SUPABASE_URL,
   import.meta.env.PUBLIC_SUPABASE_ANON_KEY,
@@ -37,8 +36,7 @@ const { data: progress } = await userClient
 
 <DashboardLayout title={lesson.title} session={session!}>
   <div class="mb-6">
-    <a href="/dashboard/aulas" class="font-sans text-sm transition-colors" style="color: var(--fade);"
-      onmouseover="this.style.color='var(--parchment)'" onmouseout="this.style.color='var(--fade)'">
+    <a href="/dashboard/aulas" class="back-link font-sans text-sm">
       ← Voltar para aulas
     </a>
   </div>
@@ -49,6 +47,7 @@ const { data: progress } = await userClient
     lessonId={lesson.id}
     videoUrl={lesson.video_url}
     initialWatchTime={progress?.watch_time ?? 0}
+    initialCompleted={progress?.completed ?? false}
     client:load
   />
 
@@ -59,3 +58,13 @@ const { data: progress } = await userClient
     </div>
   )}
 </DashboardLayout>
+
+<style>
+  .back-link {
+    color: var(--fade);
+    transition: color 0.2s;
+  }
+  .back-link:hover {
+    color: var(--parchment);
+  }
+</style>

@@ -13,7 +13,7 @@ const [totalRevenue, totalStudents, lessons] = await Promise.all([
 ]);
 ---
 
-<DashboardLayout title="Admin" session={session!}>
+<DashboardLayout title="Admin" session={session!} isAdmin={true}>
   <h1 class="font-display font-light text-3xl mb-8" style="color: var(--cream);">Painel Administrativo</h1>
 
   <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
@@ -34,18 +34,18 @@ const [totalRevenue, totalStudents, lessons] = await Promise.all([
   <div class="blade mb-8"></div>
 
   <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-    <a href="/admin/aulas" class="transition-colors" style="background-color: var(--mahogany); border: 1px solid var(--ink); padding: 1.5rem; display: block;"
-      onmouseover="this.style.borderColor='var(--blade)'" onmouseout="this.style.borderColor='var(--ink)'">
+    <a href="/admin/aulas" class="transition-colors hover:border-blade" style="background-color: var(--mahogany); border: 1px solid var(--ink); padding: 1.5rem; display: block;"
+>
       <h2 class="font-sans font-medium mb-1" style="color: var(--cream);">Aulas</h2>
       <p class="font-sans text-sm" style="color: var(--fade);">Criar, editar e publicar aulas</p>
     </a>
-    <a href="/admin/alunos" class="transition-colors" style="background-color: var(--mahogany); border: 1px solid var(--ink); padding: 1.5rem; display: block;"
-      onmouseover="this.style.borderColor='var(--blade)'" onmouseout="this.style.borderColor='var(--ink)'">
+    <a href="/admin/alunos" class="transition-colors hover:border-blade" style="background-color: var(--mahogany); border: 1px solid var(--ink); padding: 1.5rem; display: block;"
+>
       <h2 class="font-sans font-medium mb-1" style="color: var(--cream);">Alunos</h2>
       <p class="font-sans text-sm" style="color: var(--fade);">Lista de alunos cadastrados</p>
     </a>
-    <a href="/admin/vendas" class="transition-colors" style="background-color: var(--mahogany); border: 1px solid var(--ink); padding: 1.5rem; display: block;"
-      onmouseover="this.style.borderColor='var(--blade)'" onmouseout="this.style.borderColor='var(--ink)'">
+    <a href="/admin/vendas" class="transition-colors hover:border-blade" style="background-color: var(--mahogany); border: 1px solid var(--ink); padding: 1.5rem; display: block;"
+>
       <h2 class="font-sans font-medium mb-1" style="color: var(--cream);">Vendas</h2>
       <p class="font-sans text-sm" style="color: var(--fade);">Relatório de pedidos</p>
     </a>
