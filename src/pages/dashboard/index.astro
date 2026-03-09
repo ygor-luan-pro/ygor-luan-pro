@@ -5,17 +5,17 @@ import { LessonsService } from '../../services/lessons.service';
 import { ProgressService } from '../../services/progress.service';
 import { AuthService } from '../../services/auth.service';
 
-const { session } = Astro.locals;
+const { user } = Astro.locals;
 const [lessons, completedCount, profile] = await Promise.all([
   LessonsService.getAll(),
-  ProgressService.getCompletedCount(session!.user.id),
-  AuthService.getProfile(session!.user.id),
+  ProgressService.getCompletedCount(user!.id),
+  AuthService.getProfile(user!.id),
 ]);
 
-const displayName = profile?.full_name?.split(' ')[0] ?? session!.user.email?.split('@')[0] ?? 'Artesão';
+const displayName = profile?.full_name?.split(' ')[0] ?? user!.email?.split('@')[0] ?? 'Artesão';
 ---
 
-<DashboardLayout title="Meu Progresso" session={session!}>
+<DashboardLayout title="Meu Progresso" user={user!}>
   <p class="section-eyebrow">Bem-vindo de volta</p>
   <h1 class="font-display font-light text-4xl mt-1" style="color: var(--cream);">Olá, {displayName}.</h1>
   <div class="page-divider"></div>

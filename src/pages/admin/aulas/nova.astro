@@ -2,10 +2,10 @@
 import DashboardLayout from '../../../components/layout/DashboardLayout.astro';
 import AdminLessonForm from '../../../islands/AdminLessonForm';
 
-const { session } = Astro.locals;
+const { user } = Astro.locals;
 ---
 
-<DashboardLayout title="Nova Aula" session={session!} isAdmin={true}>
+<DashboardLayout title="Nova Aula" user={user!} isAdmin={true}>
   <div class="max-w-2xl">
     <div class="mb-6">
       <a href="/admin/aulas" class="font-sans text-sm link-btn">

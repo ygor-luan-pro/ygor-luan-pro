@@ -2,6 +2,7 @@ import { defineMiddleware } from 'astro:middleware';
 import { createServerClient, parseCookieHeader } from '@supabase/ssr';
 import type { CookieOptions } from '@supabase/ssr';
 import type { Database } from '../types/database.types';
+import { UsersService } from '../services/users.service';
 
 const PROTECTED_PREFIXES = ['/dashboard', '/admin'];
 const ADMIN_PREFIXES = ['/admin'];
@@ -25,24 +26,18 @@ export const onRequest = defineMiddleware(async (
     },
   );
 
-  const { data: { session } } = await supabase.auth.getSession();
-  locals.session = session;
-
   const { pathname } = url;
+  const isProtected = PROTECTED_PREFIXES.some((p) => pathname.startsWith(p));
 
-  if (PROTECTED_PREFIXES.some((p) => pathname.startsWith(p)) && !session) {
-    return redirect('/login');
-  }
+  if (!isProtected) return next();
+
+  const { data: { user } } = await supabase.auth.getUser();
+  locals.user = user;
+
+  if (!user) return redirect('/login');
 
   if (ADMIN_PREFIXES.some((p) => pathname.startsWith(p))) {
-    const result = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', session!.user.id)
-      .single();
-
-    const role = (result.data as { role?: string } | null)?.role;
-    if (role !== 'admin') {
+    if (!(await UsersService.isAdmin(user.id))) {
       return redirect('/dashboard');
     }
   }

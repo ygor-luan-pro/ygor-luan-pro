@@ -3,15 +3,15 @@ import DashboardLayout from '../../components/layout/DashboardLayout.astro';
 import { AuthService } from '../../services/auth.service';
 import { formatDate } from '../../lib/utils';
 
-const { session } = Astro.locals;
+const { user } = Astro.locals;
 
 if (Astro.request.method === 'POST') {
-  await AuthService.resetPassword(session!.user.email!);
+  await AuthService.resetPassword(user!.email!);
   return Astro.redirect('/dashboard/perfil?reset=sent');
 }
 
 const resetSent = Astro.url.searchParams.get('reset') === 'sent';
-const profile = await AuthService.getProfile(session!.user.id);
+const profile = await AuthService.getProfile(user!.id);
 
 const initials = profile?.full_name
   ?.split(' ')
@@ -21,7 +21,7 @@ const initials = profile?.full_name
   .toUpperCase() ?? '?';
 ---
 
-<DashboardLayout title="Meu Perfil" session={session!}>
+<DashboardLayout title="Meu Perfil" user={user!}>
   <h1 class="font-display font-light text-4xl" style="color: var(--cream);">Meu Perfil</h1>
   <div class="page-divider"></div>
 
@@ -31,7 +31,7 @@ const initials = profile?.full_name
         <span class="font-display text-2xl" style="color: var(--copper);">{initials}</span>
       </div>
       <div>
-        <p class="font-display font-semibold text-xl" style="color: var(--cream);">{profile?.full_name ?? session!.user.email}</p>
+        <p class="font-display font-semibold text-xl" style="color: var(--cream);">{profile?.full_name ?? user!.email}</p>
         <span class="font-sans text-xs tracking-wide uppercase" style="color: var(--fade);">Aluno</span>
       </div>
     </div>
@@ -39,7 +39,7 @@ const initials = profile?.full_name
     <div class="space-y-5 py-6">
       <div>
         <p class="font-sans text-xs tracking-[0.15em] uppercase mb-1" style="color: var(--fade);">E-mail</p>
-        <p class="font-sans text-sm" style="color: var(--cream);">{session!.user.email}</p>
+        <p class="font-sans text-sm" style="color: var(--cream);">{user!.email}</p>
       </div>
 
       <div>

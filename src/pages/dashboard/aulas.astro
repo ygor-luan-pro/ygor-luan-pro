@@ -1,27 +1,15 @@
 ---
 import DashboardLayout from '../../components/layout/DashboardLayout.astro';
-import { createClient } from '@supabase/supabase-js';
-import type { Database } from '../../types/database.types';
+import { LessonsService } from '../../services/lessons.service';
+import { ProgressService } from '../../services/progress.service';
 import { formatDuration } from '../../lib/utils';
 
-const { session } = Astro.locals;
+const { user } = Astro.locals;
 
-const userClient = createClient<Database>(
-  import.meta.env.PUBLIC_SUPABASE_URL,
-  import.meta.env.PUBLIC_SUPABASE_ANON_KEY,
-  {
-    auth: { persistSession: false },
-    global: { headers: { Authorization: `Bearer ${session!.access_token}` } },
-  },
-);
-
-const [lessonsResult, progressResult] = await Promise.all([
-  userClient.from('lessons').select('*').eq('is_published', true).order('module_number').order('order_number'),
-  userClient.from('user_progress').select('*').eq('user_id', session!.user.id),
+const [lessons, progressList] = await Promise.all([
+  LessonsService.getAll(),
+  ProgressService.getUserProgress(user!.id),
 ]);
-
-const lessons = lessonsResult.data ?? [];
-const progressList = progressResult.data ?? [];
 
 const progressMap = new Map(progressList.map((p) => [p.lesson_id, p]));
 
@@ -36,7 +24,7 @@ const modules = lessons.reduce<Map<number, typeof lessons>>(
 );
 ---
 
-<DashboardLayout title="Aulas" session={session!}>
+<DashboardLayout title="Aulas" user={user!}>
   <p class="section-eyebrow">Seu conteúdo</p>
   <h1 class="font-display font-light text-4xl mt-1" style="color: var(--cream);">Aulas</h1>
   <div class="page-divider"></div>

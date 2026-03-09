@@ -5,7 +5,7 @@ import { UsersService } from '../../services/users.service';
 import { LessonsService } from '../../services/lessons.service';
 import { formatCurrency } from '../../lib/utils';
 
-const { session } = Astro.locals;
+const { user } = Astro.locals;
 const [totalRevenue, totalStudents, lessons] = await Promise.all([
   OrdersService.getTotalRevenue(),
   UsersService.countStudents(),
@@ -13,7 +13,7 @@ const [totalRevenue, totalStudents, lessons] = await Promise.all([
 ]);
 ---
 
-<DashboardLayout title="Admin" session={session!} isAdmin={true}>
+<DashboardLayout title="Admin" user={user!} isAdmin={true}>
   <h1 class="font-display font-light text-3xl mb-8" style="color: var(--cream);">Painel Administrativo</h1>
 
   <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">

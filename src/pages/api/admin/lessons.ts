@@ -1,22 +1,13 @@
 import type { APIRoute } from 'astro';
 import { LessonsService } from '../../../services/lessons.service';
-import { supabaseAdmin } from '../../../lib/supabase';
-
-async function isAdmin(userId: string): Promise<boolean> {
-  const { data } = await supabaseAdmin
-    .from('profiles')
-    .select('role')
-    .eq('id', userId)
-    .single();
-  return data?.role === 'admin';
-}
+import { UsersService } from '../../../services/users.service';
 
 export const GET: APIRoute = async ({ locals }) => {
-  if (!locals.session) {
+  if (!locals.user) {
     return new Response(JSON.stringify({ error: 'Não autenticado' }), { status: 401 });
   }
 
-  if (!(await isAdmin(locals.session.user.id))) {
+  if (!(await UsersService.isAdmin(locals.user.id))) {
     return new Response(JSON.stringify({ error: 'Acesso negado' }), { status: 403 });
   }
 
@@ -28,11 +19,11 @@ export const GET: APIRoute = async ({ locals }) => {
 };
 
 export const POST: APIRoute = async ({ request, locals }) => {
-  if (!locals.session) {
+  if (!locals.user) {
     return new Response(JSON.stringify({ error: 'Não autenticado' }), { status: 401 });
   }
 
-  if (!(await isAdmin(locals.session.user.id))) {
+  if (!(await UsersService.isAdmin(locals.user.id))) {
     return new Response(JSON.stringify({ error: 'Acesso negado' }), { status: 403 });
   }
 

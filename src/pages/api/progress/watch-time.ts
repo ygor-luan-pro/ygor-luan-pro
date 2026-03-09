@@ -2,7 +2,7 @@ import type { APIRoute } from 'astro';
 import { ProgressService } from '../../../services/progress.service';
 
 export const POST: APIRoute = async ({ request, locals }) => {
-  if (!locals.session) {
+  if (!locals.user) {
     return new Response(JSON.stringify({ error: 'Não autenticado' }), { status: 401 });
   }
 
@@ -17,7 +17,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     });
   }
 
-  await ProgressService.updateWatchTime(locals.session.user.id, lessonId, watchTime);
+  await ProgressService.updateWatchTime(locals.user.id, lessonId, watchTime);
 
   return new Response(JSON.stringify({ ok: true }), {
     status: 200,

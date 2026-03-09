@@ -2,11 +2,11 @@
 import DashboardLayout from '../../../components/layout/DashboardLayout.astro';
 import { LessonsService } from '../../../services/lessons.service';
 
-const { session } = Astro.locals;
+const { user } = Astro.locals;
 const lessons = await LessonsService.getAllAdmin();
 ---
 
-<DashboardLayout title="Aulas" session={session!} isAdmin={true}>
+<DashboardLayout title="Aulas" user={user!} isAdmin={true}>
   <div class="flex items-center justify-between mb-8">
     <h1 class="font-display font-light text-3xl" style="color: var(--cream);">Aulas</h1>
     <a href="/admin/aulas/nova" class="btn-primary text-sm px-4 py-2">+ Nova Aula</a>

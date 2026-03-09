@@ -71,7 +71,7 @@ export const POST: APIRoute = async ({ request }) => {
       .select('id')
       .eq('email', email)
       .single();
-    userId = profile?.id ?? null;
+    userId = profile?.id ?? undefined;
   } else if (createError) {
     console.error('Webhook: erro ao criar usuário', createError);
     return new Response('Error creating user', { status: 500 });

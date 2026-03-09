@@ -1,11 +1,11 @@
 ---
 import DashboardLayout from '../../components/layout/DashboardLayout.astro';
 
-const { session } = Astro.locals;
+const { user } = Astro.locals;
 const calcomLink = import.meta.env.PUBLIC_CALCOM_LINK ?? 'https://cal.com/ygorluan/mentoria';
 ---
 
-<DashboardLayout title="Mentoria 1:1" session={session!}>
+<DashboardLayout title="Mentoria 1:1" user={user!}>
   <p class="section-eyebrow">Sessão exclusiva</p>
   <h1 class="font-display font-light text-4xl mt-1" style="color: var(--cream);">Mentoria 1:1</h1>
   <div class="page-divider"></div>

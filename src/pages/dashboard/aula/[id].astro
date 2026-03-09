@@ -1,40 +1,23 @@
 ---
 import DashboardLayout from '../../../components/layout/DashboardLayout.astro';
 import VideoPlayer from '../../../islands/VideoPlayer';
-import { createClient } from '@supabase/supabase-js';
-import type { Database } from '../../../types/database.types';
+import { LessonsService } from '../../../services/lessons.service';
+import { ProgressService } from '../../../services/progress.service';
 
-const { session } = Astro.locals;
+const { user } = Astro.locals;
 const { id } = Astro.params;
 
 if (!id) return Astro.redirect('/dashboard/aulas');
 
-const userClient = createClient<Database>(
-  import.meta.env.PUBLIC_SUPABASE_URL,
-  import.meta.env.PUBLIC_SUPABASE_ANON_KEY,
-  {
-    auth: { persistSession: false },
-    global: { headers: { Authorization: `Bearer ${session!.access_token}` } },
-  },
-);
+const [lesson, progress] = await Promise.all([
+  LessonsService.getById(id).catch(() => null),
+  ProgressService.getLessonProgress(user!.id, id),
+]);
 
-const { data: lesson, error: lessonError } = await userClient
-  .from('lessons')
-  .select('*')
-  .eq('id', id)
-  .single();
-
-if (lessonError || !lesson) return Astro.redirect('/dashboard/aulas');
-
-const { data: progress } = await userClient
-  .from('user_progress')
-  .select('*')
-  .eq('user_id', session!.user.id)
-  .eq('lesson_id', id)
-  .single();
+if (!lesson) return Astro.redirect('/dashboard/aulas');
 ---
 
-<DashboardLayout title={lesson.title} session={session!}>
+<DashboardLayout title={lesson.title} user={user!}>
   <div class="mb-6">
     <a href="/dashboard/aulas" class="back-link font-sans text-sm">
       ← Voltar para aulas

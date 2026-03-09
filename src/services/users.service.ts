@@ -21,4 +21,13 @@ export class UsersService {
     if (error) throw new Error(error.message);
     return count ?? 0;
   }
+
+  static async isAdmin(userId: string): Promise<boolean> {
+    const { data } = await supabaseAdmin
+      .from('profiles')
+      .select('role')
+      .eq('id', userId)
+      .single();
+    return data?.role === 'admin';
+  }
 }

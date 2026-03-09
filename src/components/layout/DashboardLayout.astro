@@ -1,13 +1,13 @@
 ---
-import type { Session } from '@supabase/supabase-js';
+import type { User } from '@supabase/supabase-js';
 import '../../styles/global.css';
 
 interface Props {
   title: string;
-  session: Session;
+  user: User;
   isAdmin?: boolean;
 }
-const { title, session, isAdmin = false } = Astro.props;
+const { title, user, isAdmin = false } = Astro.props;
 const pathname = Astro.url.pathname;
 
 const navItems = [
@@ -107,7 +107,7 @@ const mobileNavItems = [
       </nav>
 
       <div class="px-4 py-5" style="border-top: 1px solid var(--ink);">
-        <p class="font-sans text-xs truncate mb-3" style="color: var(--fade);">{session.user.email}</p>
+        <p class="font-sans text-xs truncate mb-3" style="color: var(--fade);">{user.email}</p>
         <a href="/api/auth/signout" class="font-sans text-sm link-btn">
           Sair
         </a>

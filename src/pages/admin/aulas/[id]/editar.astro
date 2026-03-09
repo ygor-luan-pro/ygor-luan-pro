@@ -3,7 +3,7 @@ import DashboardLayout from '../../../../components/layout/DashboardLayout.astro
 import AdminLessonForm from '../../../../islands/AdminLessonForm';
 import { LessonsService } from '../../../../services/lessons.service';
 
-const { session } = Astro.locals;
+const { user } = Astro.locals;
 const { id } = Astro.params;
 
 if (!id) return Astro.redirect('/admin/aulas');
@@ -16,7 +16,7 @@ try {
 }
 ---
 
-<DashboardLayout title="Editar Aula" session={session!} isAdmin={true}>
+<DashboardLayout title="Editar Aula" user={user!} isAdmin={true}>
   <div class="max-w-2xl">
     <div class="mb-6">
       <a href="/admin/aulas" class="font-sans text-sm link-btn">

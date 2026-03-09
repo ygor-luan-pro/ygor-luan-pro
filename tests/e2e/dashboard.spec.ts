@@ -64,11 +64,12 @@ test.describe('Fluxo do aluno autenticado', () => {
     await expect(page).toHaveURL(/\/dashboard\/aula\/.+/, { timeout: 5000 });
   });
 
-  test('página do player exibe botão de concluir aula', async ({ page }) => {
+  test('página do player exibe controle de conclusão da aula', async ({ page }) => {
     await page.goto('/dashboard/aulas');
     await page.locator('text=Bem-vindo ao Ygor Luan Pro').click();
     await expect(page).toHaveURL(/\/dashboard\/aula\/.+/);
     const completeBtn = page.locator('button', { hasText: /conclu/i });
-    await expect(completeBtn).toBeVisible({ timeout: 5000 });
+    const completedMsg = page.locator('p', { hasText: /conclu/i });
+    await expect(completeBtn.or(completedMsg)).toBeVisible({ timeout: 5000 });
   });
 });

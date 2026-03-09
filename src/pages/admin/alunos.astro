@@ -3,11 +3,11 @@ import DashboardLayout from '../../components/layout/DashboardLayout.astro';
 import { UsersService } from '../../services/users.service';
 import { formatDate } from '../../lib/utils';
 
-const { session } = Astro.locals;
+const { user } = Astro.locals;
 const students = (await UsersService.getAllAdmin()).filter((u) => u.role === 'student');
 ---
 
-<DashboardLayout title="Alunos" session={session!} isAdmin={true}>
+<DashboardLayout title="Alunos" user={user!} isAdmin={true}>
   <h1 class="font-display font-light text-3xl mb-8" style="color: var(--cream);">Alunos ({students.length})</h1>
 
   <div style="background-color: var(--mahogany); border: 1px solid var(--ink);">
