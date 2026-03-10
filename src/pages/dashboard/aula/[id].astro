@@ -3,18 +3,41 @@ import DashboardLayout from '../../../components/layout/DashboardLayout.astro';
 import VideoPlayer from '../../../islands/VideoPlayer';
 import { LessonsService } from '../../../services/lessons.service';
 import { ProgressService } from '../../../services/progress.service';
+import { MaterialsService } from '../../../services/materials.service';
 
 const { user } = Astro.locals;
 const { id } = Astro.params;
 
 if (!id) return Astro.redirect('/dashboard/aulas');
 
-const [lesson, progress] = await Promise.all([
+const [lesson, progress, materials] = await Promise.all([
   LessonsService.getById(id).catch(() => null),
   ProgressService.getLessonProgress(user!.id, id),
+  MaterialsService.getByLessonId(id).catch(() => []),
 ]);
 
 if (!lesson) return Astro.redirect('/dashboard/aulas');
+
+const materialsWithUrls = await Promise.all(
+  materials.map(async (m) => ({
+    ...m,
+    signedUrl: await MaterialsService.getSignedUrl(m.file_url).catch(() => null),
+  })),
+);
+
+function formatFileSize(bytes: number | null): string {
+  if (!bytes) return '';
+  if (bytes < 1048576) return `${Math.round(bytes / 1024)} KB`;
+  return `${(bytes / 1048576).toFixed(1)} MB`;
+}
+
+function fileTypeBadge(fileType: string | null): string {
+  if (!fileType) return 'Arquivo';
+  if (fileType.includes('pdf')) return 'PDF';
+  if (fileType.includes('zip')) return 'ZIP';
+  if (fileType.includes('image')) return 'Imagem';
+  return 'Arquivo';
+}
 ---
 
 <DashboardLayout title={lesson.title} user={user!}>
@@ -38,6 +61,38 @@ if (!lesson) return Astro.redirect('/dashboard/aulas');
     <div class="mt-6" style="background-color: var(--mahogany); border: 1px solid var(--ink); padding: 1.5rem;">
       <h2 class="font-sans font-medium text-xs tracking-[0.15em] uppercase mb-3" style="color: var(--fade);">Sobre esta aula</h2>
       <p class="font-sans text-sm leading-relaxed" style="color: var(--parchment);">{lesson.description}</p>
+    </div>
+  )}
+
+  {materialsWithUrls.length > 0 && (
+    <div class="mt-6" style="background-color: var(--mahogany); border: 1px solid var(--ink); padding: 1.5rem;">
+      <h2 class="font-sans font-medium text-xs tracking-[0.15em] uppercase mb-4" style="color: var(--fade);">
+        Materiais Complementares
+      </h2>
+      <ul class="space-y-3">
+        {materialsWithUrls.map((m) => (
+          <li class="flex items-center justify-between gap-4">
+            <div class="flex items-center gap-3 min-w-0">
+              <span class="font-sans text-xs font-medium px-2 py-0.5" style="background:var(--ink);color:var(--fade);">
+                {fileTypeBadge(m.file_type)}
+              </span>
+              <span class="font-sans text-sm truncate" style="color: var(--parchment);">{m.title}</span>
+              {m.file_size && (
+                <span class="font-sans text-xs shrink-0" style="color: var(--fade);">{formatFileSize(m.file_size)}</span>
+              )}
+            </div>
+            {m.signedUrl ? (
+              <a href={m.signedUrl} download
+                 class="font-sans text-xs shrink-0 px-3 py-1"
+                 style="color:var(--copper);border:1px solid var(--copper);">
+                Baixar
+              </a>
+            ) : (
+              <span class="font-sans text-xs" style="color: var(--fade);">Indisponível</span>
+            )}
+          </li>
+        ))}
+      </ul>
     </div>
   )}
 </DashboardLayout>
