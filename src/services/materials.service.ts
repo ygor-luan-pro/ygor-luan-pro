@@ -12,4 +12,15 @@ export class MaterialsService {
     if (error) throw new Error(error.message);
     return data ?? [];
   }
+
+  static async create(input: Omit<Material, 'id' | 'created_at'>): Promise<Material> {
+    const { data, error } = await supabaseAdmin
+      .from('materials')
+      .insert(input)
+      .select()
+      .single();
+
+    if (error) throw new Error(error.message);
+    return data;
+  }
 }

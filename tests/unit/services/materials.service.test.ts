@@ -15,6 +15,42 @@ const mockMaterial = {
 describe('MaterialsService', () => {
   beforeEach(() => { vi.clearAllMocks(); });
 
+  describe('create', () => {
+    it('insere e retorna o material criado', async () => {
+      vi.mocked(supabaseAdmin.from).mockReturnValueOnce({
+        insert: vi.fn().mockReturnValue({
+          select: vi.fn().mockReturnValue({
+            single: vi.fn().mockResolvedValue({ data: mockMaterial, error: null }),
+          }),
+        }),
+      } as never);
+
+      const result = await MaterialsService.create({
+        lesson_id: 'lesson-1',
+        title: 'Apostila de Navalha',
+        file_url: 'lesson-1/abc123-apostila.pdf',
+        file_type: 'application/pdf',
+        file_size: 204800,
+      });
+
+      expect(result.id).toBe('mat-1');
+    });
+
+    it('lança erro quando insert falha', async () => {
+      vi.mocked(supabaseAdmin.from).mockReturnValueOnce({
+        insert: vi.fn().mockReturnValue({
+          select: vi.fn().mockReturnValue({
+            single: vi.fn().mockResolvedValue({ data: null, error: { message: 'insert failed' } }),
+          }),
+        }),
+      } as never);
+
+      await expect(
+        MaterialsService.create({ lesson_id: 'lesson-1', title: 'X', file_url: 'x.pdf', file_type: null, file_size: null }),
+      ).rejects.toThrow('insert failed');
+    });
+  });
+
   describe('getByLessonId', () => {
     it('retorna materiais de uma aula', async () => {
       vi.mocked(supabaseAdmin.from).mockReturnValueOnce({
