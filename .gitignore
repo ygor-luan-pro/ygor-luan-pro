@@ -31,3 +31,8 @@ test-results/
 
 # jetbrains setting folder
 .idea/
+
+# git worktrees
+.worktrees/
+
+.mcp.json
