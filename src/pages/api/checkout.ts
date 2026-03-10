@@ -2,7 +2,7 @@ import type { APIRoute } from 'astro';
 import { preference } from '../../lib/mercadopago';
 import type { ProductId } from '../../types';
 
-const isLaunchMode = import.meta.env.IS_LAUNCH_MODE === 'true';
+const isLaunchMode = import.meta.env.PUBLIC_IS_LAUNCH_MODE === 'true';
 
 const PRODUCT_CATALOG: Record<ProductId, { title: string; description: string; price: number }> = {
   'videoaulas': {
@@ -20,8 +20,9 @@ const PRODUCT_CATALOG: Record<ProductId, { title: string; description: string; p
 export const POST: APIRoute = async ({ request }) => {
   const { email, productId } = await request.json() as { email?: string; productId?: ProductId };
 
-  if (!email) {
-    return new Response(JSON.stringify({ error: 'E-mail obrigatório' }), {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!email || !emailRegex.test(email)) {
+    return new Response(JSON.stringify({ error: 'E-mail inválido ou obrigatório' }), {
       status: 400,
       headers: { 'Content-Type': 'application/json' },
     });

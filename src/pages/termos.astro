@@ -1,0 +1,174 @@
+---
+import Header from '../components/layout/Header.astro';
+import Footer from '../components/layout/Footer.astro';
+import '../styles/global.css';
+---
+
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Termos de Uso – Ygor Luan Pro</title>
+    <meta name="description" content="Termos de Uso da plataforma Ygor Luan Pro." />
+    <meta name="robots" content="noindex" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <Header />
+
+    <main class="max-w-3xl mx-auto px-6 pt-32 pb-20">
+      <h1 class="font-display text-4xl font-semibold mb-2" style="color: var(--cream);">
+        Termos de Uso
+      </h1>
+      <p class="text-sm mb-12" style="color: var(--fade);">Última atualização: março de 2026</p>
+
+      <div class="prose-legal">
+        <section>
+          <h2>1. Objeto</h2>
+          <p>
+            Estes Termos de Uso regulam o acesso e a utilização da plataforma <strong>Ygor Luan Pro</strong>
+            ("Plataforma"), operada por Ygor Luan ("Instrutor"), que oferece curso de barbearia profissional
+            em formato de videoaulas e sessões de mentoria individual (1:1).
+          </p>
+        </section>
+
+        <section>
+          <h2>2. Acesso ao Conteúdo</h2>
+          <p>
+            Após a confirmação do pagamento, o aluno recebe acesso <strong>vitalício</strong> ao conteúdo
+            adquirido, incluindo videoaulas, materiais complementares e, conforme o plano contratado,
+            sessões de mentoria 1:1.
+          </p>
+          <p>
+            O acesso é pessoal e intransferível. É proibido compartilhar credenciais de acesso com
+            terceiros ou reproduzir, distribuir ou comercializar o conteúdo da Plataforma sob qualquer
+            forma.
+          </p>
+        </section>
+
+        <section>
+          <h2>3. Política de Reembolso</h2>
+          <p>
+            Em conformidade com o art. 49 do Código de Defesa do Consumidor (Lei nº 8.078/1990),
+            o aluno tem direito ao reembolso integral do valor pago caso solicite o cancelamento em
+            até <strong>7 (sete) dias corridos</strong> a partir da data da compra, independentemente
+            do motivo.
+          </p>
+          <p>
+            Para solicitar o reembolso, envie um e-mail para
+            <a href="mailto:suporte@ygorluanpro.com.br">suporte@ygorluanpro.com.br</a> dentro do prazo
+            indicado. O estorno será processado conforme as regras da operadora de pagamento.
+          </p>
+        </section>
+
+        <section>
+          <h2>4. Propriedade Intelectual</h2>
+          <p>
+            Todo o conteúdo da Plataforma — videoaulas, textos, imagens, logotipos, materiais
+            complementares — é de propriedade exclusiva do Instrutor e está protegido pela legislação
+            brasileira de direitos autorais (Lei nº 9.610/1998).
+          </p>
+          <p>
+            A compra concede ao aluno uma <strong>licença de uso pessoal, não exclusiva e
+            intransferível</strong> para fins de aprendizado individual. Qualquer uso além deste
+            escopo requer autorização prévia por escrito.
+          </p>
+        </section>
+
+        <section>
+          <h2>5. Responsabilidades</h2>
+          <p>
+            O Instrutor se compromete a disponibilizar o conteúdo de forma estável e a manter os
+            materiais acessíveis. Eventuais interrupções por manutenção serão comunicadas com
+            antecedência sempre que possível.
+          </p>
+          <p>
+            O aluno é responsável por garantir que seus equipamentos e conexão à internet sejam
+            adequados para acesso à Plataforma. A Plataforma não se responsabiliza por resultados
+            específicos decorrentes da aplicação das técnicas ensinadas.
+          </p>
+        </section>
+
+        <section>
+          <h2>6. Alterações nos Termos</h2>
+          <p>
+            Estes Termos podem ser atualizados a qualquer momento. Alterações relevantes serão
+            comunicadas por e-mail aos alunos ativos. O uso continuado da Plataforma após a
+            notificação implica aceitação dos novos termos.
+          </p>
+        </section>
+
+        <section>
+          <h2>7. Foro e Legislação Aplicável</h2>
+          <p>
+            Estes Termos são regidos pela legislação brasileira. Fica eleito o foro da comarca
+            de domicílio do Instrutor para dirimir eventuais controvérsias, sem prejuízo da
+            competência de outros juízos nos casos previstos em lei.
+          </p>
+        </section>
+
+        <section>
+          <h2>8. Contato</h2>
+          <p>
+            Dúvidas sobre estes Termos: <a href="mailto:suporte@ygorluanpro.com.br">suporte@ygorluanpro.com.br</a>
+          </p>
+        </section>
+      </div>
+    </main>
+
+    <Footer />
+  </body>
+</html>
+
+<style>
+  .prose-legal {
+    color: var(--fade);
+    font-family: var(--font-sans, 'DM Sans', sans-serif);
+    line-height: 1.75;
+  }
+
+  .prose-legal section {
+    margin-bottom: 2.5rem;
+  }
+
+  .prose-legal h2 {
+    font-family: var(--font-display, 'Cormorant Garamond', serif);
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--cream);
+    margin-bottom: 0.75rem;
+  }
+
+  .prose-legal p {
+    margin-bottom: 1rem;
+  }
+
+  .prose-legal strong {
+    color: var(--parchment);
+    font-weight: 500;
+  }
+
+  .prose-legal a {
+    color: var(--copper);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .prose-legal a:hover {
+    color: var(--cream);
+  }
+
+  .prose-legal ul {
+    list-style: disc;
+    padding-left: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .prose-legal ul li {
+    margin-bottom: 0.5rem;
+  }
+</style>

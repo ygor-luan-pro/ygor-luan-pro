@@ -9,6 +9,34 @@ import CTA from '../components/landing/CTA.astro';
 import '../styles/global.css';
 
 const checkoutFailed = Astro.url.searchParams.get('checkout') === 'failed';
+const isLaunchMode = import.meta.env.PUBLIC_IS_LAUNCH_MODE === 'true';
+const coursePrice = isLaunchMode ? '997' : '1497';
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Person",
+      "@id": "https://ygorluanpro.com.br/#ygorluan",
+      "name": "Ygor Luan",
+      "jobTitle": "Barbeiro Profissional e Mentor",
+      "url": "https://ygorluanpro.com.br"
+    },
+    {
+      "@type": "Course",
+      "name": "Mentoria Completa – Ygor Luan Pro",
+      "description": "Curso completo de barbearia profissional com videoaulas + sessões de mentoria 1:1.",
+      "url": "https://ygorluanpro.com.br",
+      "provider": { "@id": "https://ygorluanpro.com.br/#ygorluan" },
+      "offers": {
+        "@type": "Offer",
+        "price": coursePrice,
+        "priceCurrency": "BRL",
+        "availability": "https://schema.org/InStock"
+      }
+    }
+  ]
+};
 ---
 
 <!doctype html>
@@ -20,6 +48,21 @@ const checkoutFailed = Astro.url.searchParams.get('checkout') === 'failed';
     <meta name="generator" content={Astro.generator} />
     <title>Ygor Luan Pro – Mentoria para Barbeiros</title>
     <meta name="description" content="Aprenda barbearia profissional com Ygor Luan. Curso completo em vídeo + mentoria 1:1 personalizada." />
+    <link rel="canonical" href="https://ygorluanpro.com.br/" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://ygorluanpro.com.br/" />
+    <meta property="og:title" content="Ygor Luan Pro – Mentoria para Barbeiros" />
+    <meta property="og:description" content="Aprenda barbearia profissional com Ygor Luan. Curso completo em vídeo + mentoria 1:1 personalizada." />
+    <meta property="og:locale" content="pt_BR" />
+    <meta property="og:site_name" content="Ygor Luan Pro" />
+
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Ygor Luan Pro – Mentoria para Barbeiros" />
+    <meta name="twitter:description" content="Aprenda barbearia profissional com Ygor Luan. Curso completo em vídeo + mentoria 1:1 personalizada." />
+
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(jsonLd)} />
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />

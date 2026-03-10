@@ -32,9 +32,20 @@ const modules = lessons.reduce<Map<number, typeof lessons>>(
   <div class="space-y-12">
     {[...modules.entries()].map(([moduleNum, moduleLessons]) => {
       const allDone = moduleLessons.every((l) => progressMap.get(l.id)?.completed);
+      const completedInModule = moduleLessons.filter((l) => progressMap.get(l.id)?.completed).length;
+      const percentage = moduleLessons.length === 0 ? 0 : Math.round((completedInModule / moduleLessons.length) * 100);
       return (
         <div>
-          <p class="section-eyebrow mb-4">Módulo {moduleNum}</p>
+          <div class="flex justify-between font-sans text-xs mb-2" style="color: var(--fade);">
+            <span>Módulo {moduleNum}</span>
+            <span>{completedInModule} de {moduleLessons.length} concluídas</span>
+          </div>
+          <div class="h-px mb-4" style="background-color: var(--tobacco);">
+            <div
+              class="h-full"
+              style={`width: ${percentage}%; background-color: var(--copper); transition: width 0.3s;`}
+            />
+          </div>
           <div class={`lesson-timeline${allDone ? ' lesson-timeline--completed' : ''}`}>
             {moduleLessons.map((lesson) => {
               const progress = progressMap.get(lesson.id);

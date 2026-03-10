@@ -16,13 +16,14 @@ export class ProgressService {
     userId: string,
     lessonId: string,
   ): Promise<UserProgress | null> {
-    const { data } = await supabaseAdmin
+    const { data, error } = await supabaseAdmin
       .from('user_progress')
       .select('*')
       .eq('user_id', userId)
       .eq('lesson_id', lessonId)
       .single();
 
+    if (error && error.code !== 'PGRST116') throw new Error(error.message);
     return data;
   }
 
