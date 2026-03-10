@@ -2,6 +2,7 @@
 import DashboardLayout from '../../../../components/layout/DashboardLayout.astro';
 import AdminLessonForm from '../../../../islands/AdminLessonForm';
 import { LessonsService } from '../../../../services/lessons.service';
+import { MaterialsService } from '../../../../services/materials.service';
 
 const { user } = Astro.locals;
 const { id } = Astro.params;
@@ -14,6 +15,8 @@ try {
 } catch {
   return Astro.redirect('/admin/aulas');
 }
+
+const materials = await MaterialsService.getByLessonId(id).catch(() => []);
 ---
 
 <DashboardLayout title="Editar Aula" user={user!} isAdmin={true}>
@@ -26,6 +29,47 @@ try {
     <h1 class="font-display font-light text-3xl mb-8" style="color: var(--cream);">Editar: {lesson.title}</h1>
     <div style="background-color: var(--mahogany); border: 1px solid var(--ink); padding: 2rem;">
       <AdminLessonForm mode="edit" lesson={lesson} client:load />
+    </div>
+
+    <div class="mt-8" style="background-color: var(--mahogany); border: 1px solid var(--ink); padding: 2rem;">
+      <h2 class="font-sans font-medium text-xs tracking-[0.15em] uppercase mb-6" style="color: var(--fade);">
+        Materiais Complementares
+      </h2>
+
+      {materials.length > 0 ? (
+        <ul class="space-y-2 mb-6">
+          {materials.map((m) => (
+            <li class="flex items-center justify-between gap-4 py-2" style="border-bottom:1px solid var(--ink);">
+              <span class="font-sans text-sm" style="color: var(--parchment);">{m.title}</span>
+              <form method="POST" action={`/api/admin/materials/${m.id}`}>
+                <input type="hidden" name="_method" value="DELETE" />
+                <button type="submit" class="font-sans text-xs link-btn">Remover</button>
+              </form>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p class="font-sans text-sm mb-6" style="color: var(--fade);">Nenhum material adicionado.</p>
+      )}
+
+      <form method="POST" action="/api/admin/materials/upload" enctype="multipart/form-data" class="space-y-4">
+        <input type="hidden" name="lessonId" value={lesson.id} />
+        <div>
+          <label for="mat-title" class="font-sans font-medium text-xs tracking-[0.15em] uppercase block mb-2" style="color: var(--fade);">Título</label>
+          <input type="text" id="mat-title" name="title" required
+            class="w-full font-sans text-sm px-3 py-2"
+            style="background:var(--ink);color:var(--parchment);border:1px solid var(--graphite);" />
+        </div>
+        <div>
+          <label for="mat-file" class="font-sans font-medium text-xs tracking-[0.15em] uppercase block mb-2" style="color: var(--fade);">Arquivo (PDF, ZIP, Imagem — máx. 50 MB)</label>
+          <input type="file" id="mat-file" name="file" required accept=".pdf,.zip,.jpg,.jpeg,.png,.xlsx"
+            class="w-full font-sans text-sm" style="color:var(--parchment);" />
+        </div>
+        <button type="submit" class="font-sans text-sm px-4 py-2"
+          style="border:1px solid var(--copper);color:var(--copper);">
+          Enviar Material
+        </button>
+      </form>
     </div>
   </div>
 </DashboardLayout>
