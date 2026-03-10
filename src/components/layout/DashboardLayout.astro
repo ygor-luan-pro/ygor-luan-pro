@@ -89,7 +89,9 @@ const mobileNavItems = [
               <span class="font-sans text-xs tracking-[0.15em] uppercase" style="color: var(--blade);">Admin</span>
             </div>
             {adminItems.map((item) => {
-              const isActive = pathname.startsWith(item.href);
+              const isActive = item.href === '/admin'
+                ? pathname === item.href
+                : pathname.startsWith(item.href);
               return (
                 <a
                   href={item.href}
