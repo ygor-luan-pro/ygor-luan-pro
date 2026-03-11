@@ -29,10 +29,12 @@ export const POST: APIRoute = async ({ request }) => {
   }
 
   const secret = import.meta.env.MERCADOPAGO_WEBHOOK_SECRET;
-  if (secret) {
-    if (!verifyMpSignature(request.headers, notification.data.id, secret)) {
-      return new Response('Unauthorized', { status: 401 });
-    }
+  if (!secret) {
+    console.error('MERCADOPAGO_WEBHOOK_SECRET não configurado');
+    return new Response('Unauthorized', { status: 401 });
+  }
+  if (!verifyMpSignature(request.headers, notification.data.id, secret)) {
+    return new Response('Unauthorized', { status: 401 });
   }
 
   const paymentData = await mpPayment.get({ id: notification.data.id });
@@ -56,10 +58,9 @@ export const POST: APIRoute = async ({ request }) => {
     return new Response('OK', { status: 200 });
   }
 
-  const tempPassword = crypto.randomUUID();
   const { data: authData, error: createError } = await supabaseAdmin.auth.admin.createUser({
     email,
-    password: tempPassword,
+    password: crypto.randomUUID(),
     email_confirm: true,
   });
 
@@ -87,16 +88,29 @@ export const POST: APIRoute = async ({ request }) => {
     role: 'student',
   });
 
-  await supabaseAdmin.from('orders').insert({
-    user_id: userId,
-    payment_id: String(paymentData.id),
-    status: 'approved',
-    amount: paymentData.transaction_amount ?? 0,
-    payment_method: paymentData.payment_method_id ?? null,
-    approved_at: new Date().toISOString(),
+  const { error: orderError } = await supabaseAdmin.from('orders').upsert(
+    {
+      user_id: userId,
+      payment_id: String(paymentData.id),
+      status: 'approved',
+      amount: paymentData.transaction_amount ?? 0,
+      payment_method: paymentData.payment_method_id ?? null,
+      approved_at: new Date().toISOString(),
+    },
+    { onConflict: 'payment_id', ignoreDuplicates: true },
+  );
+
+  if (orderError) {
+    console.error('Webhook: erro ao criar pedido', orderError);
+    return new Response('Error creating order', { status: 500 });
+  }
+
+  const { data: linkData } = await supabaseAdmin.auth.admin.generateLink({
+    type: 'recovery',
+    email,
   });
 
-  const siteUrl = import.meta.env.PUBLIC_SITE_URL ?? 'https://ygorluanpro.com.br';
+  const recoveryLink = linkData?.properties?.action_link;
 
   try {
     await resend.emails.send({
@@ -121,26 +135,19 @@ export const POST: APIRoute = async ({ request }) => {
             <p style="margin:0 0 24px;color:#ccc;font-size:16px;line-height:1.6;">
               Seu pagamento foi confirmado. A partir de agora você tem acesso completo às aulas gravadas e ao agendamento da sessão 1:1.
             </p>
-            <table width="100%" cellpadding="0" cellspacing="0" style="background:#1a1a1a;border-radius:8px;margin-bottom:32px;border:1px solid #2a2a2a;">
-              <tr>
-                <td style="padding:24px 28px;">
-                  <p style="margin:0 0 4px;color:#888;font-size:12px;letter-spacing:2px;text-transform:uppercase;">Suas credenciais de acesso</p>
-                  <p style="margin:8px 0 4px;color:#eee;font-size:15px;"><strong style="color:#b87333;">E-mail:</strong> ${email}</p>
-                  <p style="margin:4px 0;color:#eee;font-size:15px;"><strong style="color:#b87333;">Senha temporária:</strong> ${tempPassword}</p>
-                </td>
-              </tr>
-            </table>
+            <p style="margin:0 0 32px;color:#ccc;font-size:16px;line-height:1.6;">
+              Clique no botão abaixo para definir sua senha e acessar a plataforma. O link expira em 24 horas.
+            </p>
             <table width="100%" cellpadding="0" cellspacing="0">
               <tr>
                 <td align="center">
-                  <a href="${siteUrl}/login" style="display:inline-block;background:linear-gradient(135deg,#b87333,#8b5e3c);color:#fff;text-decoration:none;font-size:16px;font-weight:600;padding:16px 40px;border-radius:8px;letter-spacing:.5px;">
-                    Acessar a plataforma →
+                  <a href="${recoveryLink}" style="display:inline-block;background:linear-gradient(135deg,#b87333,#8b5e3c);color:#fff;text-decoration:none;font-size:16px;font-weight:600;padding:16px 40px;border-radius:8px;letter-spacing:.5px;">
+                    Definir sua senha →
                   </a>
                 </td>
               </tr>
             </table>
             <p style="margin:32px 0 0;color:#666;font-size:13px;text-align:center;line-height:1.6;">
-              Recomendamos alterar sua senha após o primeiro login.<br>
               Dúvidas? Responda este e-mail.
             </p>
           </td>

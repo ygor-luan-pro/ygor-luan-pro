@@ -9,8 +9,14 @@ interface TriggerBody {
 }
 
 export const POST: APIRoute = async ({ request }) => {
-  if (!import.meta.env.DEV) {
+  const testSecret = import.meta.env.WEBHOOK_TEST_SECRET;
+  if (!import.meta.env.DEV || !testSecret) {
     return new Response(null, { status: 404 });
+  }
+
+  const authHeader = request.headers.get('x-test-secret');
+  if (authHeader !== testSecret) {
+    return new Response('Unauthorized', { status: 401 });
   }
 
   const { email, amount = 997, paymentId = `fake-${Date.now()}` } =
