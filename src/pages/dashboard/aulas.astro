@@ -2,9 +2,13 @@
 import DashboardLayout from '../../components/layout/DashboardLayout.astro';
 import { LessonsService } from '../../services/lessons.service';
 import { ProgressService } from '../../services/progress.service';
+import { OrdersService } from '../../services/orders.service';
 import { formatDuration } from '../../lib/utils';
 
 const { user } = Astro.locals;
+
+const hasAccess = await OrdersService.hasActiveAccess(user!.id);
+if (!hasAccess) return Astro.redirect('/sem-acesso');
 
 const [lessons, progressList] = await Promise.all([
   LessonsService.getAll(),

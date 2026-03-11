@@ -3,11 +3,15 @@ import DashboardLayout from '../../../components/layout/DashboardLayout.astro';
 import VideoPlayer from '../../../islands/VideoPlayer';
 import { LessonsService } from '../../../services/lessons.service';
 import { ProgressService } from '../../../services/progress.service';
+import { OrdersService } from '../../../services/orders.service';
 
 const { user } = Astro.locals;
 const { id } = Astro.params;
 
 if (!id) return Astro.redirect('/dashboard/aulas');
+
+const hasAccess = await OrdersService.hasActiveAccess(user!.id);
+if (!hasAccess) return Astro.redirect('/sem-acesso');
 
 const [lesson, progress] = await Promise.all([
   LessonsService.getById(id).catch(() => null),

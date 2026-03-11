@@ -1,9 +1,13 @@
 ---
 import DashboardLayout from '../../components/layout/DashboardLayout.astro';
 import { AuthService } from '../../services/auth.service';
+import { OrdersService } from '../../services/orders.service';
 import { formatDate } from '../../lib/utils';
 
 const { user } = Astro.locals;
+
+const hasAccess = await OrdersService.hasActiveAccess(user!.id);
+if (!hasAccess) return Astro.redirect('/sem-acesso');
 
 if (Astro.request.method === 'POST') {
   await AuthService.resetPassword(user!.email!);

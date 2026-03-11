@@ -1,9 +1,18 @@
 import type { APIRoute } from 'astro';
 import { ProgressService } from '../../../services/progress.service';
+import { OrdersService } from '../../../services/orders.service';
 
 export const POST: APIRoute = async ({ request, locals }) => {
   if (!locals.user) {
     return new Response(JSON.stringify({ error: 'Não autenticado' }), { status: 401 });
+  }
+
+  const hasAccess = await OrdersService.hasActiveAccess(locals.user.id);
+  if (!hasAccess) {
+    return new Response(JSON.stringify({ error: 'Sem acesso' }), {
+      status: 403,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
 
   const { lessonId } = await request.json() as { lessonId?: string };

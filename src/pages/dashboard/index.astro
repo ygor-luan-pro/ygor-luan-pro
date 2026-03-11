@@ -4,13 +4,28 @@ import ProgressTracker from '../../islands/ProgressTracker';
 import { LessonsService } from '../../services/lessons.service';
 import { ProgressService } from '../../services/progress.service';
 import { AuthService } from '../../services/auth.service';
+import { OrdersService } from '../../services/orders.service';
 
 const { user } = Astro.locals;
-const [lessons, completedCount, profile] = await Promise.all([
-  LessonsService.getAll(),
-  ProgressService.getCompletedCount(user!.id),
-  AuthService.getProfile(user!.id),
-]);
+
+const hasAccess = await OrdersService.hasActiveAccess(user!.id);
+if (!hasAccess) return Astro.redirect('/sem-acesso');
+
+let lessons: Awaited<ReturnType<typeof LessonsService.getAll>> = [];
+let completedCount = 0;
+let profile: Awaited<ReturnType<typeof AuthService.getProfile>> = null;
+let dashboardLoadError = false;
+
+try {
+  [lessons, completedCount, profile] = await Promise.all([
+    LessonsService.getAll(),
+    ProgressService.getCompletedCount(user!.id),
+    AuthService.getProfile(user!.id),
+  ]);
+} catch (err) {
+  console.error('Dashboard index: erro ao carregar dados', err);
+  dashboardLoadError = true;
+}
 
 const displayName = profile?.full_name?.split(' ')[0] ?? user!.email?.split('@')[0] ?? 'Artesão';
 ---
@@ -19,6 +34,10 @@ const displayName = profile?.full_name?.split(' ')[0] ?? user!.email?.split('@')
   <p class="section-eyebrow">Bem-vindo de volta</p>
   <h1 class="font-display font-light text-4xl mt-1" style="color: var(--cream);">Olá, {displayName}.</h1>
   <div class="page-divider"></div>
+
+  {dashboardLoadError && (
+    <p class="font-sans text-sm mb-6" style="color: #f87171;">Erro ao carregar dados. Tente recarregar a página.</p>
+  )}
 
   <div class="mb-6 card" style="border-color: var(--blade);">
     <h2 class="font-sans font-medium text-sm tracking-wide uppercase mb-4" style="color: var(--fade);">Seu progresso</h2>
