@@ -4,12 +4,9 @@ import ProgressTracker from '../../islands/ProgressTracker';
 import { LessonsService } from '../../services/lessons.service';
 import { ProgressService } from '../../services/progress.service';
 import { AuthService } from '../../services/auth.service';
-import { OrdersService } from '../../services/orders.service';
 import { groupLessonsByModule } from '../../lib/utils';
 
-const { user } = Astro.locals;
-
-const hasAccess = await OrdersService.hasActiveAccess(user!.id);
+const { user, hasAccess } = Astro.locals;
 if (!hasAccess) return Astro.redirect('/sem-acesso');
 
 let lessons: Awaited<ReturnType<typeof LessonsService.getAll>> = [];
