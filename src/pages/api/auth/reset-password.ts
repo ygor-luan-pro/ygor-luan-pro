@@ -13,15 +13,12 @@ export const POST: APIRoute = async ({ request }) => {
 
   try {
     await AuthService.resetPassword(email);
-    return new Response(JSON.stringify({ ok: true }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
-    });
   } catch (err) {
-    const message = err instanceof Error ? err.message : 'Erro interno';
-    return new Response(JSON.stringify({ error: message }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    console.error('reset-password: erro interno', err);
   }
+
+  return new Response(JSON.stringify({ ok: true }), {
+    status: 200,
+    headers: { 'Content-Type': 'application/json' },
+  });
 };

@@ -1,7 +1,12 @@
 ---
 import DashboardLayout from '../../components/layout/DashboardLayout.astro';
+import { OrdersService } from '../../services/orders.service';
 
 const { user } = Astro.locals;
+
+const hasAccess = await OrdersService.hasActiveAccess(user!.id);
+if (!hasAccess) return Astro.redirect('/sem-acesso');
+
 const calcomLink = import.meta.env.PUBLIC_CALCOM_LINK ?? 'https://cal.com/ygorluan/mentoria';
 ---
 

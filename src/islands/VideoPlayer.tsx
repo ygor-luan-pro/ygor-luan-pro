@@ -16,6 +16,7 @@ export default function VideoPlayer({
   initialCompleted = false,
 }: VideoPlayerProps) {
   const [completed, setCompleted] = useState(initialCompleted);
+  const [progressError, setProgressError] = useState(false);
   const completedRef = useRef(initialCompleted);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const lastSavedRef = useRef(initialWatchTime);
@@ -30,14 +31,16 @@ export default function VideoPlayer({
     completedRef.current = true;
     setCompleted(true);
     try {
-      await fetch('/api/progress/complete', {
+      const res = await fetch('/api/progress/complete', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ lessonId }),
       });
+      if (!res.ok) throw new Error('Falha ao marcar aula como concluída');
     } catch {
       completedRef.current = false;
       setCompleted(false);
+      setProgressError(true);
     }
   }, [lessonId]);
 
@@ -51,12 +54,19 @@ export default function VideoPlayer({
       if (shouldSaveWatchTime(seconds, lastSavedRef.current)) {
         lastSavedRef.current = seconds;
         try {
-          await fetch('/api/progress/watch-time', {
+          const res = await fetch('/api/progress/watch-time', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ lessonId, watchTime: Math.floor(seconds) }),
           });
-        } catch (_e) {}
+          if (!res.ok) {
+            setProgressError(true);
+          } else {
+            setProgressError(false);
+          }
+        } catch {
+          console.error('VideoPlayer: falha ao salvar progresso');
+        }
       }
 
       if (shouldAutoComplete(seconds, duration)) {
@@ -92,6 +102,12 @@ export default function VideoPlayer({
           title="Aula"
         />
       </div>
+
+      {progressError && (
+        <p className="font-sans text-sm" style={{ color: '#f87171' }}>
+          Não foi possível salvar seu progresso. Verifique sua conexão.
+        </p>
+      )}
 
       {!completed && (
         <button onClick={markComplete} className="btn-ghost text-sm px-4 py-2">

@@ -24,27 +24,13 @@ const adminItems = [
   { href: '/admin/vendas', label: 'Vendas' },
 ];
 
-const mobileNavItems = [
-  {
-    href: '/dashboard',
-    label: 'Início',
-    icon: `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 6.5L8 1.5L14 6.5V14H10V10H6V14H2V6.5Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" fill="none"/></svg>`,
-  },
-  {
-    href: '/dashboard/aulas',
-    label: 'Aulas',
-    icon: `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="1.5" y="2.5" width="13" height="11" rx="1" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M6.5 5.5L10.5 8L6.5 10.5V5.5Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" fill="none"/></svg>`,
-  },
-  {
-    href: '/dashboard/mentoria',
-    label: 'Mentoria',
-    icon: `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="5" r="3" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M2 13.5C2 11 4.69 9 8 9C11.31 9 14 11 14 13.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"/></svg>`,
-  },
-  {
-    href: '/dashboard/perfil',
-    label: 'Perfil',
-    icon: `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="5" r="3" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M2 14C2 11.24 4.69 9 8 9C11.31 9 14 11.24 14 14" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"/></svg>`,
-  },
+type MobileNavItem = { href: string; label: string };
+
+const mobileNavItems: MobileNavItem[] = [
+  { href: '/dashboard', label: 'Início' },
+  { href: '/dashboard/aulas', label: 'Aulas' },
+  { href: '/dashboard/mentoria', label: 'Mentoria' },
+  { href: '/dashboard/perfil', label: 'Perfil' },
 ];
 ---
 
@@ -129,7 +115,18 @@ const mobileNavItems = [
             class="flex-1 flex flex-col items-center gap-1 py-3 font-sans text-xs transition-colors"
             style={isActive ? 'color: var(--copper);' : 'color: var(--fade);'}
           >
-            <span set:html={item.icon} />
+            {item.href === '/dashboard' && (
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 6.5L8 1.5L14 6.5V14H10V10H6V14H2V6.5Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" fill="none"/></svg>
+            )}
+            {item.href === '/dashboard/aulas' && (
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="1.5" y="2.5" width="13" height="11" rx="1" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M6.5 5.5L10.5 8L6.5 10.5V5.5Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" fill="none"/></svg>
+            )}
+            {item.href === '/dashboard/mentoria' && (
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="5" r="3" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M2 13.5C2 11 4.69 9 8 9C11.31 9 14 11 14 13.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"/></svg>
+            )}
+            {item.href === '/dashboard/perfil' && (
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="5" r="3" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M2 14C2 11.24 4.69 9 8 9C11.31 9 14 11.24 14 14" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"/></svg>
+            )}
             {item.label}
           </a>
         );

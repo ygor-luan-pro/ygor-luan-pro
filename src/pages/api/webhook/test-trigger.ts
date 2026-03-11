@@ -9,8 +9,14 @@ interface TriggerBody {
 }
 
 export const POST: APIRoute = async ({ request }) => {
-  if (!import.meta.env.DEV) {
+  const testSecret = import.meta.env.WEBHOOK_TEST_SECRET;
+  if (!import.meta.env.DEV || !testSecret) {
     return new Response(null, { status: 404 });
+  }
+
+  const authHeader = request.headers.get('x-test-secret');
+  if (authHeader !== testSecret) {
+    return new Response('Unauthorized', { status: 401 });
   }
 
   const { email, amount = 997, paymentId = `fake-${Date.now()}` } =
@@ -33,10 +39,9 @@ export const POST: APIRoute = async ({ request }) => {
     return Response.json({ ...result, skipped: 'order already exists' }, { status: 200 });
   }
 
-  const tempPassword = crypto.randomUUID();
   const { data: authData, error: createError } = await supabaseAdmin.auth.admin.createUser({
     email,
-    password: tempPassword,
+    password: crypto.randomUUID(),
     email_confirm: true,
   });
 
@@ -62,25 +67,35 @@ export const POST: APIRoute = async ({ request }) => {
 
   await supabaseAdmin.from('profiles').upsert({ id: userId, email, role: 'student' });
 
-  await supabaseAdmin.from('orders').insert({
-    user_id: userId,
-    payment_id: paymentId,
-    status: 'approved',
-    amount,
-    payment_method: 'test',
-    approved_at: new Date().toISOString(),
-  });
+  await supabaseAdmin.from('orders').upsert(
+    {
+      user_id: userId,
+      payment_id: paymentId,
+      status: 'approved',
+      amount,
+      payment_method: 'test',
+      approved_at: new Date().toISOString(),
+    },
+    { onConflict: 'payment_id', ignoreDuplicates: true },
+  );
 
   result.orderCreated = true;
 
-  const siteUrl = import.meta.env.PUBLIC_SITE_URL ?? 'http://localhost:4321';
+  const { data: linkData } = await supabaseAdmin.auth.admin.generateLink({
+    type: 'recovery',
+    email,
+  });
+
+  const recoveryLink = linkData?.properties?.action_link ?? null;
 
   try {
     await resend.emails.send({
       from: FROM_EMAIL,
       to: email,
       subject: '[TEST] Acesso ao Ygor Luan Pro',
-      html: `<p>Teste local. Email: ${email} | Senha: ${tempPassword} | <a href="${siteUrl}/login">Login</a></p>`,
+      html: recoveryLink
+        ? `<p>Teste local. Email: ${email} | <a href="${recoveryLink}">Definir senha</a></p>`
+        : `<p>Teste local. Email: ${email} | Link indisponível — acesse /login</p>`,
     });
     result.emailSent = true;
   } catch (err) {

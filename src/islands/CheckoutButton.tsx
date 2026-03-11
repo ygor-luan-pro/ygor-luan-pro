@@ -54,7 +54,7 @@ export default function CheckoutButton({
         <input
           type="email"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => setEmail(e.target.value.trim().toLowerCase())}
           required
           placeholder="Seu melhor e-mail"
           className="input-field mb-3"
@@ -73,7 +73,7 @@ export default function CheckoutButton({
       <input
         type="email"
         value={email}
-        onChange={(e) => setEmail(e.target.value)}
+        onChange={(e) => setEmail(e.target.value.trim().toLowerCase())}
         required
         placeholder="Seu melhor e-mail"
         className="input-field"

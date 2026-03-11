@@ -4,11 +4,24 @@ import { UsersService } from '../../services/users.service';
 import { formatDate } from '../../lib/utils';
 
 const { user } = Astro.locals;
-const students = (await UsersService.getAllAdmin()).filter((u) => u.role === 'student');
+
+let students: Awaited<ReturnType<typeof UsersService.getAllAdmin>> = [];
+let alunosLoadError = false;
+
+try {
+  students = (await UsersService.getAllAdmin()).filter((u) => u.role === 'student');
+} catch (err) {
+  console.error('Admin alunos: erro ao carregar dados', err);
+  alunosLoadError = true;
+}
 ---
 
 <DashboardLayout title="Alunos" user={user!} isAdmin={true}>
   <h1 class="font-display font-light text-3xl mb-8" style="color: var(--cream);">Alunos ({students.length})</h1>
+
+  {alunosLoadError && (
+    <p class="font-sans text-sm mb-6" style="color: #f87171;">Erro ao carregar lista de alunos. Tente recarregar a página.</p>
+  )}
 
   <div style="background-color: var(--mahogany); border: 1px solid var(--ink);">
     <div class="overflow-x-auto">

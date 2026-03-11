@@ -68,6 +68,10 @@ export class ProgressService {
 
     if (error) throw new Error(error.message);
 
+    if (!Array.isArray(data) || data.length === 0) {
+      throw new Error('Dados inválidos de get_student_stats');
+    }
+
     const [row] = data as StudentStats[];
     return row;
   }
