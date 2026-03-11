@@ -1,13 +1,12 @@
 import type { APIRoute } from 'astro';
 import { LessonsService } from '../../../services/lessons.service';
-import { UsersService } from '../../../services/users.service';
 
 export const GET: APIRoute = async ({ locals }) => {
   if (!locals.user) {
     return new Response(JSON.stringify({ error: 'Não autenticado' }), { status: 401 });
   }
 
-  if (!(await UsersService.isAdmin(locals.user.id))) {
+  if (!locals.isAdmin) {
     return new Response(JSON.stringify({ error: 'Acesso negado' }), { status: 403 });
   }
 
@@ -23,7 +22,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     return new Response(JSON.stringify({ error: 'Não autenticado' }), { status: 401 });
   }
 
-  if (!(await UsersService.isAdmin(locals.user.id))) {
+  if (!locals.isAdmin) {
     return new Response(JSON.stringify({ error: 'Acesso negado' }), { status: 403 });
   }
 
