@@ -5,10 +5,10 @@ import type { Database } from '../types/database.types';
 import { UsersService } from '../services/users.service';
 import { OrdersService } from '../services/orders.service';
 
-const PROTECTED_PREFIXES = ['/dashboard', '/admin', '/api/progress'];
-const ADMIN_PREFIXES = ['/admin'];
+const PROTECTED_PREFIXES = ['/dashboard', '/admin', '/api/progress', '/api/admin'];
+const ADMIN_PREFIXES = ['/admin', '/api/admin'];
 const DASHBOARD_PREFIXES = ['/dashboard'];
-const PROGRESS_API_PREFIXES = ['/api/progress'];
+const API_PREFIXES = ['/api/progress', '/api/admin'];
 
 export const onRequest = defineMiddleware(async (
   { url, request, cookies, locals, redirect },
@@ -37,7 +37,7 @@ export const onRequest = defineMiddleware(async (
   const { data: { user } } = await supabase.auth.getUser();
   locals.user = user;
 
-  const isApiRoute = PROGRESS_API_PREFIXES.some((p) => pathname.startsWith(p));
+  const isApiRoute = API_PREFIXES.some((p) => pathname.startsWith(p));
 
   if (!user) {
     if (isApiRoute) {
@@ -58,7 +58,15 @@ export const onRequest = defineMiddleware(async (
   locals.hasAccess = hasAccess || isAdmin;
 
   if (ADMIN_PREFIXES.some((p) => pathname.startsWith(p))) {
-    if (!isAdmin) return redirect('/dashboard');
+    if (!isAdmin) {
+      if (isApiRoute) {
+        return new Response(JSON.stringify({ error: 'Acesso negado' }), {
+          status: 403,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      }
+      return redirect('/dashboard');
+    }
   }
 
   if (DASHBOARD_PREFIXES.some((p) => pathname.startsWith(p))) {
