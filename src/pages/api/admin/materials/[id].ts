@@ -2,15 +2,12 @@ import type { APIRoute } from 'astro';
 import { MaterialsService } from '../../../../services/materials.service';
 
 export const DELETE: APIRoute = async ({ locals, params }) => {
-  if (!locals.user) {
-    return new Response(JSON.stringify({ error: 'Não autenticado' }), { status: 401 });
-  }
   if (!locals.isAdmin) {
-    return new Response(JSON.stringify({ error: 'Acesso negado' }), { status: 403 });
+    return new Response(JSON.stringify({ error: 'Acesso negado' }), { status: 403, headers: { 'Content-Type': 'application/json' } });
   }
 
   if (!params.id) {
-    return new Response(JSON.stringify({ error: 'ID inválido' }), { status: 400 });
+    return new Response(JSON.stringify({ error: 'ID inválido' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
   }
 
   try {

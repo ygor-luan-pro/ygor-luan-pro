@@ -3,17 +3,13 @@ import { LessonsService } from '../../../../services/lessons.service';
 import type { Lesson } from '../../../../types';
 
 export const PUT: APIRoute = async ({ params, request, locals }) => {
-  if (!locals.user) {
-    return new Response(JSON.stringify({ error: 'Não autenticado' }), { status: 401 });
-  }
-
   if (!locals.isAdmin) {
-    return new Response(JSON.stringify({ error: 'Acesso negado' }), { status: 403 });
+    return new Response(JSON.stringify({ error: 'Acesso negado' }), { status: 403, headers: { 'Content-Type': 'application/json' } });
   }
 
   const { id } = params;
   if (!id) {
-    return new Response(JSON.stringify({ error: 'ID obrigatório' }), { status: 400 });
+    return new Response(JSON.stringify({ error: 'ID obrigatório' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
   }
 
   const raw = await request.json() as Record<string, unknown>;
@@ -36,19 +32,15 @@ export const PUT: APIRoute = async ({ params, request, locals }) => {
 };
 
 export const DELETE: APIRoute = async ({ params, locals }) => {
-  if (!locals.user) {
-    return new Response(JSON.stringify({ error: 'Não autenticado' }), { status: 401 });
-  }
-
   if (!locals.isAdmin) {
-    return new Response(JSON.stringify({ error: 'Acesso negado' }), { status: 403 });
+    return new Response(JSON.stringify({ error: 'Acesso negado' }), { status: 403, headers: { 'Content-Type': 'application/json' } });
   }
 
   const { id } = params;
   if (!id) {
-    return new Response(JSON.stringify({ error: 'ID obrigatório' }), { status: 400 });
+    return new Response(JSON.stringify({ error: 'ID obrigatório' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
   }
 
   await LessonsService.togglePublish(id, false);
-  return new Response(JSON.stringify({ ok: true }), { status: 200 });
+  return new Response(null, { status: 204 });
 };

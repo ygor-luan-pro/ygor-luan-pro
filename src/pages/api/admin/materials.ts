@@ -2,11 +2,8 @@ import type { APIRoute } from 'astro';
 import { MaterialsService } from '../../../services/materials.service';
 
 export const POST: APIRoute = async ({ locals, request }) => {
-  if (!locals.user) {
-    return new Response(JSON.stringify({ error: 'Não autenticado' }), { status: 401 });
-  }
   if (!locals.isAdmin) {
-    return new Response(JSON.stringify({ error: 'Acesso negado' }), { status: 403 });
+    return new Response(JSON.stringify({ error: 'Acesso negado' }), { status: 403, headers: { 'Content-Type': 'application/json' } });
   }
 
   const body = await request.json() as {
@@ -19,7 +16,7 @@ export const POST: APIRoute = async ({ locals, request }) => {
   if (!body.lesson_id || !body.title || !body.file_url) {
     return new Response(
       JSON.stringify({ error: 'lesson_id, title e file_url são obrigatórios' }),
-      { status: 400 }
+      { status: 400, headers: { 'Content-Type': 'application/json' } },
     );
   }
 

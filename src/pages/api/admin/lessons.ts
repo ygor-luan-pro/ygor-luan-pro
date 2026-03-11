@@ -2,12 +2,8 @@ import type { APIRoute } from 'astro';
 import { LessonsService } from '../../../services/lessons.service';
 
 export const GET: APIRoute = async ({ locals }) => {
-  if (!locals.user) {
-    return new Response(JSON.stringify({ error: 'Não autenticado' }), { status: 401 });
-  }
-
   if (!locals.isAdmin) {
-    return new Response(JSON.stringify({ error: 'Acesso negado' }), { status: 403 });
+    return new Response(JSON.stringify({ error: 'Acesso negado' }), { status: 403, headers: { 'Content-Type': 'application/json' } });
   }
 
   const lessons = await LessonsService.getAllAdmin();
@@ -18,12 +14,8 @@ export const GET: APIRoute = async ({ locals }) => {
 };
 
 export const POST: APIRoute = async ({ request, locals }) => {
-  if (!locals.user) {
-    return new Response(JSON.stringify({ error: 'Não autenticado' }), { status: 401 });
-  }
-
   if (!locals.isAdmin) {
-    return new Response(JSON.stringify({ error: 'Acesso negado' }), { status: 403 });
+    return new Response(JSON.stringify({ error: 'Acesso negado' }), { status: 403, headers: { 'Content-Type': 'application/json' } });
   }
 
   const body = await request.json() as {
