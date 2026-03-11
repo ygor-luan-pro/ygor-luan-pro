@@ -225,5 +225,23 @@ describe('ProgressService', () => {
 
       await expect(ProgressService.getStudentStats('user-1')).rejects.toThrow('rpc error');
     });
+
+    it('lança erro quando RPC retorna array vazio', async () => {
+      vi.mocked(supabaseAdmin.rpc).mockResolvedValueOnce({
+        data: [],
+        error: null,
+      } as never);
+
+      await expect(ProgressService.getStudentStats('user-1')).rejects.toThrow('Dados inválidos de get_student_stats');
+    });
+
+    it('lança erro quando RPC retorna formato inesperado (não array)', async () => {
+      vi.mocked(supabaseAdmin.rpc).mockResolvedValueOnce({
+        data: { total_lessons: 5 },
+        error: null,
+      } as never);
+
+      await expect(ProgressService.getStudentStats('user-1')).rejects.toThrow('Dados inválidos de get_student_stats');
+    });
   });
 });
