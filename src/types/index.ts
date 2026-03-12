@@ -34,7 +34,7 @@ export type QuizQuestionPublic = Omit<QuizQuestion, 'correct_answer_index'> & {
 export type QuizAttemptResult = {
   score: number;
   total: number;
-  correctIndices: number[];
+  perQuestion: boolean[];
 };
 
 export type ModuleWithQuiz = Module & {

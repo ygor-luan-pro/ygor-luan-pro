@@ -75,6 +75,10 @@ describe('POST /api/quiz/[module]/submit — autorização', () => {
     const res = await submitQuiz(makeContext({ user: mockUser, hasAccess: true, isAdmin: false }, { answers: 'errado' }));
     expect(res.status).toBe(400);
   });
+  it('retorna 400 quando answers contém valor fora de 0–3', async () => {
+    const res = await submitQuiz(makeContext({ user: mockUser, hasAccess: true, isAdmin: false }, { answers: [0, 5, -1] }));
+    expect(res.status).toBe(400);
+  });
 });
 
 describe('POST /api/admin/quiz — autorização', () => {

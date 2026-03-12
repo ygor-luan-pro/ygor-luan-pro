@@ -22,12 +22,17 @@ export const POST: APIRoute = async ({ request, locals }) => {
   if (body.correct_answer_index < 0 || body.correct_answer_index > 3)
     return new Response(JSON.stringify({ error: 'correct_answer_index deve ser entre 0 e 3' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
 
-  const question = await QuizService.createQuestion({
-    module_number: body.module_number,
-    question: body.question,
-    options: body.options,
-    correct_answer_index: body.correct_answer_index,
-    order_number: body.order_number ?? 1,
-  });
-  return new Response(JSON.stringify(question), { status: 201, headers: { 'Content-Type': 'application/json' } });
+  try {
+    const question = await QuizService.createQuestion({
+      module_number: body.module_number,
+      question: body.question,
+      options: body.options,
+      correct_answer_index: body.correct_answer_index,
+      order_number: body.order_number ?? 1,
+    });
+    return new Response(JSON.stringify(question), { status: 201, headers: { 'Content-Type': 'application/json' } });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Erro interno';
+    return new Response(JSON.stringify({ error: message }), { status: 500, headers: { 'Content-Type': 'application/json' } });
+  }
 };

@@ -74,18 +74,17 @@ export default function QuizPlayer({ moduleNumber, questions, initialBestAttempt
       {(state === 'answering' || state === 'submitted') && (
         <form onSubmit={handleSubmit} className="space-y-8">
           {questions.map((q, qIdx) => {
-            const isCorrect = result && selected[qIdx] === result.correctIndices[qIdx];
+            const isCorrect = result && result.perQuestion[qIdx];
             return (
               <div key={q.id}>
                 <p className="font-sans font-medium text-sm mb-3" style={{ color: 'var(--cream)' }}>{qIdx + 1}. {q.question}</p>
                 <div className="space-y-2">
                   {q.options.map((option, oIdx) => {
                     const isSelected = selected[qIdx] === oIdx;
-                    const isCorrectOption = result && result.correctIndices[qIdx] === oIdx;
                     let borderColor = 'var(--ink)', bgColor = 'transparent', textColor = 'var(--parchment)';
                     if (state === 'submitted') {
-                      if (isCorrectOption) { borderColor = 'var(--copper)'; bgColor = 'rgba(201,133,58,0.08)'; textColor = 'var(--copper)'; }
-                      else if (isSelected) { borderColor = 'rgba(239,68,68,0.5)'; bgColor = 'rgba(239,68,68,0.06)'; textColor = '#f87171'; }
+                      if (isSelected && isCorrect) { borderColor = 'var(--copper)'; bgColor = 'rgba(201,133,58,0.08)'; textColor = 'var(--copper)'; }
+                      else if (isSelected && !isCorrect) { borderColor = 'rgba(239,68,68,0.5)'; bgColor = 'rgba(239,68,68,0.06)'; textColor = '#f87171'; }
                     } else if (isSelected) { borderColor = 'var(--copper)'; bgColor = 'rgba(201,133,58,0.06)'; textColor = 'var(--cream)'; }
                     return (
                       <button key={oIdx} type="button" disabled={state === 'submitted'} onClick={() => handleSelect(qIdx, oIdx)}

@@ -99,7 +99,7 @@ describe('QuizService', () => {
       const result = await QuizService.submitAttempt('user-1', 1, [2]);
       expect(result.score).toBe(1);
       expect(result.total).toBe(1);
-      expect(result.correctIndices).toEqual([2]);
+      expect(result.perQuestion).toEqual([true]);
     });
 
     it('score 0 quando todas as respostas estão erradas', async () => {

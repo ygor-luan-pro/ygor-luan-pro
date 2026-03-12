@@ -29,8 +29,8 @@ export class QuizService {
     if (questions.length === 0) throw new Error('Módulo sem questões');
     if (answers.length !== questions.length) throw new Error('Número de respostas inválido');
 
-    const correctIndices = questions.map((q) => q.correct_answer_index);
-    const score = answers.reduce((acc, answer, i) => acc + (answer === correctIndices[i] ? 1 : 0), 0);
+    const perQuestion = answers.map((answer, i) => answer === questions[i].correct_answer_index);
+    const score = perQuestion.filter(Boolean).length;
 
     const { error } = await supabaseAdmin
       .from('quiz_attempts')
@@ -39,7 +39,7 @@ export class QuizService {
       .single();
     if (error) throw new Error(error.message);
 
-    return { score, total: questions.length, correctIndices };
+    return { score, total: questions.length, perQuestion };
   }
 
   static async getBestAttempt(

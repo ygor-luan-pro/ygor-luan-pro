@@ -11,9 +11,14 @@ export const GET: APIRoute = async ({ params, locals }) => {
   if (!params.module || isNaN(moduleNumber) || moduleNumber < 1)
     return new Response(JSON.stringify({ error: 'Módulo inválido' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
 
-  const [questions, bestAttempt] = await Promise.all([
-    QuizService.getPublicQuestionsByModule(moduleNumber),
-    QuizService.getBestAttempt(locals.user.id, moduleNumber),
-  ]);
-  return new Response(JSON.stringify({ questions, bestAttempt }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+  try {
+    const [questions, bestAttempt] = await Promise.all([
+      QuizService.getPublicQuestionsByModule(moduleNumber),
+      QuizService.getBestAttempt(locals.user.id, moduleNumber),
+    ]);
+    return new Response(JSON.stringify({ questions, bestAttempt }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Erro interno';
+    return new Response(JSON.stringify({ error: message }), { status: 500, headers: { 'Content-Type': 'application/json' } });
+  }
 };
