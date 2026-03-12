@@ -8,21 +8,29 @@ export class MaterialsService {
       .select('*')
       .eq('lesson_id', lessonId)
       .order('created_at');
+
     if (error) throw new Error(error.message);
     return data ?? [];
   }
 
-  static async create(input: {
-    lesson_id: string;
-    title: string;
-    file_url: string;
-    file_type?: string | null;
-  }): Promise<Material> {
+  static async create(input: Omit<Material, 'id' | 'created_at'>): Promise<Material> {
     const { data, error } = await supabaseAdmin
       .from('materials')
       .insert(input)
       .select()
       .single();
+
+    if (error) throw new Error(error.message);
+    return data;
+  }
+
+  static async getById(id: string): Promise<Material> {
+    const { data, error } = await supabaseAdmin
+      .from('materials')
+      .select('*')
+      .eq('id', id)
+      .single();
+
     if (error) throw new Error(error.message);
     return data;
   }
@@ -32,6 +40,16 @@ export class MaterialsService {
       .from('materials')
       .delete()
       .eq('id', id);
+
     if (error) throw new Error(error.message);
+  }
+
+  static async getSignedUrl(storagePath: string, expiresInSeconds = 3600): Promise<string> {
+    const { data, error } = await supabaseAdmin.storage
+      .from('materials')
+      .createSignedUrl(storagePath, expiresInSeconds);
+
+    if (error) throw new Error(error.message);
+    return data.signedUrl;
   }
 }

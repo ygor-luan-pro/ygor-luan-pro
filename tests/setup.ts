@@ -31,6 +31,15 @@ vi.mock('../src/lib/supabase', () => {
       upsert: vi.fn(() => Promise.resolve({ data: null, error: null })),
     })),
     rpc: vi.fn(() => Promise.resolve({ data: null, error: null })),
+    storage: {
+      from: vi.fn(() => ({
+        upload: vi.fn(() => Promise.resolve({ data: { path: 'test/path.pdf' }, error: null })),
+        remove: vi.fn(() => Promise.resolve({ data: [], error: null })),
+        createSignedUrl: vi.fn(() =>
+          Promise.resolve({ data: { signedUrl: 'https://signed.url/test.pdf' }, error: null }),
+        ),
+      })),
+    },
     auth: {
       signInWithPassword: vi.fn(),
       signOut: vi.fn(),
