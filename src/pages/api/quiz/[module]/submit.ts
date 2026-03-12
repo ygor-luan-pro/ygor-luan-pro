@@ -1,0 +1,20 @@
+import type { APIRoute } from 'astro';
+import { QuizService } from '../../../../services/quiz.service';
+
+export const POST: APIRoute = async ({ params, request, locals }) => {
+  if (!locals.user)
+    return new Response(JSON.stringify({ error: 'Não autenticado' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
+  if (!locals.hasAccess)
+    return new Response(JSON.stringify({ error: 'Sem acesso' }), { status: 403, headers: { 'Content-Type': 'application/json' } });
+
+  const moduleNumber = Number(params.module);
+  if (!params.module || isNaN(moduleNumber) || moduleNumber < 1)
+    return new Response(JSON.stringify({ error: 'Módulo inválido' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
+
+  const body = await request.json() as { answers?: unknown };
+  if (!Array.isArray(body.answers))
+    return new Response(JSON.stringify({ error: 'answers deve ser um array' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
+
+  const result = await QuizService.submitAttempt(locals.user.id, moduleNumber, body.answers as number[]);
+  return new Response(JSON.stringify(result), { status: 200, headers: { 'Content-Type': 'application/json' } });
+};
