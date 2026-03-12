@@ -165,6 +165,50 @@ export interface Database {
         Update: Partial<Database['public']['Tables']['materials']['Insert']>;
         Relationships: [];
       };
+      quiz_questions: {
+        Row: {
+          id: string;
+          module_number: number;
+          question: string;
+          options: Json;
+          correct_answer_index: number;
+          order_number: number;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          module_number: number;
+          question: string;
+          options: Json;
+          correct_answer_index: number;
+          order_number?: number;
+          created_at?: string;
+        };
+        Update: Partial<Database['public']['Tables']['quiz_questions']['Insert']>;
+        Relationships: [];
+      };
+      quiz_attempts: {
+        Row: {
+          id: string;
+          user_id: string;
+          module_number: number;
+          score: number;
+          total: number;
+          answers: Json;
+          completed_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          module_number: number;
+          score: number;
+          total: number;
+          answers: Json;
+          completed_at?: string;
+        };
+        Update: Partial<Database['public']['Tables']['quiz_attempts']['Insert']>;
+        Relationships: [];
+      };
     };
     Views: {
       [_ in never]: never;

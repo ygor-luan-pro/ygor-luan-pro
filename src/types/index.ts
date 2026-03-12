@@ -24,6 +24,24 @@ export type StudentStats = {
   total_watch_time: number;
 };
 
+export type QuizQuestion = Database['public']['Tables']['quiz_questions']['Row'];
+export type QuizAttempt  = Database['public']['Tables']['quiz_attempts']['Row'];
+
+export type QuizQuestionPublic = Omit<QuizQuestion, 'correct_answer_index'> & {
+  options: string[];
+};
+
+export type QuizAttemptResult = {
+  score: number;
+  total: number;
+  correctIndices: number[];
+};
+
+export type ModuleWithQuiz = Module & {
+  hasQuiz: boolean;
+  bestAttempt: Pick<QuizAttempt, 'score' | 'total'> | null;
+};
+
 export type ProductId = 'videoaulas' | 'mentoria-completa';
 
 export interface PricingProduct {
