@@ -24,21 +24,32 @@ const mockLesson = {
   updated_at: new Date().toISOString(),
 };
 
+function mockOrdersQuery(userIds: string[]) {
+  vi.mocked(supabaseAdmin.from).mockReturnValueOnce({
+    select: vi.fn().mockReturnValue({
+      eq: vi.fn().mockResolvedValue({
+        data: userIds.map((id) => ({ user_id: id })),
+        error: null,
+      }),
+    }),
+  } as never);
+}
+
+function mockProfilesQuery(students: Array<{ email: string; full_name: string | null }>) {
+  vi.mocked(supabaseAdmin.from).mockReturnValueOnce({
+    select: vi.fn().mockReturnValue({
+      in: vi.fn().mockResolvedValue({ data: students, error: null }),
+    }),
+  } as never);
+}
+
 describe('EmailService', () => {
   beforeEach(() => vi.clearAllMocks());
 
   describe('getActiveStudents', () => {
-    it('retorna lista mapeada de alunos ativos do Supabase', async () => {
-      vi.mocked(supabaseAdmin.from).mockReturnValueOnce({
-        select: vi.fn().mockReturnValue({
-          eq: vi.fn().mockResolvedValue({
-            data: [
-              { profiles: { email: 'aluno@exemplo.com', full_name: 'Aluno Teste' } },
-            ],
-            error: null,
-          }),
-        }),
-      } as never);
+    it('retorna lista de alunos ativos do Supabase', async () => {
+      mockOrdersQuery(['user-1']);
+      mockProfilesQuery([{ email: 'aluno@exemplo.com', full_name: 'Aluno Teste' }]);
 
       const students = await EmailService.getActiveStudents();
 
@@ -47,7 +58,7 @@ describe('EmailService', () => {
       expect(students[0].full_name).toBe('Aluno Teste');
     });
 
-    it('retorna array vazio quando data é null', async () => {
+    it('retorna array vazio quando não há pedidos aprovados', async () => {
       vi.mocked(supabaseAdmin.from).mockReturnValueOnce({
         select: vi.fn().mockReturnValue({
           eq: vi.fn().mockResolvedValue({ data: null, error: null }),
@@ -94,17 +105,11 @@ describe('EmailService', () => {
 
   describe('notifyNewLesson', () => {
     it('busca alunos ativos e envia email para cada um', async () => {
-      vi.mocked(supabaseAdmin.from).mockReturnValueOnce({
-        select: vi.fn().mockReturnValue({
-          eq: vi.fn().mockResolvedValue({
-            data: [
-              { profiles: { email: 'aluno1@exemplo.com', full_name: 'Aluno 1' } },
-              { profiles: { email: 'aluno2@exemplo.com', full_name: 'Aluno 2' } },
-            ],
-            error: null,
-          }),
-        }),
-      } as never);
+      mockOrdersQuery(['user-1', 'user-2']);
+      mockProfilesQuery([
+        { email: 'aluno1@exemplo.com', full_name: 'Aluno 1' },
+        { email: 'aluno2@exemplo.com', full_name: 'Aluno 2' },
+      ]);
 
       vi.mocked(resend.emails.send)
         .mockResolvedValueOnce({ data: { id: 'msg-1' }, error: null })
