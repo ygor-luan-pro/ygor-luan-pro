@@ -30,6 +30,6 @@ describe('welcomeTemplate', () => {
 
   it('subject contém emojis ou caracteres especiais', () => {
     const { subject } = welcomeTemplate({ name: 'Test', loginUrl: 'https://example.com' });
-    expect(subject.length).toBeGreaterThan(0);
+    expect(subject).toContain('🎉');
   });
 });

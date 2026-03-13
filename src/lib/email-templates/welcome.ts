@@ -1,11 +1,8 @@
+import type { EmailTemplate } from './types';
+
 interface WelcomeData {
   name: string | null;
   loginUrl: string;
-}
-
-interface EmailTemplate {
-  subject: string;
-  html: string;
 }
 
 export function welcomeTemplate(data: WelcomeData): EmailTemplate {

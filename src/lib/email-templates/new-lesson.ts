@@ -1,12 +1,9 @@
+import type { EmailTemplate } from './types';
+
 interface NewLessonData {
   lessonTitle: string;
   moduleName: string;
   lessonUrl: string;
-}
-
-interface EmailTemplate {
-  subject: string;
-  html: string;
 }
 
 export function newLessonTemplate(data: NewLessonData): EmailTemplate {

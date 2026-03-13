@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { mentorshipReminderTemplate } from '../../../../src/lib/email-templates/mentorship-reminder';
 
 describe('mentorshipReminderTemplate', () => {
-  const testDate = new Date('2026-03-14T15:30:00');
+  const testDate = new Date('2026-03-14T15:30:00-03:00');
   const testUrl = 'https://meeting.example.com/room123';
 
   it('retorna subject não vazio', () => {

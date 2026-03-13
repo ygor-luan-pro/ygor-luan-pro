@@ -1,11 +1,8 @@
+import type { EmailTemplate } from './types';
+
 interface CertificateData {
   studentName: string | null;
   certificateUrl: string;
-}
-
-interface EmailTemplate {
-  subject: string;
-  html: string;
 }
 
 export function certificateAvailableTemplate(data: CertificateData): EmailTemplate {

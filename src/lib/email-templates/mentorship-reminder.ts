@@ -1,12 +1,9 @@
+import type { EmailTemplate } from './types';
+
 interface MentorshipReminderData {
   studentName: string | null;
   scheduledAt: Date;
   meetingUrl: string;
-}
-
-interface EmailTemplate {
-  subject: string;
-  html: string;
 }
 
 function formatDatePtBR(date: Date): string {
