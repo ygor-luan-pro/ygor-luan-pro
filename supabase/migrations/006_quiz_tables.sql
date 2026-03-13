@@ -1,5 +1,5 @@
 CREATE TABLE public.quiz_questions (
-  id                   UUID        PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id                   UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
   module_number        INTEGER     NOT NULL,
   question             TEXT        NOT NULL,
   options              JSONB       NOT NULL,
@@ -9,7 +9,7 @@ CREATE TABLE public.quiz_questions (
 );
 
 CREATE TABLE public.quiz_attempts (
-  id             UUID        PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id             UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id        UUID        NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
   module_number  INTEGER     NOT NULL,
   score          INTEGER     NOT NULL,
