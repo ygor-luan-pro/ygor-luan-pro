@@ -2,7 +2,7 @@ import type { APIRoute } from 'astro';
 import { createHmac } from 'crypto';
 import { payment as mpPayment } from '../../../lib/mercadopago';
 import { supabaseAdmin } from '../../../lib/supabase';
-import { resend, FROM_EMAIL } from '../../../lib/resend';
+import { EmailService } from '../../../services/email.service';
 import type { MercadoPagoPaymentNotification } from '../../../types/mercadopago.types';
 
 function verifyMpSignature(headers: Headers, paymentId: string, secret: string): boolean {
@@ -117,60 +117,7 @@ export const POST: APIRoute = async ({ request }) => {
 
   const recoveryLink = linkData.properties.action_link;
 
-  try {
-    await resend.emails.send({
-      from: FROM_EMAIL,
-      to: email,
-      subject: 'Seu acesso ao Ygor Luan Pro está pronto! ✂️',
-      html: `<!DOCTYPE html>
-<html lang="pt-BR">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
-<body style="margin:0;padding:0;background:#0a0a0a;font-family:'Helvetica Neue',Arial,sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0a0a0a;padding:40px 20px;">
-    <tr><td align="center">
-      <table width="600" cellpadding="0" cellspacing="0" style="background:#111;border-radius:12px;overflow:hidden;border:1px solid #222;">
-        <tr>
-          <td style="background:linear-gradient(135deg,#b87333,#8b5e3c);padding:40px 48px;text-align:center;">
-            <p style="margin:0 0 8px;color:#fff8f0;font-size:13px;letter-spacing:3px;text-transform:uppercase;opacity:.8;">Ygor Luan Pro</p>
-            <h1 style="margin:0;color:#fff;font-size:28px;font-weight:700;line-height:1.2;">Acesso liberado.<br>Bem-vindo à mentoria.</h1>
-          </td>
-        </tr>
-        <tr>
-          <td style="padding:40px 48px;">
-            <p style="margin:0 0 24px;color:#ccc;font-size:16px;line-height:1.6;">
-              Seu pagamento foi confirmado. A partir de agora você tem acesso completo às aulas gravadas e ao agendamento da sessão 1:1.
-            </p>
-            <p style="margin:0 0 32px;color:#ccc;font-size:16px;line-height:1.6;">
-              Clique no botão abaixo para definir sua senha e acessar a plataforma. O link expira em 24 horas.
-            </p>
-            <table width="100%" cellpadding="0" cellspacing="0">
-              <tr>
-                <td align="center">
-                  <a href="${recoveryLink}" style="display:inline-block;background:linear-gradient(135deg,#b87333,#8b5e3c);color:#fff;text-decoration:none;font-size:16px;font-weight:600;padding:16px 40px;border-radius:8px;letter-spacing:.5px;">
-                    Definir sua senha →
-                  </a>
-                </td>
-              </tr>
-            </table>
-            <p style="margin:32px 0 0;color:#666;font-size:13px;text-align:center;line-height:1.6;">
-              Dúvidas? Responda este e-mail.
-            </p>
-          </td>
-        </tr>
-        <tr>
-          <td style="padding:24px 48px;border-top:1px solid #1e1e1e;text-align:center;">
-            <p style="margin:0;color:#444;font-size:12px;">© 2025 Ygor Luan Pro · Todos os direitos reservados</p>
-          </td>
-        </tr>
-      </table>
-    </td></tr>
-  </table>
-</body>
-</html>`,
-    });
-  } catch (err) {
-    console.error('Webhook: falha ao enviar email de boas-vindas', err);
-  }
+  await EmailService.sendWelcome(email, paymentData.payer?.first_name ?? null, recoveryLink);
 
   return new Response('OK', { status: 200 });
 };

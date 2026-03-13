@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { LessonsService } from '../../../../services/lessons.service';
+import { EmailService } from '../../../../services/email.service';
 import type { Lesson } from '../../../../types';
 
 export const PUT: APIRoute = async ({ params, request, locals }) => {
@@ -24,6 +25,10 @@ export const PUT: APIRoute = async ({ params, request, locals }) => {
   ) as Partial<Omit<Lesson, 'id' | 'created_at' | 'updated_at'>>;
 
   const lesson = await LessonsService.update(id, body);
+
+  if (raw.is_published === true) {
+    void EmailService.notifyNewLesson(lesson);
+  }
 
   return new Response(JSON.stringify(lesson), {
     status: 200,
