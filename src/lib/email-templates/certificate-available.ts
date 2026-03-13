@@ -1,0 +1,206 @@
+interface CertificateData {
+  studentName: string | null;
+  certificateUrl: string;
+}
+
+interface EmailTemplate {
+  subject: string;
+  html: string;
+}
+
+export function certificateAvailableTemplate(data: CertificateData): EmailTemplate {
+  const displayName = data.studentName || 'Aluno';
+
+  const html = `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+          body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #0a0a0a;
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+          }
+          .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #0a0a0a;
+            padding: 40px 20px;
+          }
+          .header {
+            text-align: center;
+            margin-bottom: 40px;
+          }
+          .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: #c9a96e;
+            margin-bottom: 20px;
+          }
+          .celebration {
+            font-size: 48px;
+            margin-bottom: 15px;
+          }
+          .title {
+            font-size: 32px;
+            font-weight: bold;
+            color: #ffffff;
+            margin: 0 0 10px 0;
+          }
+          .subtitle {
+            font-size: 16px;
+            color: #c9a96e;
+            margin: 0;
+          }
+          .content {
+            background-color: #1a1a1a;
+            border-left: 4px solid #c9a96e;
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+          }
+          .greeting {
+            font-size: 18px;
+            color: #ffffff;
+            margin-bottom: 20px;
+            line-height: 1.6;
+          }
+          .achievement-box {
+            background-color: #0a0a0a;
+            border: 2px solid #c9a96e;
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            margin: 30px 0;
+          }
+          .achievement-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+          }
+          .achievement-text {
+            font-size: 16px;
+            color: #c9a96e;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+          }
+          .achievement-name {
+            font-size: 20px;
+            color: #ffffff;
+            font-weight: bold;
+            margin-bottom: 15px;
+          }
+          .message {
+            color: #cccccc;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+          }
+          .cta-button {
+            display: inline-block;
+            background-color: #c9a96e;
+            color: #0a0a0a;
+            padding: 14px 32px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 16px;
+            margin: 20px 0;
+            text-align: center;
+            width: 100%;
+            box-sizing: border-box;
+          }
+          .cta-button:hover {
+            background-color: #b8956f;
+          }
+          .details {
+            background-color: #0a0a0a;
+            padding: 20px;
+            border-radius: 6px;
+            margin: 20px 0;
+            font-size: 13px;
+            color: #999999;
+            line-height: 1.6;
+          }
+          .footer {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid #333333;
+            color: #888888;
+            font-size: 12px;
+          }
+          .footer a {
+            color: #c9a96e;
+            text-decoration: none;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <div class="logo">Ygor Luan Pro</div>
+            <div class="celebration">🎓</div>
+            <h1 class="title">Parabéns!</h1>
+            <p class="subtitle">Seu certificado está pronto</p>
+          </div>
+
+          <div class="content">
+            <p class="greeting">
+              Olá <strong>${displayName}</strong>,
+            </p>
+
+            <p class="greeting">
+              Que incrível! Você completou todo o curso de Ygor Luan Pro e conquistou sua certificação de barbeiro profissional. 🏆
+            </p>
+
+            <div class="achievement-box">
+              <div class="achievement-icon">🎖️</div>
+              <div class="achievement-text">Certificado de Conclusão</div>
+              <div class="achievement-name">Barbeiro Profissional - Ygor Luan Pro</div>
+              <p style="color: #cccccc; margin: 0;">Você domina técnicas avançadas de barbeiraria</p>
+            </div>
+
+            <p class="message">
+              Seu certificado digital está pronto para ser acessado, baixado e compartilhado. Use-o para comprovar suas competências no mercado de trabalho.
+            </p>
+
+            <a href="${data.certificateUrl}" class="cta-button">Visualizar certificado →</a>
+
+            <div class="details">
+              <strong>O que fazer agora?</strong>
+              <ul style="margin: 10px 0; padding-left: 20px;">
+                <li>Baixe seu certificado em alta resolução</li>
+                <li>Compartilhe nas suas redes sociais</li>
+                <li>Adicione ao seu portfólio profissional</li>
+              </ul>
+            </div>
+
+            <p style="color: #999999; font-size: 13px; margin-top: 20px;">
+              Se o botão acima não funcionar, copie e cole este link no seu navegador:
+              <br>
+              <code style="background-color: #0a0a0a; padding: 8px 12px; border-radius: 4px; display: inline-block; margin-top: 10px; word-break: break-all;">${data.certificateUrl}</code>
+            </p>
+          </div>
+
+          <div class="footer">
+            <p>© 2026 Ygor Luan Pro. Todos os direitos reservados.</p>
+            <p>
+              <a href="https://ygorluanpro.com.br/privacidade">Política de Privacidade</a> |
+              <a href="https://ygorluanpro.com.br/termos">Termos de Serviço</a>
+            </p>
+          </div>
+        </div>
+      </body>
+    </html>
+  `.trim();
+
+  return {
+    subject: 'Seu certificado está disponível!',
+    html
+  };
+}
