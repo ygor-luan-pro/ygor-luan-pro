@@ -26,4 +26,9 @@ test.describe('Landing Page', () => {
     await page.locator('#faq').scrollIntoViewIfNeeded();
     await expect(page.locator('#faq')).toBeVisible();
   });
+
+  test('seção brand showcase exibe os três mockups', async ({ page }) => {
+    const imgs = page.locator('img[alt="Cartão de visita Ygor Luan Academy"], img[alt="Papelaria Ygor Luan Academy"], img[alt="Sacola Ygor Luan Academy"]');
+    await expect(imgs).toHaveCount(3);
+  });
 });
