@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { useState } from 'react';
 import type { Lesson } from '../types';
 import { slugify } from '../lib/utils';
 
@@ -25,7 +25,7 @@ export default function AdminLessonForm({ mode, lesson }: AdminLessonFormProps) 
     if (mode === 'create') setSlug(slugify(value));
   };
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     setError(null);

@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { useState } from 'react';
 import type { QuizQuestionPublic, QuizAttemptResult } from '../types';
 
 interface QuizPlayerProps {
@@ -25,7 +25,7 @@ export default function QuizPlayer({ moduleNumber, questions, initialBestAttempt
     setSelected((prev) => { const next = [...prev]; next[qIdx] = oIdx; return next; });
   };
 
-  const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     if (!allAnswered) return;
     setLoading(true);

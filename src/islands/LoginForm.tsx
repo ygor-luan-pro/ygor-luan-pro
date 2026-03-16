@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { useState } from 'react';
 
 export default function LoginForm() {
   const [email, setEmail] = useState('');
@@ -8,7 +8,7 @@ export default function LoginForm() {
   const [resetSent, setResetSent] = useState(false);
   const [mode, setMode] = useState<'login' | 'reset'>('login');
 
-  const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
+  const handleLogin = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
@@ -33,7 +33,7 @@ export default function LoginForm() {
     }
   };
 
-  const handleReset = async (e: FormEvent<HTMLFormElement>) => {
+  const handleReset = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     setError(null);

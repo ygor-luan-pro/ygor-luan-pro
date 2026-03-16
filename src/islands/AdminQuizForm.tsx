@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { useState } from 'react';
 import type { QuizQuestion } from '../types';
 
 interface AdminQuizFormProps {
@@ -24,7 +24,7 @@ export default function AdminQuizForm({ moduleNumber, question, mode }: AdminQui
     setOptions((prev) => { const next = [...prev] as [string, string, string, string]; next[index] = value; return next; });
   };
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true); setError(null); setSuccess(false);
     const endpoint = mode === 'create' ? '/api/admin/quiz' : `/api/admin/quiz/${question?.id}`;

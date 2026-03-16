@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { useState } from 'react';
 import type { Material } from '../types';
 
 interface Props {
@@ -23,7 +23,7 @@ export default function AdminMaterialsManager({ lessonId, initialMaterials }: Pr
     marginBottom: '0.375rem',
   };
 
-  const handleAdd = async (e: FormEvent<HTMLFormElement>) => {
+  const handleAdd = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
