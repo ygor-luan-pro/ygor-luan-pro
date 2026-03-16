@@ -14,6 +14,11 @@ export const onRequest = defineMiddleware(async (
   { url, request, cookies, locals, redirect },
   next,
 ) => {
+  const { pathname } = url;
+  const isProtected = PROTECTED_PREFIXES.some((p) => pathname.startsWith(p));
+
+  if (!isProtected) return next();
+
   const supabase = createServerClient<Database>(
     import.meta.env.PUBLIC_SUPABASE_URL,
     import.meta.env.PUBLIC_SUPABASE_ANON_KEY,
@@ -22,17 +27,16 @@ export const onRequest = defineMiddleware(async (
         getAll: () => parseCookieHeader(request.headers.get('Cookie') ?? ''),
         setAll: (cookiesToSet: { name: string; value: string; options: CookieOptions }[]) => {
           for (const { name, value, options } of cookiesToSet) {
-            cookies.set(name, value, options);
+            try {
+              cookies.set(name, value, options);
+            } catch {
+              // _emitInitialSession fires via setTimeout after response is sent; ignore
+            }
           }
         },
       },
     },
   );
-
-  const { pathname } = url;
-  const isProtected = PROTECTED_PREFIXES.some((p) => pathname.startsWith(p));
-
-  if (!isProtected) return next();
 
   const { data: { user } } = await supabase.auth.getUser();
   locals.user = user;
