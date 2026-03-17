@@ -19,9 +19,11 @@ pnpm-debug.log*
 .env.production
 .env.local
 
-# claude / mcp
+# claude / mcp / opencode
 .claude/
 .mcp.json
+.opencode.json
+opencode.json
 
 # test artifacts
 playwright-report/
