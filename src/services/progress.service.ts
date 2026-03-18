@@ -28,12 +28,15 @@ export class ProgressService {
   }
 
   static async markComplete(userId: string, lessonId: string): Promise<void> {
-    const { error } = await supabaseAdmin.from('user_progress').upsert({
-      user_id: userId,
-      lesson_id: lessonId,
-      completed: true,
-      completed_at: new Date().toISOString(),
-    });
+    const { error } = await supabaseAdmin.from('user_progress').upsert(
+      {
+        user_id: userId,
+        lesson_id: lessonId,
+        completed: true,
+        completed_at: new Date().toISOString(),
+      },
+      { onConflict: 'user_id,lesson_id' },
+    );
 
     if (error) throw new Error(error.message);
   }
@@ -43,11 +46,14 @@ export class ProgressService {
     lessonId: string,
     watchTime: number,
   ): Promise<void> {
-    const { error } = await supabaseAdmin.from('user_progress').upsert({
-      user_id: userId,
-      lesson_id: lessonId,
-      watch_time: watchTime,
-    });
+    const { error } = await supabaseAdmin.from('user_progress').upsert(
+      {
+        user_id: userId,
+        lesson_id: lessonId,
+        watch_time: watchTime,
+      },
+      { onConflict: 'user_id,lesson_id' },
+    );
 
     if (error) throw new Error(error.message);
   }

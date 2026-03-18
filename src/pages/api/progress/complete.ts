@@ -27,7 +27,15 @@ export const POST: APIRoute = async ({ request, locals }) => {
     });
   }
 
-  await ProgressService.markComplete(locals.user.id, lessonId);
+  try {
+    await ProgressService.markComplete(locals.user.id, lessonId);
+  } catch (err) {
+    console.error('progress/complete:', err);
+    return new Response(JSON.stringify({ error: 'Erro ao marcar aula como concluída' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
 
   try {
     const stats = await ProgressService.getStudentStats(locals.user.id);

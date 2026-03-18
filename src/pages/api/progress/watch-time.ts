@@ -28,7 +28,15 @@ export const POST: APIRoute = async ({ request, locals }) => {
     });
   }
 
-  await ProgressService.updateWatchTime(locals.user.id, lessonId, watchTime);
+  try {
+    await ProgressService.updateWatchTime(locals.user.id, lessonId, watchTime);
+  } catch (err) {
+    console.error('progress/watch-time:', err);
+    return new Response(JSON.stringify({ error: 'Erro ao salvar progresso' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
 
   return new Response(JSON.stringify({ ok: true }), {
     status: 200,

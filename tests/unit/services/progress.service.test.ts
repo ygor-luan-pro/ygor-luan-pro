@@ -124,13 +124,17 @@ describe('ProgressService', () => {
   });
 
   describe('markComplete', () => {
-    it('chama upsert corretamente e resolve sem erro', async () => {
+    it('chama upsert com onConflict correto e resolve sem erro', async () => {
+      const upsertMock = vi.fn().mockResolvedValue({ data: null, error: null });
       vi.mocked(supabaseAdmin.from).mockReturnValueOnce({
-        upsert: vi.fn().mockResolvedValue({ data: null, error: null }),
+        upsert: upsertMock,
       } as never);
 
       await expect(ProgressService.markComplete('user-1', 'lesson-1')).resolves.toBeUndefined();
-      expect(supabaseAdmin.from).toHaveBeenCalledWith('user_progress');
+      expect(upsertMock).toHaveBeenCalledWith(
+        expect.objectContaining({ user_id: 'user-1', lesson_id: 'lesson-1', completed: true }),
+        { onConflict: 'user_id,lesson_id' },
+      );
     });
 
     it('lança erro quando upsert falha', async () => {
@@ -152,6 +156,7 @@ describe('ProgressService', () => {
       await expect(ProgressService.updateWatchTime('user-1', 'lesson-1', 180)).resolves.toBeUndefined();
       expect(upsertMock).toHaveBeenCalledWith(
         expect.objectContaining({ watch_time: 180, user_id: 'user-1', lesson_id: 'lesson-1' }),
+        { onConflict: 'user_id,lesson_id' },
       );
     });
 
