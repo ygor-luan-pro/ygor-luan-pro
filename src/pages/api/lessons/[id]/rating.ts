@@ -17,12 +17,20 @@ export const GET: APIRoute = async ({ params, locals }) => {
   }
 
   const lessonId = params.id!;
-  const rating = await RatingsService.getUserLessonRating(locals.user.id, lessonId);
 
-  return new Response(JSON.stringify({ rating }), {
-    status: 200,
-    headers: { 'Content-Type': 'application/json' },
-  });
+  try {
+    const rating = await RatingsService.getUserLessonRating(locals.user.id, lessonId);
+    return new Response(JSON.stringify({ rating }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  } catch (err) {
+    console.error('rating GET:', err);
+    return new Response(JSON.stringify({ error: 'Erro ao buscar avaliação' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
 };
 
 export const POST: APIRoute = async ({ params, request, locals }) => {
@@ -53,10 +61,17 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
 
   const comment = typeof body.comment === 'string' ? body.comment.trim() || undefined : undefined;
 
-  const rating = await RatingsService.upsertRating(locals.user.id, lessonId, ratingValue, comment);
-
-  return new Response(JSON.stringify({ rating }), {
-    status: 200,
-    headers: { 'Content-Type': 'application/json' },
-  });
+  try {
+    const rating = await RatingsService.upsertRating(locals.user.id, lessonId, ratingValue, comment);
+    return new Response(JSON.stringify({ rating }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  } catch (err) {
+    console.error('rating POST:', err);
+    return new Response(JSON.stringify({ error: 'Erro ao salvar avaliação' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
 };

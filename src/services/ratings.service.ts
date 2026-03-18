@@ -1,4 +1,4 @@
-import { supabase, supabaseAdmin } from '../lib/supabase';
+import { supabaseAdmin } from '../lib/supabase';
 import type { LessonRating } from '../types';
 
 type RatingWithJoins = LessonRating & {
@@ -11,7 +11,7 @@ export class RatingsService {
     userId: string,
     lessonId: string
   ): Promise<LessonRating | null> {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('lesson_ratings')
       .select('*')
       .eq('user_id', userId)
@@ -28,7 +28,7 @@ export class RatingsService {
     rating: number,
     comment?: string
   ): Promise<LessonRating> {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('lesson_ratings')
       .upsert(
         {
