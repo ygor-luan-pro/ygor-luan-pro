@@ -37,6 +37,7 @@ export default function VideoPlayer({
         body: JSON.stringify({ lessonId }),
       });
       if (!res.ok) throw new Error('Falha ao marcar aula como concluída');
+      window.dispatchEvent(new CustomEvent('lesson-completed', { detail: { lessonId } }));
     } catch {
       completedRef.current = false;
       setCompleted(false);

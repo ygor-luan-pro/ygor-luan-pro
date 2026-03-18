@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { LessonRating } from '../types';
 
 interface LessonRatingProps {
@@ -10,7 +10,18 @@ interface LessonRatingProps {
 type Status = 'idle' | 'saving' | 'saved' | 'error';
 
 export default function LessonRating({ lessonId, isCompleted, initialRating }: LessonRatingProps) {
+  const [completed, setCompleted] = useState(isCompleted);
   const [selectedRating, setSelectedRating] = useState<number>(initialRating?.rating ?? 0);
+
+  useEffect(() => {
+    const handler = (e: Event) => {
+      if ((e as CustomEvent<{ lessonId: string }>).detail.lessonId === lessonId) {
+        setCompleted(true);
+      }
+    };
+    window.addEventListener('lesson-completed', handler);
+    return () => window.removeEventListener('lesson-completed', handler);
+  }, [lessonId]);
   const [hovered, setHovered] = useState<number>(0);
   const [comment, setComment] = useState<string>(initialRating?.comment ?? '');
   const [status, setStatus] = useState<Status>('idle');
@@ -49,13 +60,13 @@ export default function LessonRating({ lessonId, isCompleted, initialRating }: L
         Avalie esta aula
       </h3>
 
-      {!isCompleted && (
+      {!completed && (
         <p style={{ fontSize: '0.875rem', color: 'var(--fade)' }}>
           Complete a aula para avaliar.
         </p>
       )}
 
-      {isCompleted && (
+      {completed && (
         <form onSubmit={handleSubmit}>
           <div
             style={{ display: 'flex', gap: '0.25rem', marginBottom: '1rem' }}
