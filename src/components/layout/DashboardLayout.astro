@@ -48,8 +48,30 @@ const mobileNavItems: MobileNavItem[] = [
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <style>
+      @media (max-width: 767px) {
+        .mobile-main { padding-top: calc(52px + 1.5rem) !important; }
+      }
+    </style>
   </head>
   <body>
+    <header class="md:hidden fixed top-0 inset-x-0 flex items-center justify-between px-4" style="height:52px; background-color:var(--mahogany); border-bottom:1px solid var(--blade); z-index:40;">
+      <a href="/" class="flex items-center gap-2">
+        <img src="/images/symbol-box-laranja.png" alt="" style="height:28px; width:auto;" />
+        <span style="color:var(--copper); font-weight:700; font-size:0.85rem; line-height:1.1;">Ygor Luan<br/>Academy</span>
+      </a>
+      <button
+        id="mobile-menu-btn"
+        aria-label="Abrir menu"
+        aria-expanded="false"
+        style="background:none; border:none; cursor:pointer; color:var(--fade); padding:0.5rem;"
+      >
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M3 5H17M3 10H17M3 15H17" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </header>
+
     <aside class="hidden md:flex flex-col fixed inset-y-0 left-0 w-64" style="background-color: var(--espresso); border-right: 1px solid var(--blade); z-index: 40;">
       <div class="px-6 py-6" style="border-bottom: 1px solid var(--ink);">
         <a href="/" class="flex items-center gap-2">
@@ -107,7 +129,7 @@ const mobileNavItems: MobileNavItem[] = [
       </div>
     </aside>
 
-    <main class="md:ml-64 pb-20 md:pb-0 min-h-screen p-6 md:p-10" style="background-color: var(--espresso);">
+    <main class="md:ml-64 pb-20 md:pb-0 min-h-screen p-6 md:p-10 mobile-main" style="background-color: var(--espresso);">
       <slot />
     </main>
 
@@ -144,18 +166,6 @@ const mobileNavItems: MobileNavItem[] = [
           </a>
         );
       })}
-      <button
-        id="mobile-menu-btn"
-        class="flex-1 flex flex-col items-center gap-1 py-3 font-sans text-xs"
-        style="color: var(--fade); background: none; border: none; cursor: pointer;"
-        aria-label="Abrir menu"
-        aria-expanded="false"
-      >
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M2 4H14M2 8H14M2 12H14" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
-        </svg>
-        Menu
-      </button>
     </nav>
 
     <div id="mobile-overlay" class="md:hidden" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:45;"></div>
@@ -163,7 +173,7 @@ const mobileNavItems: MobileNavItem[] = [
     <div
       id="mobile-drawer"
       class="md:hidden"
-      style="position:fixed; bottom:57px; left:0; right:0; max-height:80vh; overflow-y:auto; background-color:var(--espresso); border-top:1px solid var(--blade); z-index:50; transform:translateY(100%); transition:transform 0.25s ease;"
+      style="display:none; position:fixed; top:52px; left:0; right:0; max-height:calc(100vh - 52px - 57px); overflow-y:auto; background-color:var(--espresso); border-bottom:1px solid var(--blade); z-index:50;"
     >
       <div style="display:flex; align-items:center; justify-content:space-between; padding:1rem 1.25rem 0.75rem; border-bottom:1px solid var(--ink);">
         <span class="font-sans text-xs tracking-[0.15em] uppercase" style="color:var(--fade);">Navegação</span>
@@ -232,19 +242,19 @@ const mobileNavItems: MobileNavItem[] = [
       const overlay = document.getElementById('mobile-overlay');
 
       function openDrawer() {
-        drawer!.style.transform = 'translateY(0)';
+        drawer!.style.display = 'block';
         overlay!.style.display = 'block';
         btn!.setAttribute('aria-expanded', 'true');
       }
 
       function closeDrawer() {
-        drawer!.style.transform = 'translateY(100%)';
+        drawer!.style.display = 'none';
         overlay!.style.display = 'none';
         btn!.setAttribute('aria-expanded', 'false');
       }
 
       btn?.addEventListener('click', () => {
-        drawer!.style.transform === 'translateY(0)' ? closeDrawer() : openDrawer();
+        drawer!.style.display === 'block' ? closeDrawer() : openDrawer();
       });
       closeBtn?.addEventListener('click', closeDrawer);
       overlay?.addEventListener('click', closeDrawer);
