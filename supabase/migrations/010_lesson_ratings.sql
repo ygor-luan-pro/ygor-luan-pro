@@ -1,5 +1,5 @@
 CREATE TABLE lesson_ratings (
-  id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id         UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
   lesson_id       UUID NOT NULL REFERENCES lessons(id) ON DELETE CASCADE,
   rating          INTEGER NOT NULL CHECK (rating BETWEEN 1 AND 5),
@@ -11,7 +11,7 @@ CREATE TABLE lesson_ratings (
 
 CREATE TRIGGER update_lesson_ratings_updated_at
   BEFORE UPDATE ON lesson_ratings
-  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
 ALTER TABLE lesson_ratings ENABLE ROW LEVEL SECURITY;
 
@@ -22,4 +22,4 @@ CREATE POLICY "Users can manage own ratings"
 
 CREATE POLICY "Admin can view all ratings"
   ON lesson_ratings FOR SELECT
-  USING (is_admin(auth.uid()));
+  USING (is_admin());
