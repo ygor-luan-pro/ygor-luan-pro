@@ -6,6 +6,13 @@ vi.mock('../../../src/services/progress.service', () => ({
   ProgressService: {
     updateWatchTime: vi.fn().mockResolvedValue(undefined),
     markComplete: vi.fn().mockResolvedValue(undefined),
+    getLessonProgress: vi.fn().mockResolvedValue(null),
+  },
+}));
+
+vi.mock('../../../src/services/certificate.service', () => ({
+  CertificateService: {
+    isEligible: vi.fn().mockResolvedValue(false),
   },
 }));
 

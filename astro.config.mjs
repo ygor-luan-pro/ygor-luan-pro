@@ -7,14 +7,17 @@ import sitemap from '@astrojs/sitemap';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://ygorluanpro.com.br',
+  site: 'https://ygorluanacademy.com.br',
   output: 'server',
   adapter: vercel(),
   integrations: [
     react(),
     tailwind({ applyBaseStyles: false }),
     sitemap({
-      filter: (page) => !page.includes('/dashboard') && !page.includes('/admin'),
+      filter: (page) =>
+        !page.includes('/dashboard') &&
+        !page.includes('/admin') &&
+        !page.includes('/redefinir-senha'),
     }),
   ],
 });

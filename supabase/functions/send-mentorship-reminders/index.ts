@@ -4,7 +4,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SUPABASE_SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')!;
-const FROM_EMAIL = Deno.env.get('RESEND_FROM_EMAIL') ?? 'noreply@ygorluanpro.com.br';
+const FROM_EMAIL = Deno.env.get('RESEND_FROM_EMAIL') ?? 'noreply@ygorluanacademy.com.br';
 
 interface SessionRow {
   id: string;
@@ -87,8 +87,8 @@ function buildReminderHtml(displayName: string, formattedDate: string, formatted
       <div class="footer">
         <p>© 2026 Ygor Luan Academy. Todos os direitos reservados.</p>
         <p>
-          <a href="https://ygorluanpro.com.br/privacidade">Política de Privacidade</a> |
-          <a href="https://ygorluanpro.com.br/termos">Termos de Serviço</a>
+          <a href="https://ygorluanacademy.com.br/privacidade">Política de Privacidade</a> |
+          <a href="https://ygorluanacademy.com.br/termos">Termos de Serviço</a>
         </p>
       </div>
     </div>
@@ -164,7 +164,7 @@ serve(async () => {
         profile.email,
         profile.full_name,
         new Date(session.scheduled_at),
-        session.meeting_url ?? 'https://ygorluanpro.com.br/dashboard/mentoria',
+        session.meeting_url ?? 'https://ygorluanacademy.com.br/dashboard/mentoria',
       );
 
       const { error: updateError } = await supabase

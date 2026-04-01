@@ -1,6 +1,6 @@
 ---
 import DashboardLayout from '../../components/layout/DashboardLayout.astro';
-import { LessonsService } from '../../services/lessons.service';
+import { CertificateService } from '../../services/certificate.service';
 import { ProgressService } from '../../services/progress.service';
 import { AuthService } from '../../services/auth.service';
 import { formatDate } from '../../lib/utils';
@@ -9,40 +9,31 @@ const { user, hasAccess } = Astro.locals;
 
 if (!hasAccess) return Astro.redirect('/sem-acesso');
 
-let lessons: Awaited<ReturnType<typeof LessonsService.getAll>> = [];
-let progressList: Awaited<ReturnType<typeof ProgressService.getUserProgress>> = [];
+let isComplete = false;
+let completionDate: string | null = null;
 let profile: Awaited<ReturnType<typeof AuthService.getProfile>> = null;
+let percentComplete = 0;
 let loadError = false;
 
 try {
-  [lessons, progressList, profile] = await Promise.all([
-    LessonsService.getAll(),
-    ProgressService.getUserProgress(user!.id),
+  const [eligible, date, prof, stats] = await Promise.all([
+    CertificateService.isEligible(user!.id),
+    CertificateService.getCompletionDate(user!.id),
     AuthService.getProfile(user!.id),
+    ProgressService.getStudentStats(user!.id),
   ]);
+  isComplete = eligible;
+  completionDate = date;
+  profile = prof;
+  percentComplete =
+    stats.total_lessons > 0
+      ? Math.round((Number(stats.completed_count) / Number(stats.total_lessons)) * 100)
+      : 0;
 } catch (err) {
   console.error('Certificado: erro ao carregar dados', err);
   loadError = true;
 }
 
-const publishedIds = new Set(lessons.map((l) => l.id));
-const completedIds = new Set(
-  progressList.filter((p) => p.completed && publishedIds.has(p.lesson_id)).map((p) => p.lesson_id)
-);
-const isComplete = lessons.length > 0 && lessons.every((l) => completedIds.has(l.id));
-
-const completionDate = isComplete
-  ? progressList
-      .filter((p) => p.completed && p.completed_at !== null)
-      .reduce<string | null>(
-        (latest, p) => (!latest || p.completed_at! > latest ? p.completed_at : latest),
-        null,
-      )
-  : null;
-
-const completedCount = completedIds.size;
-const totalLessons = lessons.length;
-const percentComplete = totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
 const studentName = profile?.full_name ?? user!.email?.split('@')[0] ?? 'Aluno';
 ---
 
@@ -75,8 +66,7 @@ const studentName = profile?.full_name ?? user!.email?.split('@')[0] ?? 'Aluno';
     <div class="card" style="border-color: var(--blade);">
       <p class="section-eyebrow mb-3">Ainda não disponível</p>
       <p class="font-sans text-sm mb-6" style="color: var(--fade);">
-        Conclua todas as aulas para liberar seu certificado.
-        Você completou {completedCount} de {totalLessons} aulas ({percentComplete}%).
+        Conclua todas as aulas para liberar seu certificado ({percentComplete}% concluído).
       </p>
       <div class="h-px mb-6" style="background-color: var(--tobacco);">
         <div class="h-full" style={`width: ${percentComplete}%; background-color: var(--copper);`} />

@@ -57,7 +57,7 @@ describe('AuthService (integration mock)', () => {
 
       expect(supabase.auth.resetPasswordForEmail).toHaveBeenCalledWith(
         'aluno@test.com',
-        expect.objectContaining({ redirectTo: expect.stringContaining('/login') }),
+        expect.objectContaining({ redirectTo: expect.stringContaining('/redefinir-senha') }),
       );
     });
 

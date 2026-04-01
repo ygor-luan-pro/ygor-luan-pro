@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 vi.mock('../../../src/lib/resend', () => ({
   resend: { emails: { send: vi.fn() } },
-  FROM_EMAIL: 'noreply@ygorluanpro.com.br',
+  FROM_EMAIL: 'noreply@ygorluanacademy.com.br',
 }));
 
 import { EmailService } from '../../../src/services/email.service';
@@ -85,7 +85,7 @@ describe('EmailService', () => {
     it('chama resend.emails.send com subject e to corretos', async () => {
       vi.mocked(resend.emails.send).mockResolvedValueOnce({ data: { id: 'msg-1' }, error: null });
 
-      await EmailService.sendWelcome('aluno@exemplo.com', 'Aluno Teste', 'https://ygorluanpro.com.br/login');
+      await EmailService.sendWelcome('aluno@exemplo.com', 'Aluno Teste', 'https://ygorluanacademy.com.br/login');
 
       expect(resend.emails.send).toHaveBeenCalledOnce();
       const callArg = vi.mocked(resend.emails.send).mock.calls[0][0];
@@ -98,7 +98,7 @@ describe('EmailService', () => {
       vi.mocked(resend.emails.send).mockRejectedValueOnce(new Error('Resend down'));
 
       await expect(
-        EmailService.sendWelcome('aluno@exemplo.com', null, 'https://ygorluanpro.com.br/login'),
+        EmailService.sendWelcome('aluno@exemplo.com', null, 'https://ygorluanacademy.com.br/login'),
       ).resolves.toBeUndefined();
     });
   });

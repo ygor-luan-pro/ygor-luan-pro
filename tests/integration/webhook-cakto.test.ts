@@ -134,7 +134,7 @@ describe('POST /api/webhook/cakto', () => {
 
       await POST(makeCtx(makePayload()));
 
-      const ordersFromIndex = vi.mocked(supabaseAdmin.from).mock.calls.findIndex(
+      const ordersFromIndex = vi.mocked(supabaseAdmin.from).mock.calls.findLastIndex(
         ([table]) => table === 'orders',
       );
       expect(ordersFromIndex).toBeGreaterThanOrEqual(0);

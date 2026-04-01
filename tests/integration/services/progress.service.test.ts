@@ -40,6 +40,7 @@ describe('ProgressService', () => {
 
       expect(upsertMock).toHaveBeenCalledWith(
         expect.objectContaining({ user_id: 'user-1', lesson_id: 'lesson-1', watch_time: 120 }),
+        expect.objectContaining({ onConflict: 'user_id,lesson_id' }),
       );
     });
 

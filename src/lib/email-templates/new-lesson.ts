@@ -154,8 +154,8 @@ export function newLessonTemplate(data: NewLessonData): EmailTemplate {
           <div class="footer">
             <p>© 2026 Ygor Luan Academy. Todos os direitos reservados.</p>
             <p>
-              <a href="https://ygorluanpro.com.br/privacidade">Política de Privacidade</a> |
-              <a href="https://ygorluanpro.com.br/termos">Termos de Serviço</a>
+              <a href="https://ygorluanacademy.com.br/privacidade">Política de Privacidade</a> |
+              <a href="https://ygorluanacademy.com.br/termos">Termos de Serviço</a>
             </p>
           </div>
         </div>

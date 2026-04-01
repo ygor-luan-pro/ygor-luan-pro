@@ -27,7 +27,7 @@ export class AuthService {
 
   static async resetPassword(email: string): Promise<void> {
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${import.meta.env.PUBLIC_SITE_URL}/login?reset=true`,
+      redirectTo: `${import.meta.env.PUBLIC_SITE_URL}/redefinir-senha`,
     });
 
     if (error) throw new Error(error.message);
