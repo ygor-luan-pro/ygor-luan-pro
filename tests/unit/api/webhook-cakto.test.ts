@@ -14,7 +14,7 @@ vi.mock('../../../src/lib/supabase', () => ({
 
 vi.mock('../../../src/lib/resend', () => ({
   resend: { emails: { send: vi.fn() } },
-  FROM_EMAIL: 'noreply@ygorluanpro.com.br',
+  FROM_EMAIL: 'noreply@ygorluanacademy.com.br',
 }));
 
 import { POST } from '../../../src/pages/api/webhook/cakto';

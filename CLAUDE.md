@@ -870,3 +870,10 @@ Projeto proprietário - Todos os direitos reservados © 2025 Ygor Luan Pro
 
 **Última atualização**: 02/03/2026
 **Versão do documento**: 1.0.0
+
+## Active Technologies
+- TypeScript 5 (strict mode) + Astro 5 (`.astro`) + Deno (supabase/functions/) + Astro 5, React 19, Supabase JS v2, Vitest 4, Resend (001-code-review)
+- N/A (processo de review, sem escrita em banco) (001-code-review)
+
+## Recent Changes
+- 001-code-review: Added TypeScript 5 (strict mode) + Astro 5 (`.astro`) + Deno (supabase/functions/) + Astro 5, React 19, Supabase JS v2, Vitest 4, Resend
