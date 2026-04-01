@@ -1,17 +1,12 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Fluxo de Checkout', () => {
-  test('exibe erro com e-mail inválido', async ({ page }) => {
+  test('exibe link de checkout no hero', async ({ page }) => {
     await page.goto('/');
 
-    const emailInput = page.locator('input[type="email"]').first();
-    await emailInput.fill('nao-e-email');
-    await emailInput.press('Enter');
-
-    const validationMessage = await emailInput.evaluate(
-      (el: HTMLInputElement) => el.validationMessage,
-    );
-    expect(validationMessage).not.toBe('');
+    const ctaLink = page.locator('a.btn-primary').first();
+    await expect(ctaLink).toBeVisible();
+    await expect(ctaLink).toHaveText(/Quero começar/);
   });
 
   test('página de obrigado exibe conteúdo de sucesso', async ({ page }) => {

@@ -14,8 +14,8 @@ test.describe('Landing Page', () => {
     await expect(page.locator('#beneficios')).toBeVisible();
   });
 
-  test('exibe campo de e-mail no hero', async ({ page }) => {
-    await expect(page.locator('input[type="email"]').first()).toBeVisible();
+  test('exibe botão de checkout no hero', async ({ page }) => {
+    await expect(page.locator('a.btn-primary, button.btn-primary').first()).toBeVisible();
   });
 
   test('exibe link para login', async ({ page }) => {
