@@ -1,0 +1,63 @@
+---
+import ResetPasswordForm from '../islands/ResetPasswordForm';
+import '../styles/global.css';
+
+const { user } = Astro.locals;
+if (user) return Astro.redirect('/dashboard');
+---
+
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Redefinir senha – Ygor Luan Academy</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  </head>
+  <body class="min-h-screen flex">
+    <div class="hidden lg:flex flex-col justify-between w-2/5 p-16" style="background-color: var(--mahogany); border-right: 1px solid var(--blade);">
+      <a href="/" class="flex items-center gap-2">
+        <img src="/images/symbol-box-laranja.png" alt="" height="36" style="height:36px; width:auto;" />
+        <span style="color:var(--copper); font-weight:700; font-size:1rem; line-height:1.1;">Ygor Luan<br/>Academy</span>
+      </a>
+      <div>
+        <p class="font-display font-light leading-tight mb-4" style="font-size: 2.5rem; color: var(--cream);">
+          Sua arte.<br/>
+          <span style="font-weight: 600;">Seu negócio.</span>
+        </p>
+        <p class="font-sans text-sm" style="color: var(--fade);">
+          Crie uma nova senha para acessar sua área exclusiva de aluno.
+        </p>
+      </div>
+      <p class="font-sans text-xs" style="color: var(--fade);">
+        © {new Date().getFullYear()} Ygor Luan Academy
+      </p>
+    </div>
+
+    <div class="flex-1 flex flex-col items-center justify-center px-6 py-12" style="background-color: var(--espresso);">
+      <div class="w-full max-w-sm">
+        <div class="lg:hidden mb-10 text-center">
+          <a href="/" class="flex items-center justify-center gap-2">
+            <img src="/images/symbol-box-laranja.png" alt="" height="32" style="height:32px; width:auto;" />
+            <span style="color:var(--copper); font-weight:700; font-size:0.9rem; line-height:1.1;">Ygor Luan<br/>Academy</span>
+          </a>
+        </div>
+
+        <h1 class="font-display font-light text-3xl mb-1" style="color: var(--cream);">Redefinir senha</h1>
+        <p class="font-sans text-sm mb-8" style="color: var(--fade);">Crie uma nova senha para sua conta</p>
+
+        <div style="background-color: var(--mahogany); border: 1px solid var(--ink); padding: 2rem;">
+          <ResetPasswordForm client:load />
+        </div>
+
+        <p class="text-center font-sans text-sm mt-6" style="color: var(--fade);">
+          Lembrou a senha?{' '}
+          <a href="/login" class="transition-colors hover:underline" style="color: var(--copper);">Voltar ao login</a>
+        </p>
+      </div>
+    </div>
+  </body>
+</html>
