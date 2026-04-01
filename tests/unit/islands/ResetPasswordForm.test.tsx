@@ -40,6 +40,27 @@ describe('ResetPasswordForm', () => {
     });
   });
 
+  it('deve mostrar erro quando setSession falhar', async () => {
+    Object.defineProperty(window, 'location', {
+      value: {
+        hash: '#access_token=valid-token&refresh_token=valid-refresh&type=recovery',
+        href: '',
+      },
+      writable: true,
+      configurable: true,
+    });
+
+    mockSetSession.mockResolvedValueOnce({ error: { message: 'expired' } });
+
+    render(<ResetPasswordForm />);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('Link inválido ou expirado. Solicite um novo.'),
+      ).toBeInTheDocument();
+    });
+  });
+
   it('mostra formulário quando o token de recovery é válido', async () => {
     Object.defineProperty(window, 'location', {
       value: {

@@ -3,5 +3,6 @@ Allow: /
 Disallow: /dashboard/
 Disallow: /admin/
 Disallow: /api/
+Disallow: /redefinir-senha
 
-Sitemap: https://ygorluanpro.com.br/sitemap.xml
+Sitemap: https://ygorluanacademy.com.br/sitemap.xml
