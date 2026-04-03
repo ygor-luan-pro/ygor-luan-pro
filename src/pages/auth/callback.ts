@@ -1,10 +1,10 @@
+import { createServerClient, parseCookieHeader, type CookieOptions } from '@supabase/ssr';
 import type { APIRoute } from 'astro';
-import { createServerClient, parseCookieHeader } from '@supabase/ssr';
-import type { CookieOptions } from '@supabase/ssr';
 
 export const GET: APIRoute = async ({ url, request, cookies, redirect }) => {
   const code = url.searchParams.get('code');
-  const next = url.searchParams.get('next') ?? '/dashboard';
+  const nextParam = url.searchParams.get('next') ?? '/dashboard';
+  const next = nextParam.startsWith('/') && !nextParam.startsWith('//') ? nextParam : '/dashboard';
 
   if (!code) return redirect('/login');
 

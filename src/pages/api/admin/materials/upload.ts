@@ -20,12 +20,35 @@ export const POST: APIRoute = async ({ request, locals }) => {
     return new Response(JSON.stringify({ error: 'file, lessonId e title são obrigatórios' }), { status: 400 });
   }
 
-  const fileExt = file.name.split('.').pop() ?? 'bin';
+  const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  if (!UUID_REGEX.test(lessonId)) {
+    return new Response(JSON.stringify({ error: 'lessonId inválido' }), { status: 400 });
+  }
+
+  const ALLOWED_EXTENSIONS: Record<string, string> = {
+    pdf: 'application/pdf',
+    jpg: 'image/jpeg',
+    jpeg: 'image/jpeg',
+    png: 'image/png',
+    webp: 'image/webp',
+    mp4: 'video/mp4',
+    zip: 'application/zip',
+    doc: 'application/msword',
+    docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  };
+  const fileExt = (file.name.split('.').pop() ?? '').toLowerCase();
+  const contentType = ALLOWED_EXTENSIONS[fileExt];
+  if (!contentType) {
+    return new Response(
+      JSON.stringify({ error: `Tipo de arquivo não permitido. Permitidos: ${Object.keys(ALLOWED_EXTENSIONS).join(', ')}` }),
+      { status: 400 },
+    );
+  }
   const storagePath = `${lessonId}/${crypto.randomUUID()}.${fileExt}`;
 
   const { error: uploadError } = await supabaseAdmin.storage
     .from('materials')
-    .upload(storagePath, file, { contentType: file.type });
+    .upload(storagePath, file, { contentType });
 
   if (uploadError) {
     return new Response(JSON.stringify({ error: uploadError.message }), { status: 500 });
