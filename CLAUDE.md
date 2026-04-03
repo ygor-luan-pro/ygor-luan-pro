@@ -56,7 +56,7 @@ Plataforma exclusiva de venda de mentoria de barbeiro com curso em vídeo + sess
 
 Criar um funil completo:
 1. Landing page otimizada (SEO + conversão)
-2. Checkout seguro via Mercado Pago
+2. Checkout seguro via Cakto
 3. Acesso automático após pagamento
 4. Área de membros com aulas gravadas
 5. Sistema de agendamento para mentoria 1:1
@@ -78,7 +78,7 @@ Criar um funil completo:
 - **Serverless**: Supabase Edge Functions (Deno)
 
 ### Integrações
-- **Pagamento**: Mercado Pago (checkout + webhook)
+- **Pagamento**: Cakto (checkout + webhook)
 - **Vídeos**: Vimeo (privado, proteção de conteúdo)
 - **Agendamento**: Cal.com (open source)
 - **Email**: Resend (transacional)
@@ -112,10 +112,10 @@ Criar um funil completo:
                │ Webhooks
                ▼
 ┌─────────────────────────────────────────────┐
-│  MERCADO PAGO                               │
+│  CAKTO                                      │
 │  - Checkout hosted                          │
 │  - Processamento de pagamento               │
-│  - Notificações (IPN/Webhook)               │
+│  - Notificações (Webhook)                   │
 └─────────────────────────────────────────────┘
 ```
 
@@ -170,7 +170,7 @@ ygor-luan-academy/
 │   │
 │   ├── lib/
 │   │   ├── supabase.ts                 # Cliente Supabase
-│   │   ├── mercadopago.ts              # SDK Mercado Pago
+│   │   ├── cakto.ts                    # SDK Cakto
 │   │   └── utils.ts                    # Helpers gerais
 │   │
 │   ├── services/
@@ -182,7 +182,7 @@ ygor-luan-academy/
 │   │
 │   ├── types/
 │   │   ├── database.types.ts           # Types do Supabase
-│   │   ├── mercadopago.types.ts        # Types MP
+│   │   ├── cakto.types.ts              # Types Cakto
 │   │   └── index.ts
 │   │
 │   └── middleware/
@@ -196,7 +196,7 @@ ygor-luan-academy/
 │   │   └── 003_functions.sql           # Functions SQL
 │   └── functions/
 │       └── webhook-pagamento/
-│           └── index.ts                # Webhook MP
+│           └── index.ts                # DEPRECATED (era Mercado Pago)
 │
 ├── tests/
 │   ├── unit/
@@ -411,42 +411,43 @@ const handleCheckout = async () => {
 };
 ```
 
-### 2. Mercado Pago → Webhook
+### 2. Cakto → Webhook
 ```typescript
-// supabase/functions/webhook-pagamento/index.ts
-serve(async (req) => {
-  const payload = await req.json();
-  
-  if (payload.type === 'payment' && payload.data.status === 'approved') {
-    // 1. Criar usuário
-    const password = crypto.randomUUID();
-    const { data: user } = await supabase.auth.admin.createUser({
-      email: payload.data.payer.email,
-      password,
-      email_confirm: true
-    });
-    
-    // 2. Criar perfil
-    await supabase.from('profiles').insert({
-      id: user.user.id,
-      email: user.user.email,
-      role: 'student'
-    });
-    
-    // 3. Registrar pedido
-    await supabase.from('orders').insert({
-      user_id: user.user.id,
-      payment_id: payload.data.id,
-      status: 'approved',
-      amount: payload.data.transaction_amount
-    });
-    
-    // 4. Enviar email de boas-vindas
-    await sendWelcomeEmail(user.user.email, password);
+// src/pages/api/webhook/cakto.ts
+export const POST: APIRoute = async ({ request }) => {
+  const body = await request.json() as CaktoWebhookPayload;
+
+  // Valida secret
+  if (!verifyCaktoSecret(body.secret, import.meta.env.CAKTO_WEBHOOK_SECRET)) {
+    return new Response('Unauthorized', { status: 401 });
   }
-  
+
+  if (body.event !== 'purchase_approved') {
+    return new Response('OK', { status: 200 });
+  }
+
+  const { email, name } = body.data.customer;
+
+  // 1. Criar usuário
+  const { data: authData } = await supabaseAdmin.auth.admin.createUser({
+    email, password: crypto.randomUUID(), email_confirm: true,
+  });
+
+  // 2. Criar perfil
+  await supabaseAdmin.from('profiles').upsert({ id: userId, email, full_name: name, role: 'student' });
+
+  // 3. Registrar pedido
+  await supabaseAdmin.from('orders').upsert({
+    user_id: userId, payment_id: body.data.id,
+    status: 'approved', amount: body.data.amount / 100,
+  }, { onConflict: 'payment_id', ignoreDuplicates: true });
+
+  // 4. Enviar email com link de acesso
+  const { data: linkData } = await supabaseAdmin.auth.admin.generateLink({ type: 'recovery', email });
+  void EmailService.sendWelcome(email, name, linkData.properties.action_link);
+
   return new Response('OK', { status: 200 });
-});
+};
 ```
 
 ### 3. Login → Dashboard
@@ -646,7 +647,7 @@ test.describe('Fluxo de Compra', () => {
     
     // 2. Clica em comprar
     await page.click('button:has-text("Comprar Agora")');
-    await expect(page).toHaveURL(/mercadopago/);
+    await expect(page).toHaveURL(/cakto/);
     
     // 3. Preenche dados (mock)
     // ... resto do fluxo
@@ -767,8 +768,9 @@ PUBLIC_SUPABASE_URL=https://xxx.supabase.co
 PUBLIC_SUPABASE_ANON_KEY=eyJxxx...
 SUPABASE_SERVICE_ROLE_KEY=eyJxxx...  # NUNCA expor no frontend
 
-MERCADOPAGO_PUBLIC_KEY=APP_USR_xxx
-MERCADOPAGO_ACCESS_TOKEN=APP_USR_xxx  # Apenas backend
+PUBLIC_CAKTO_CHECKOUT_URL_MENTORIA=https://pay.cakto.com.br/xxx
+PUBLIC_CAKTO_CHECKOUT_URL_VIDEOAULAS=https://pay.cakto.com.br/xxx
+CAKTO_WEBHOOK_SECRET=xxx
 
 VIMEO_ACCESS_TOKEN=xxx
 RESEND_API_KEY=re_xxx
@@ -783,13 +785,13 @@ SITE_URL=https://ygorluanpro.com.br
 ### Documentação
 - [Astro Docs](https://docs.astro.build)
 - [Supabase Docs](https://supabase.com/docs)
-- [Mercado Pago API](https://www.mercadopago.com.br/developers)
+- [Cakto Developers](https://developers.cakto.com.br)
 - [Vimeo API](https://developer.vimeo.com/)
 
 ### Tutoriais Relevantes
 - [Astro + Supabase Auth](https://docs.astro.build/en/guides/authentication/#using-supabase)
 - [Implementing RLS](https://supabase.com/docs/guides/auth/row-level-security)
-- [Mercado Pago Webhooks](https://www.mercadopago.com.br/developers/pt/docs/your-integrations/notifications/webhooks)
+- [Cakto Webhooks](https://developers.cakto.com.br/webhooks)
 
 ---
 
