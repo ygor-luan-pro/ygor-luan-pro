@@ -1,5 +1,5 @@
-import { supabaseAdmin } from '../lib/supabase';
-import type { QuizQuestion, QuizAttempt, QuizQuestionPublic, QuizAttemptResult } from '../types';
+import { supabaseAdmin } from '../lib/supabase-admin';
+import type { QuizAttempt, QuizAttemptResult, QuizQuestion, QuizQuestionPublic } from '../types';
 
 export class QuizService {
   static async getQuestionsByModule(moduleNumber: number): Promise<QuizQuestion[]> {

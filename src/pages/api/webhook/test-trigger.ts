@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
-import { supabaseAdmin } from '../../../lib/supabase';
-import { resend, FROM_EMAIL } from '../../../lib/resend';
+import { FROM_EMAIL, resend } from '../../../lib/resend';
+import { supabaseAdmin } from '../../../lib/supabase-admin';
 
 interface TriggerBody {
   email: string;

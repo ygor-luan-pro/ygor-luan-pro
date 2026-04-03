@@ -1,5 +1,5 @@
 import { resend, FROM_EMAIL } from '../lib/resend';
-import { supabaseAdmin } from '../lib/supabase';
+import { supabaseAdmin } from '../lib/supabase-admin';
 import { welcomeTemplate } from '../lib/email-templates/welcome';
 import { newLessonTemplate } from '../lib/email-templates/new-lesson';
 import { certificateAvailableTemplate } from '../lib/email-templates/certificate-available';

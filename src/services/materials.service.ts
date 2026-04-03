@@ -1,4 +1,4 @@
-import { supabaseAdmin } from '../lib/supabase';
+import { supabaseAdmin } from '../lib/supabase-admin';
 import type { Material } from '../types';
 
 export class MaterialsService {

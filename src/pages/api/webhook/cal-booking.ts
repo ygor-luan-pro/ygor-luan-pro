@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
 import { createHmac, timingSafeEqual } from 'crypto';
-import { supabaseAdmin } from '../../../lib/supabase';
+import { supabaseAdmin } from '../../../lib/supabase-admin';
 
 interface CalBookingPayload {
   startTime: string;

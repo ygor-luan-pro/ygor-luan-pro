@@ -1,6 +1,6 @@
+import { timingSafeEqual } from 'node:crypto';
 import type { APIRoute } from 'astro';
-import { timingSafeEqual } from 'crypto';
-import { supabaseAdmin } from '../../../lib/supabase';
+import { supabaseAdmin } from '../../../lib/supabase-admin';
 import { EmailService } from '../../../services/email.service';
 import type { CaktoWebhookPayload } from '../../../types/cakto.types';
 

@@ -1,7 +1,7 @@
 import type { APIRoute } from 'astro';
 import { MaterialsService } from '../../../../services/materials.service';
 import { UsersService } from '../../../../services/users.service';
-import { supabaseAdmin } from '../../../../lib/supabase';
+import { supabaseAdmin } from '../../../../lib/supabase-admin';
 
 export const POST: APIRoute = async ({ request, locals }) => {
   if (!locals.user) {

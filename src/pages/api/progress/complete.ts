@@ -2,7 +2,7 @@ import type { APIRoute } from 'astro';
 import { ProgressService } from '../../../services/progress.service';
 import { CertificateService } from '../../../services/certificate.service';
 import { EmailService } from '../../../services/email.service';
-import { supabaseAdmin } from '../../../lib/supabase';
+import { supabaseAdmin } from '../../../lib/supabase-admin';
 
 export const POST: APIRoute = async ({ request, locals }) => {
   if (!locals.user) {
