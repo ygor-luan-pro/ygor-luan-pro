@@ -11,6 +11,12 @@ export default defineConfig({
       provider: 'v8',
       reporter: ['text', 'lcov'],
       include: ['src/lib/**', 'src/services/**'],
+      thresholds: {
+        lines: 80,
+        functions: 80,
+        branches: 65,
+        statements: 80,
+      },
     },
     env: {
       PUBLIC_SUPABASE_URL: 'https://test.supabase.co',

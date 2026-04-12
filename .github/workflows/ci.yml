@@ -43,7 +43,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Run unit tests
-        run: pnpm test:unit
+        run: pnpm test:unit --coverage
 
       - name: Run integration tests
         run: pnpm test:integration
@@ -69,7 +69,18 @@ jobs:
         run: pnpm exec playwright install --with-deps chromium
 
       - name: Build
-        run: pnpm build
+        run: pnpm build && node -e "
+          const fs = require('fs');
+          const path = require('path');
+          const dir = 'dist/_astro';
+          if (!fs.existsSync(dir)) { console.log('No dist/_astro found'); process.exit(0); }
+          const files = fs.readdirSync(dir).filter(f => f.endsWith('.js'));
+          const totalBytes = files.reduce((sum, f) => sum + fs.statSync(path.join(dir, f)).size, 0);
+          const totalKb = Math.round(totalBytes / 1024);
+          const MAX_KB = 600;
+          console.log('JS bundle: ' + totalKb + 'kb (limit: ' + MAX_KB + 'kb)');
+          if (totalKb > MAX_KB) { console.error('Bundle too large: ' + totalKb + 'kb > ' + MAX_KB + 'kb'); process.exit(1); }
+        "
         env:
           PUBLIC_SUPABASE_URL: ${{ secrets.PUBLIC_SUPABASE_URL }}
           PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.PUBLIC_SUPABASE_ANON_KEY }}

@@ -32,4 +32,10 @@ describe('welcomeTemplate', () => {
     const { subject } = welcomeTemplate({ name: 'Test', loginUrl: 'https://example.com' });
     expect(subject).toContain('🎉');
   });
+
+  it('html e subject correspondem ao snapshot', () => {
+    const { html, subject } = welcomeTemplate({ name: 'João', loginUrl: 'https://ygorluanpro.com.br/login' });
+    expect(subject).toMatchSnapshot();
+    expect(html).toMatchSnapshot();
+  });
 });

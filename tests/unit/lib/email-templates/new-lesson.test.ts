@@ -56,4 +56,14 @@ describe('newLessonTemplate', () => {
     expect(html).toContain('<html');
     expect(html).toContain('</html>');
   });
+
+  it('html e subject correspondem ao snapshot', () => {
+    const { html, subject } = newLessonTemplate({
+      lessonTitle: 'Fade Degradê Avançado',
+      moduleName: 'Módulo 2 — Técnicas',
+      lessonUrl: 'https://ygorluanpro.com.br/dashboard/aulas/fade-avancado',
+    });
+    expect(subject).toMatchSnapshot();
+    expect(html).toMatchSnapshot();
+  });
 });

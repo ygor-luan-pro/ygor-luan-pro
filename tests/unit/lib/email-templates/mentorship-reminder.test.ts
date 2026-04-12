@@ -77,4 +77,14 @@ describe('mentorshipReminderTemplate', () => {
     expect(html).toContain('<html');
     expect(html).toContain('</html>');
   });
+
+  it('html e subject correspondem ao snapshot', () => {
+    const { html, subject } = mentorshipReminderTemplate({
+      studentName: 'João',
+      scheduledAt: testDate,
+      meetingUrl: 'https://cal.com/ygor/mentoria/abc123',
+    });
+    expect(subject).toMatchSnapshot();
+    expect(html).toMatchSnapshot();
+  });
 });

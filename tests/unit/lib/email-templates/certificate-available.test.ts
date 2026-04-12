@@ -50,4 +50,13 @@ describe('certificateAvailableTemplate', () => {
     expect(html).toContain('<html');
     expect(html).toContain('</html>');
   });
+
+  it('html e subject correspondem ao snapshot', () => {
+    const { html, subject } = certificateAvailableTemplate({
+      studentName: 'João',
+      certificateUrl: 'https://ygorluanpro.com.br/certificado/verificar/YLP-2026-00001',
+    });
+    expect(subject).toMatchSnapshot();
+    expect(html).toMatchSnapshot();
+  });
 });

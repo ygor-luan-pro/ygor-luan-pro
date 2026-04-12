@@ -2,41 +2,12 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { supabaseAdmin } from '../../src/lib/supabase-admin';
 import { resend } from '../../src/lib/resend';
 import { POST } from '../../src/pages/api/webhook/cakto';
+import { makeCaktoPayload, CAKTO_TEST_SECRET } from '../fixtures/webhooks';
 
 vi.mock('../../src/lib/resend', () => ({
   resend: { emails: { send: vi.fn(() => Promise.resolve({ id: 'email-id' })) } },
   FROM_EMAIL: 'noreply@test.com',
 }));
-
-const WEBHOOK_SECRET = 'cakto-secret-test';
-
-function makePayload(overrides: Record<string, unknown> = {}) {
-  return {
-    event: 'purchase_approved',
-    secret: WEBHOOK_SECRET,
-    sentAt: new Date().toISOString(),
-    data: {
-      id: 'order-abc-123',
-      refId: 'ref-001',
-      status: 'paid',
-      amount: 99700,
-      paymentMethod: 'credit_card',
-      installments: 1,
-      createdAt: new Date().toISOString(),
-      paidAt: new Date().toISOString(),
-      customer: {
-        name: 'Comprador Teste',
-        email: 'comprador@email.com',
-        phone: null,
-        docType: null,
-        docNumber: null,
-      },
-      product: { id: 'prod-001', name: 'Mentoria Completa' },
-      offer: { id: 'offer-001', name: 'Oferta Principal', price: 99700 },
-    },
-    ...overrides,
-  };
-}
 
 function makeCtx(payload: unknown) {
   return {
@@ -51,32 +22,32 @@ function makeCtx(payload: unknown) {
 beforeEach(() => {
   vi.clearAllMocks();
   vi.unstubAllEnvs();
-  vi.stubEnv('CAKTO_WEBHOOK_SECRET', WEBHOOK_SECRET);
+  vi.stubEnv('CAKTO_WEBHOOK_SECRET', CAKTO_TEST_SECRET);
 });
 
 describe('POST /api/webhook/cakto', () => {
   describe('secret inválido', () => {
     it('retorna 401 quando secret não está configurado', async () => {
       vi.stubEnv('CAKTO_WEBHOOK_SECRET', '');
-      const res = await POST(makeCtx(makePayload()));
+      const res = await POST(makeCtx(makeCaktoPayload()));
       expect(res.status).toBe(401);
     });
 
     it('retorna 401 quando secret do payload não bate', async () => {
-      const res = await POST(makeCtx(makePayload({ secret: 'wrong-secret' })));
+      const res = await POST(makeCtx(makeCaktoPayload(CAKTO_TEST_SECRET, { secret: 'wrong-secret' })));
       expect(res.status).toBe(401);
     });
   });
 
   describe('eventos ignorados', () => {
     it('retorna 200 sem ação para eventos que não sejam purchase_approved', async () => {
-      const res = await POST(makeCtx(makePayload({ event: 'purchase_refused' })));
+      const res = await POST(makeCtx(makeCaktoPayload(CAKTO_TEST_SECRET, { event: 'purchase_refused' })));
       expect(res.status).toBe(200);
       expect(supabaseAdmin.auth.admin.createUser).not.toHaveBeenCalled();
     });
 
     it('retorna 200 sem ação para evento refund', async () => {
-      const res = await POST(makeCtx(makePayload({ event: 'refund' })));
+      const res = await POST(makeCtx(makeCaktoPayload(CAKTO_TEST_SECRET, { event: 'refund' })));
       expect(res.status).toBe(200);
       expect(supabaseAdmin.auth.admin.createUser).not.toHaveBeenCalled();
     });
@@ -84,7 +55,7 @@ describe('POST /api/webhook/cakto', () => {
 
   describe('email ausente', () => {
     it('retorna 400 quando customer.email está vazio', async () => {
-      const payload = makePayload();
+      const payload = makeCaktoPayload();
       (payload.data.customer as Record<string, unknown>).email = '';
       const res = await POST(makeCtx(payload));
       expect(res.status).toBe(400);
@@ -101,7 +72,7 @@ describe('POST /api/webhook/cakto', () => {
         }),
       } as never);
 
-      const res = await POST(makeCtx(makePayload()));
+      const res = await POST(makeCtx(makeCaktoPayload()));
       expect(res.status).toBe(200);
       expect(supabaseAdmin.auth.admin.createUser).not.toHaveBeenCalled();
     });
@@ -114,15 +85,15 @@ describe('POST /api/webhook/cakto', () => {
         error: null,
       } as never);
 
-      const res = await POST(makeCtx(makePayload()));
+      const res = await POST(makeCtx(makeCaktoPayload()));
       expect(res.status).toBe(200);
       expect(supabaseAdmin.auth.admin.createUser).toHaveBeenCalledWith(
-        expect.objectContaining({ email: 'comprador@email.com', email_confirm: true }),
+        expect.objectContaining({ email: 'aluno@example.com', email_confirm: true }),
       );
       expect(supabaseAdmin.from).toHaveBeenCalledWith('profiles');
       expect(supabaseAdmin.from).toHaveBeenCalledWith('orders');
       expect(resend.emails.send).toHaveBeenCalledWith(
-        expect.objectContaining({ to: 'comprador@email.com' }),
+        expect.objectContaining({ to: 'aluno@example.com' }),
       );
     });
 
@@ -132,7 +103,7 @@ describe('POST /api/webhook/cakto', () => {
         error: null,
       } as never);
 
-      await POST(makeCtx(makePayload()));
+      await POST(makeCtx(makeCaktoPayload()));
 
       const ordersFromIndex = vi.mocked(supabaseAdmin.from).mock.calls.findLastIndex(
         ([table]: [string]) => table === 'orders',
@@ -171,7 +142,7 @@ describe('POST /api/webhook/cakto', () => {
         }),
       } as never);
 
-      const res = await POST(makeCtx(makePayload()));
+      const res = await POST(makeCtx(makeCaktoPayload()));
       expect(res.status).toBe(200);
       expect(supabaseAdmin.from).toHaveBeenCalledWith('profiles');
       expect(supabaseAdmin.from).toHaveBeenCalledWith('orders');
@@ -186,7 +157,7 @@ describe('POST /api/webhook/cakto', () => {
       } as never);
       vi.mocked(resend.emails.send).mockRejectedValueOnce(new Error('Resend unavailable'));
 
-      const res = await POST(makeCtx(makePayload()));
+      const res = await POST(makeCtx(makeCaktoPayload()));
       expect(res.status).toBe(200);
     });
   });

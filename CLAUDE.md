@@ -30,6 +30,17 @@ pnpm test:e2e         # Playwright E2E
 - Constants: `SCREAMING_SNAKE_CASE`
 - Types: `PascalCase`
 
+## Harness — Verificacao do Agente
+
+Antes de marcar qualquer tarefa como concluida:
+
+- `pnpm type-check` sem erros
+- `pnpm test:unit` — todos os testes passando (298+)
+- Codigo novo: teste TDD escrito primeiro (Red → Green)
+- Template de email alterado: `pnpm test:unit -u` para atualizar snapshot
+- Handler de webhook alterado: fixture em `tests/fixtures/webhooks.ts` ainda valida o contrato
+- Migration SQL nova: adicionada em `supabase/migrations/` com numero sequencial
+
 ## Docs
 
 - [Projeto e Arquitetura](docs/PROJECT.md)

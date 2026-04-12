@@ -2,6 +2,7 @@ import { createHmac } from 'crypto';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { supabaseAdmin } from '../../src/lib/supabase-admin';
 import { POST } from '../../src/pages/api/webhook/cal-booking';
+import { CAL_BOOKING_CREATED_PAYLOAD } from '../fixtures/webhooks';
 
 function signBody(body: string, secret: string): string {
   return createHmac('sha256', secret).update(body).digest('hex');
@@ -18,15 +19,6 @@ function makeRequest(body: unknown, headers: Record<string, string> = {}): Reque
 function makeCtx(body: unknown, headers: Record<string, string> = {}) {
   return { request: makeRequest(body, headers) } as Parameters<typeof POST>[0];
 }
-
-const BOOKING_CREATED_PAYLOAD = {
-  triggerEvent: 'BOOKING_CREATED',
-  payload: {
-    startTime: '2026-04-01T10:00:00Z',
-    attendees: [{ email: 'aluno@email.com', name: 'Aluno Teste' }],
-    videoCallData: { url: 'https://meet.example.com/abc' },
-  },
-};
 
 const TEST_SECRET = 'test-secret';
 
@@ -56,10 +48,10 @@ describe('POST /api/webhook/cal-booking', () => {
 
   describe('autenticação', () => {
     it('retorna 401 quando CAL_WEBHOOK_SECRET não está configurado', async () => {
-      const body = JSON.stringify(BOOKING_CREATED_PAYLOAD);
+      const body = JSON.stringify(CAL_BOOKING_CREATED_PAYLOAD);
       const signature = signBody(body, TEST_SECRET);
       const res = await POST(
-        makeCtx(BOOKING_CREATED_PAYLOAD, { 'X-Cal-Signature-256': signature }),
+        makeCtx(CAL_BOOKING_CREATED_PAYLOAD, { 'X-Cal-Signature-256': signature }),
       );
       expect(res.status).toBe(401);
     });
@@ -67,14 +59,14 @@ describe('POST /api/webhook/cal-booking', () => {
     it('retorna 401 quando assinatura é inválida', async () => {
       vi.stubEnv('CAL_WEBHOOK_SECRET', TEST_SECRET);
       const res = await POST(
-        makeCtx(BOOKING_CREATED_PAYLOAD, { 'X-Cal-Signature-256': 'invalidsignature' }),
+        makeCtx(CAL_BOOKING_CREATED_PAYLOAD, { 'X-Cal-Signature-256': 'invalidsignature' }),
       );
       expect(res.status).toBe(401);
     });
 
     it('retorna 401 quando assinatura está ausente', async () => {
       vi.stubEnv('CAL_WEBHOOK_SECRET', TEST_SECRET);
-      const res = await POST(makeCtx(BOOKING_CREATED_PAYLOAD));
+      const res = await POST(makeCtx(CAL_BOOKING_CREATED_PAYLOAD));
       expect(res.status).toBe(401);
     });
 
@@ -125,10 +117,10 @@ describe('POST /api/webhook/cal-booking', () => {
         insert: insertMock,
       } as never);
 
-      const body = JSON.stringify(BOOKING_CREATED_PAYLOAD);
+      const body = JSON.stringify(CAL_BOOKING_CREATED_PAYLOAD);
       const signature = signBody(body, TEST_SECRET);
 
-      const res = await POST(makeCtx(BOOKING_CREATED_PAYLOAD, { 'X-Cal-Signature-256': signature }));
+      const res = await POST(makeCtx(CAL_BOOKING_CREATED_PAYLOAD, { 'X-Cal-Signature-256': signature }));
       expect(res.status).toBe(200);
       expect(supabaseAdmin.from).toHaveBeenCalledWith('profiles');
       expect(supabaseAdmin.from).toHaveBeenCalledWith('mentorship_sessions');
@@ -182,10 +174,10 @@ describe('POST /api/webhook/cal-booking', () => {
         }),
       } as never);
 
-      const body = JSON.stringify(BOOKING_CREATED_PAYLOAD);
+      const body = JSON.stringify(CAL_BOOKING_CREATED_PAYLOAD);
       const signature = signBody(body, TEST_SECRET);
 
-      const res = await POST(makeCtx(BOOKING_CREATED_PAYLOAD, { 'X-Cal-Signature-256': signature }));
+      const res = await POST(makeCtx(CAL_BOOKING_CREATED_PAYLOAD, { 'X-Cal-Signature-256': signature }));
       expect(res.status).toBe(200);
       expect(supabaseAdmin.from).not.toHaveBeenCalledWith('mentorship_sessions');
     });

@@ -224,7 +224,7 @@ describe('POST /api/admin/materials — autorização', () => {
   const validBody = {
     lesson_id: 'lesson-1',
     title: 'PDF de apoio',
-    file_url: 'https://storage.example.com/file.pdf',
+    file_url: 'materials/lesson-1/arquivo.pdf',
   };
 
   it('retorna 201 quando isAdmin é true e body é válido', async () => {
