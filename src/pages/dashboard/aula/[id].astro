@@ -2,6 +2,7 @@
 import DashboardLayout from '../../../components/layout/DashboardLayout.astro';
 import VideoPlayer from '../../../islands/VideoPlayer';
 import LessonRating from '../../../islands/LessonRating';
+import LessonComments from '../../../islands/LessonComments';
 import { LessonsService } from '../../../services/lessons.service';
 import { ProgressService } from '../../../services/progress.service';
 import { MaterialsService } from '../../../services/materials.service';
@@ -91,6 +92,13 @@ const { prev, next, position, total } = findAdjacentLessons(allLessons, id);
     lessonId={lesson.id}
     isCompleted={progress?.completed ?? false}
     initialRating={existingRating}
+  />
+
+  <LessonComments
+    client:load
+    lessonId={lesson.id}
+    currentUserId={user!.id}
+    isAdmin={Astro.locals.isAdmin ?? false}
   />
 
   <div class="mt-8 flex items-center justify-between gap-4">
