@@ -67,7 +67,7 @@ describe('OrdersService', () => {
           eq: vi.fn().mockReturnValue({
             eq: vi.fn().mockReturnValue({
               limit: vi.fn().mockReturnValue({
-                single: vi.fn().mockResolvedValue({ data: { id: 'order-1' }, error: null }),
+                maybeSingle: vi.fn().mockResolvedValue({ data: { id: 'order-1' }, error: null }),
               }),
             }),
           }),
@@ -84,7 +84,7 @@ describe('OrdersService', () => {
           eq: vi.fn().mockReturnValue({
             eq: vi.fn().mockReturnValue({
               limit: vi.fn().mockReturnValue({
-                single: vi.fn().mockResolvedValue({ data: null, error: { message: 'Not found' } }),
+                maybeSingle: vi.fn().mockResolvedValue({ data: null, error: null }),
               }),
             }),
           }),

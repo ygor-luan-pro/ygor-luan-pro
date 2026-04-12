@@ -20,7 +20,7 @@ export class OrdersService {
       .eq('user_id', userId)
       .eq('status', 'approved')
       .limit(1)
-      .single();
+      .maybeSingle();
 
     return !!data;
   }
