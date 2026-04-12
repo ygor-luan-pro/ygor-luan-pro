@@ -64,7 +64,8 @@ export class CommentsService {
     const { data, error } = await supabaseAdmin
       .from('lesson_comments')
       .select('*, profiles(full_name, email), lessons(title)')
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: false })
+      .limit(500);
 
     if (error) throw new Error(error.message);
     return (data ?? []) as unknown as CommentWithAdminProfile[];

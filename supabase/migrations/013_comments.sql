@@ -24,7 +24,7 @@ CREATE POLICY "Users can create own comments"
 
 CREATE POLICY "Users can soft-delete own comments"
   ON lesson_comments FOR UPDATE
-  USING (auth.uid() = user_id)
+  USING (auth.uid() = user_id AND deleted_at IS NULL)
   WITH CHECK (auth.uid() = user_id);
 
 CREATE POLICY "Admin can view all comments including deleted"

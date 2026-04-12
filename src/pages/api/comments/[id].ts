@@ -9,6 +9,13 @@ export const DELETE: APIRoute = async ({ params, locals }) => {
     });
   }
 
+  if (!locals.hasAccess && !locals.isAdmin) {
+    return new Response(JSON.stringify({ error: 'Sem acesso' }), {
+      status: 403,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
   const commentId = params.id!;
 
   try {

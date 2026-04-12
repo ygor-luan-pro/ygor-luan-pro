@@ -58,10 +58,15 @@ export default function LessonComments({ lessonId, currentUserId, isAdmin }: Les
   const handleDelete = async (commentId: string) => {
     try {
       const res = await fetch(`/api/comments/${commentId}`, { method: 'DELETE' });
-      if (!res.ok) return;
+      if (!res.ok) {
+        setErrorMessage('Erro ao deletar comentário. Tente novamente.');
+        setStatus('error');
+        return;
+      }
       setComments((prev) => prev.filter((c) => c.id !== commentId));
     } catch {
-      // silently ignore
+      setErrorMessage('Erro ao deletar comentário. Tente novamente.');
+      setStatus('error');
     }
   };
 

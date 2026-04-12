@@ -188,7 +188,9 @@ describe('CommentsService', () => {
     it('retorna todos os comentários com perfil e aula (incluindo deletados)', async () => {
       vi.mocked(supabaseAdmin.from).mockReturnValueOnce({
         select: vi.fn().mockReturnValue({
-          order: vi.fn().mockResolvedValue({ data: [mockCommentAdmin], error: null }),
+          order: vi.fn().mockReturnValue({
+            limit: vi.fn().mockResolvedValue({ data: [mockCommentAdmin], error: null }),
+          }),
         }),
       } as never);
 
@@ -202,7 +204,9 @@ describe('CommentsService', () => {
     it('retorna array vazio quando não há comentários', async () => {
       vi.mocked(supabaseAdmin.from).mockReturnValueOnce({
         select: vi.fn().mockReturnValue({
-          order: vi.fn().mockResolvedValue({ data: null, error: null }),
+          order: vi.fn().mockReturnValue({
+            limit: vi.fn().mockResolvedValue({ data: null, error: null }),
+          }),
         }),
       } as never);
 
@@ -214,7 +218,9 @@ describe('CommentsService', () => {
     it('lança erro quando Supabase retorna erro', async () => {
       vi.mocked(supabaseAdmin.from).mockReturnValueOnce({
         select: vi.fn().mockReturnValue({
-          order: vi.fn().mockResolvedValue({ data: null, error: { message: 'fetch error' } }),
+          order: vi.fn().mockReturnValue({
+            limit: vi.fn().mockResolvedValue({ data: null, error: { message: 'fetch error' } }),
+          }),
         }),
       } as never);
 
