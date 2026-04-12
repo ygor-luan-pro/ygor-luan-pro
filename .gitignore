@@ -35,6 +35,9 @@ test-results/
 # jetbrains setting folder
 .idea/
 
+# vscode setting folder
+.vscode/
+
 # supabase CLI temp files
 supabase/.temp/
 

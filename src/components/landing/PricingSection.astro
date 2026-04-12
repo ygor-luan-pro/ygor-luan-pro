@@ -1,0 +1,94 @@
+---
+import type { PricingProduct } from '../../types';
+
+interface Props {
+  isLaunchMode: boolean;
+  spotsRemaining: number;
+  products: PricingProduct[];
+}
+
+const { isLaunchMode, spotsRemaining, products } = Astro.props;
+
+function formatPrice(value: number): string {
+  return new Intl.NumberFormat('pt-BR').format(value);
+}
+---
+
+<div class="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+  {products.map((product) => {
+    const isDisabled = product.highlighted && isLaunchMode && spotsRemaining <= 0;
+    const ctaText = product.highlighted && spotsRemaining <= 0 ? 'Lista de Espera' : product.cta;
+    const cardBorder = product.highlighted ? '1px solid var(--copper)' : '1px solid var(--blade)';
+    const spotsBarWidth = Math.min(100, ((15 - spotsRemaining) / 15) * 100);
+    return (
+      <div
+        style={`background-color: var(--mahogany); border: ${cardBorder}; position: relative;`}
+        class="p-8 flex flex-col"
+      >
+        {product.highlighted && (
+          <span style="position: absolute; top: -1px; right: 2rem; background-color: var(--copper); color: var(--espresso); font-size: 0.625rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; padding: 0.25rem 0.75rem;">
+            Mais Popular
+          </span>
+        )}
+
+        <p class="font-sans text-sm tracking-widest uppercase mb-2" style="color: var(--copper);">
+          {product.eyebrow}
+        </p>
+
+        <h3 class="font-display font-semibold mb-6" style="font-size: 1.5rem; color: var(--cream);">
+          {product.title}
+        </h3>
+
+        <ul class="space-y-2 font-sans text-sm mb-8 flex-1" style="color: var(--parchment);">
+          {product.features.map((feature) => (
+            <li><span style="color: var(--copper);">—</span> {feature}</li>
+          ))}
+        </ul>
+
+        <div class="mb-6">
+          {product.highlighted && isLaunchMode && product.originalPrice && (
+            <p class="font-sans text-sm line-through mb-1" style="color: var(--fade);">
+              De R$ {formatPrice(product.originalPrice)}
+            </p>
+          )}
+          <p class="font-mono font-medium leading-none" style="font-size: 2.5rem; color: var(--cream);">
+            R$ {formatPrice(product.price)}
+          </p>
+          <p class="font-sans text-sm mt-1" style="color: var(--fade);">pagamento único</p>
+        </div>
+
+        {product.highlighted && isLaunchMode && (
+          <div class="mb-6">
+            <div class="flex justify-between font-sans text-xs mb-1" style="color: var(--fade);">
+              <span>Vagas restantes</span>
+              <span style={`color: ${spotsRemaining > 0 ? 'var(--copper)' : '#f87171'};`}>
+                {spotsRemaining > 0 ? `${spotsRemaining} vagas` : 'Esgotado'}
+              </span>
+            </div>
+            <div style="height: 2px; background-color: var(--blade);">
+              <div style={`height: 100%; width: ${spotsBarWidth}%; background-color: var(--copper);`} />
+            </div>
+          </div>
+        )}
+
+        {isDisabled ? (
+          <button
+            disabled
+            class="btn-primary w-full"
+            style="opacity: 0.5; cursor: not-allowed;"
+          >
+            {ctaText}
+          </button>
+        ) : (
+          <a
+            href={product.checkoutUrl}
+            class="btn-primary w-full"
+            style="display: inline-block; text-align: center;"
+          >
+            {ctaText}
+          </a>
+        )}
+      </div>
+    );
+  })}
+</div>

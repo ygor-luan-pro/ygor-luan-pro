@@ -1,5 +1,5 @@
 ---
-import PricingSection from '../../islands/PricingSection';
+import PricingSection from './PricingSection.astro';
 import type { PricingProduct } from '../../types';
 
 const isLaunchMode = import.meta.env.PUBLIC_IS_LAUNCH_MODE === 'true';
@@ -63,7 +63,6 @@ const products: PricingProduct[] = [
       isLaunchMode={isLaunchMode}
       spotsRemaining={spotsRemaining}
       products={products}
-      client:load
     />
 
     <p class="font-sans text-xs text-center mt-8" style="color: var(--fade);">
