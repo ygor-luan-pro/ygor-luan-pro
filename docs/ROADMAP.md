@@ -1,5 +1,7 @@
 # Roadmap
 
+> Para visao detalhada com status e prioridades, veja [BACKLOG.md](BACKLOG.md).
+
 ## MVP (Semanas 1-6) - Concluido
 - Landing page
 - Sistema de pagamento

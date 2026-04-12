@@ -39,5 +39,6 @@ pnpm test:e2e         # Playwright E2E
 - [Deploy e CI/CD](docs/DEPLOYMENT.md)
 - [Seguranca](docs/SECURITY.md)
 - [Roadmap](docs/ROADMAP.md)
+- [Backlog / Kanban](docs/BACKLOG.md)
 - [Contribuindo](docs/CONTRIBUTING.md)
 - [Design Brief](docs/design-brief.md)
