@@ -47,6 +47,9 @@ export type LessonRatingInsert = Database['public']['Tables']['lesson_ratings'][
 
 export type Certificate = Database['public']['Tables']['certificates']['Row'];
 
+export type LessonComment = Database['public']['Tables']['lesson_comments']['Row'];
+export type LessonCommentInsert = Database['public']['Tables']['lesson_comments']['Insert'];
+
 export interface PricingProduct {
   checkoutUrl: string;
   eyebrow: string;
