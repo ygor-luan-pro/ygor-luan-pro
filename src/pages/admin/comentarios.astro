@@ -1,0 +1,14 @@
+---
+import DashboardLayout from '../../components/layout/DashboardLayout.astro';
+import AdminCommentsManager from '../../islands/AdminCommentsManager';
+
+const { user } = Astro.locals;
+---
+
+<DashboardLayout title="Comentários" user={user!} isAdmin={true}>
+  <div class="flex items-center justify-between mb-8">
+    <h1 class="font-display font-light text-3xl" style="color: var(--cream);">Moderação de Comentários</h1>
+  </div>
+
+  <AdminCommentsManager client:load />
+</DashboardLayout>
