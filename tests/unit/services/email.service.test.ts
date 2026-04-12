@@ -6,7 +6,7 @@ vi.mock('../../../src/lib/resend', () => ({
 }));
 
 import { EmailService } from '../../../src/services/email.service';
-import { supabaseAdmin } from '../../../src/lib/supabase';
+import { supabaseAdmin } from '../../../src/lib/supabase-admin';
 import { resend } from '../../../src/lib/resend';
 
 const mockLesson = {

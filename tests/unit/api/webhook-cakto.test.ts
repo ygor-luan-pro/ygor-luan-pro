@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-vi.mock('../../../src/lib/supabase', () => ({
+vi.mock('../../../src/lib/supabase-admin', () => ({
   supabaseAdmin: {
     from: vi.fn(),
     auth: {
@@ -18,7 +18,7 @@ vi.mock('../../../src/lib/resend', () => ({
 }));
 
 import { POST } from '../../../src/pages/api/webhook/cakto';
-import { supabaseAdmin } from '../../../src/lib/supabase';
+import { supabaseAdmin } from '../../../src/lib/supabase-admin';
 
 const WEBHOOK_SECRET = 'test-cakto-secret';
 

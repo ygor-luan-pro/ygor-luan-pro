@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { OrdersService } from '../../../src/services/orders.service';
-import { supabaseAdmin } from '../../../src/lib/supabase';
+import { supabaseAdmin } from '../../../src/lib/supabase-admin';
 
 const mockOrder = {
   id: 'order-1',

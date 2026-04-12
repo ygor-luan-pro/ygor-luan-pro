@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { MaterialsService } from '../../../src/services/materials.service';
-import { supabaseAdmin } from '../../../src/lib/supabase';
+import { supabaseAdmin } from '../../../src/lib/supabase-admin';
 
 const mockMaterial = {
   id: 'mat-1',

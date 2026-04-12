@@ -1,6 +1,6 @@
 import { createHmac } from 'crypto';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { supabaseAdmin } from '../../src/lib/supabase';
+import { supabaseAdmin } from '../../src/lib/supabase-admin';
 import { POST } from '../../src/pages/api/webhook/cal-booking';
 
 function signBody(body: string, secret: string): string {

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { supabaseAdmin } from '../../../src/lib/supabase';
+import { supabaseAdmin } from '../../../src/lib/supabase-admin';
 import { ProgressService } from '../../../src/services/progress.service';
 
 describe('ProgressService', () => {

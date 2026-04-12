@@ -16,8 +16,8 @@ function formatPrice(value: number): string {
 
 <div class="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
   {products.map((product) => {
-    const isDisabled = product.highlighted && isLaunchMode && spotsRemaining <= 0;
-    const ctaText = product.highlighted && spotsRemaining <= 0 ? 'Lista de Espera' : product.cta;
+    const isDisabled = product.highlighted && isLaunchMode && !(spotsRemaining > 0);
+    const ctaText = product.highlighted && !(spotsRemaining > 0) ? 'Lista de Espera' : product.cta;
     const cardBorder = product.highlighted ? '1px solid var(--copper)' : '1px solid var(--blade)';
     const spotsBarWidth = Math.min(100, ((15 - spotsRemaining) / 15) * 100);
     return (

@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { ProgressService } from '../../../src/services/progress.service';
-import { supabaseAdmin } from '../../../src/lib/supabase';
+import { supabaseAdmin } from '../../../src/lib/supabase-admin';
 
-vi.mock('../../../src/lib/supabase', () => ({
+vi.mock('../../../src/lib/supabase-admin', () => ({
   supabaseAdmin: { from: vi.fn(), rpc: vi.fn() },
 }));
 

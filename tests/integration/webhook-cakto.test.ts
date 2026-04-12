@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { supabaseAdmin } from '../../src/lib/supabase';
+import { supabaseAdmin } from '../../src/lib/supabase-admin';
 import { resend } from '../../src/lib/resend';
 import { POST } from '../../src/pages/api/webhook/cakto';
 
@@ -135,7 +135,7 @@ describe('POST /api/webhook/cakto', () => {
       await POST(makeCtx(makePayload()));
 
       const ordersFromIndex = vi.mocked(supabaseAdmin.from).mock.calls.findLastIndex(
-        ([table]) => table === 'orders',
+        ([table]: [string]) => table === 'orders',
       );
       expect(ordersFromIndex).toBeGreaterThanOrEqual(0);
 
