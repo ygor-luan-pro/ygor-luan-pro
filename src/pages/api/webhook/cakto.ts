@@ -4,13 +4,85 @@ import { supabaseAdmin } from '../../../lib/supabase-admin';
 import { EmailService } from '../../../services/email.service';
 import type { CaktoWebhookPayload } from '../../../types/cakto.types';
 
+type AllowedTargets = {
+  productIds: Set<string>;
+  offerIds: Set<string>;
+  refIds: Set<string>;
+};
+
+function parseAllowedList(value: string | undefined): Set<string> {
+  return new Set(
+    (value ?? '')
+      .split(',')
+      .map((item) => item.trim())
+      .filter(Boolean),
+  );
+}
+
+function getAllowedTargets(): AllowedTargets {
+  return {
+    productIds: parseAllowedList(import.meta.env.CAKTO_ALLOWED_PRODUCT_IDS),
+    offerIds: parseAllowedList(import.meta.env.CAKTO_ALLOWED_OFFER_IDS),
+    refIds: parseAllowedList(import.meta.env.CAKTO_ALLOWED_REF_IDS),
+  };
+}
+
+function isAllowedTarget(value: string, allowed: Set<string>): boolean {
+  return allowed.size === 0 || allowed.has(value);
+}
+
+function isAllowedPurchase(payload: CaktoWebhookPayload, allowed: AllowedTargets): boolean {
+  return isAllowedTarget(payload.data.product.id, allowed.productIds)
+    && isAllowedTarget(payload.data.offer.id, allowed.offerIds)
+    && isAllowedTarget(payload.data.refId, allowed.refIds);
+}
+
 function verifyCaktoSecret(payloadSecret: string, storedSecret: string): boolean {
   if (payloadSecret.length !== storedSecret.length) return false;
   return timingSafeEqual(Buffer.from(payloadSecret), Buffer.from(storedSecret));
 }
 
+function isCustomer(value: unknown): value is CaktoWebhookPayload['data']['customer'] {
+  if (typeof value !== 'object' || value === null) return false;
+  const candidate = value as Record<string, unknown>;
+  return typeof candidate.email === 'string'
+    && (typeof candidate.name === 'string' || candidate.name === null);
+}
+
+function isPayloadData(value: unknown): value is CaktoWebhookPayload['data'] {
+  if (typeof value !== 'object' || value === null) return false;
+  const candidate = value as Record<string, unknown>;
+  const product = candidate.product as Record<string, unknown> | undefined;
+  const offer = candidate.offer as Record<string, unknown> | undefined;
+
+  return typeof candidate.id === 'string'
+    && typeof candidate.refId === 'string'
+    && typeof candidate.amount === 'number'
+    && isCustomer(candidate.customer)
+    && typeof product?.id === 'string'
+    && typeof product?.name === 'string'
+    && typeof offer?.id === 'string'
+    && typeof offer?.name === 'string'
+    && typeof offer?.price === 'number';
+}
+
+function isCaktoWebhookPayload(value: unknown): value is CaktoWebhookPayload {
+  if (typeof value !== 'object' || value === null) return false;
+  const candidate = value as Record<string, unknown>;
+  return typeof candidate.event === 'string'
+    && typeof candidate.secret === 'string'
+    && typeof candidate.sentAt === 'string'
+    && isPayloadData(candidate.data);
+}
+
 export const POST: APIRoute = async ({ request }) => {
-  const body = (await request.json()) as CaktoWebhookPayload;
+  const payload = await request.json().catch(() => null);
+
+  if (!isCaktoWebhookPayload(payload)) {
+    return new Response('Invalid payload', { status: 400 });
+  }
+
+  const body = payload;
 
   const secret = import.meta.env.CAKTO_WEBHOOK_SECRET;
   if (!secret) {
@@ -23,6 +95,10 @@ export const POST: APIRoute = async ({ request }) => {
 
   if (body.event !== 'purchase_approved') {
     return new Response('OK', { status: 200 });
+  }
+
+  if (!isAllowedPurchase(body, getAllowedTargets())) {
+    return new Response('Forbidden', { status: 403 });
   }
 
   const { email, name } = body.data.customer;

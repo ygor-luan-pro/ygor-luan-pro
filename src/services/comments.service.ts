@@ -10,6 +10,22 @@ type CommentWithAdminProfile = LessonComment & {
   lessons: { title: string } | null;
 };
 
+type CommentsError = {
+  code?: string | null;
+  message?: string | null;
+};
+
+export class CommentsUnavailableError extends Error {
+  constructor() {
+    super('Comentários indisponíveis no momento');
+    this.name = 'CommentsUnavailableError';
+  }
+}
+
+function isCommentsUnavailable(error: CommentsError | null | undefined): boolean {
+  return error?.code === 'PGRST205' && error.message?.includes('lesson_comments') === true;
+}
+
 export class CommentsService {
   static async getByLesson(lessonId: string): Promise<CommentWithProfile[]> {
     const { data, error } = await supabaseAdmin
@@ -20,6 +36,7 @@ export class CommentsService {
       .order('created_at', { ascending: true })
       .limit(100);
 
+    if (isCommentsUnavailable(error)) return [];
     if (error) throw new Error(error.message);
     return (data ?? []) as unknown as CommentWithProfile[];
   }
@@ -35,18 +52,21 @@ export class CommentsService {
       .select()
       .single();
 
+    if (isCommentsUnavailable(error)) throw new CommentsUnavailableError();
     if (error) throw new Error(error.message);
     return data;
   }
 
   static async getOwner(commentId: string): Promise<string | null> {
-    const { data } = await supabaseAdmin
+    const { data, error } = await supabaseAdmin
       .from('lesson_comments')
       .select('user_id')
       .eq('id', commentId)
       .is('deleted_at', null)
       .maybeSingle();
 
+    if (isCommentsUnavailable(error)) throw new CommentsUnavailableError();
+    if (error) throw new Error(error.message);
     return data?.user_id ?? null;
   }
 
@@ -57,6 +77,7 @@ export class CommentsService {
       .eq('id', commentId)
       .is('deleted_at', null);
 
+    if (isCommentsUnavailable(error)) throw new CommentsUnavailableError();
     if (error) throw new Error(error.message);
   }
 
@@ -67,6 +88,7 @@ export class CommentsService {
       .order('created_at', { ascending: false })
       .limit(500);
 
+    if (isCommentsUnavailable(error)) return [];
     if (error) throw new Error(error.message);
     return (data ?? []) as unknown as CommentWithAdminProfile[];
   }

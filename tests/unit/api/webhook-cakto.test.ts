@@ -36,6 +36,15 @@ beforeEach(() => {
 });
 
 describe('POST /api/webhook/cakto', () => {
+  describe('payload inválido', () => {
+    it('retorna 400 quando body não contém estrutura mínima esperada', async () => {
+      const res = await POST({
+        request: buildRequest({ event: 'purchase_approved' }),
+      } as never);
+      expect(res.status).toBe(400);
+    });
+  });
+
   describe('validação de secret', () => {
     it('retorna 401 quando CAKTO_WEBHOOK_SECRET não está configurado', async () => {
       vi.stubEnv('CAKTO_WEBHOOK_SECRET', '');
@@ -72,6 +81,47 @@ describe('POST /api/webhook/cakto', () => {
         request: buildRequest(makeCaktoPayload(CAKTO_TEST_SECRET, { event: 'refund' })),
       } as never);
       expect(res.status).toBe(200);
+      expect(supabaseAdmin.auth.admin.createUser).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('allowlist do webhook', () => {
+    it('retorna 403 quando product.id não está na allowlist configurada', async () => {
+      vi.stubEnv('CAKTO_ALLOWED_PRODUCT_IDS', 'prod-allowed');
+      const payload = makeCaktoPayload();
+      payload.data.product.id = 'prod-blocked';
+
+      const res = await POST({
+        request: buildRequest(payload),
+      } as never);
+
+      expect(res.status).toBe(403);
+      expect(supabaseAdmin.auth.admin.createUser).not.toHaveBeenCalled();
+    });
+
+    it('retorna 403 quando offer.id não está na allowlist configurada', async () => {
+      vi.stubEnv('CAKTO_ALLOWED_OFFER_IDS', 'offer-allowed');
+      const payload = makeCaktoPayload();
+      payload.data.offer.id = 'offer-blocked';
+
+      const res = await POST({
+        request: buildRequest(payload),
+      } as never);
+
+      expect(res.status).toBe(403);
+      expect(supabaseAdmin.auth.admin.createUser).not.toHaveBeenCalled();
+    });
+
+    it('retorna 403 quando refId não está na allowlist configurada', async () => {
+      vi.stubEnv('CAKTO_ALLOWED_REF_IDS', 'ref-allowed');
+      const payload = makeCaktoPayload();
+      payload.data.refId = 'ref-blocked';
+
+      const res = await POST({
+        request: buildRequest(payload),
+      } as never);
+
+      expect(res.status).toBe(403);
       expect(supabaseAdmin.auth.admin.createUser).not.toHaveBeenCalled();
     });
   });

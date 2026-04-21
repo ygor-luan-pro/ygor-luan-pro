@@ -1,6 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 vi.mock('../../../src/services/comments.service', () => ({
+  CommentsUnavailableError: class CommentsUnavailableError extends Error {
+    constructor() {
+      super('Comentários indisponíveis no momento');
+      this.name = 'CommentsUnavailableError';
+    }
+  },
   CommentsService: {
     getByLesson: vi.fn().mockResolvedValue([]),
     create: vi.fn().mockResolvedValue({
@@ -103,6 +109,17 @@ describe('POST /api/lessons/[id]/comments — validação e autorização', () =
     const body = await res.json() as { comment: { content: string } };
     expect(body.comment.content).toBe('Ótima aula!');
   });
+
+  it('retorna 503 quando comentários estão indisponíveis', async () => {
+    const { CommentsService, CommentsUnavailableError } = await import('../../../src/services/comments.service');
+    vi.mocked(CommentsService.create).mockRejectedValueOnce(new CommentsUnavailableError());
+    const ctx = makeContext(
+      { user: mockUser, hasAccess: true },
+      { body: { content: 'Ótima aula!' }, params: { id: 'lesson-1' } },
+    );
+    const res = await postComment(ctx);
+    expect(res.status).toBe(503);
+  });
 });
 
 describe('DELETE /api/comments/[id] — autorização', () => {
@@ -142,6 +159,14 @@ describe('DELETE /api/comments/[id] — autorização', () => {
     const ctx = makeContext({ user: mockAdmin, hasAccess: true, isAdmin: true }, { method: 'DELETE', params: { id: 'c-1' } });
     const res = await deleteComment(ctx);
     expect(res.status).toBe(200);
+  });
+
+  it('retorna 503 quando comentários estão indisponíveis ao buscar owner', async () => {
+    const { CommentsService, CommentsUnavailableError } = await import('../../../src/services/comments.service');
+    vi.mocked(CommentsService.getOwner).mockRejectedValueOnce(new CommentsUnavailableError());
+    const ctx = makeContext({ user: mockUser, hasAccess: true, isAdmin: false }, { method: 'DELETE', params: { id: 'c-1' } });
+    const res = await deleteComment(ctx);
+    expect(res.status).toBe(503);
   });
 });
 

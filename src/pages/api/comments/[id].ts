@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { CommentsService } from '../../../services/comments.service';
+import { CommentsService, CommentsUnavailableError } from '../../../services/comments.service';
 
 export const DELETE: APIRoute = async ({ params, locals }) => {
   if (!locals.user) {
@@ -41,6 +41,12 @@ export const DELETE: APIRoute = async ({ params, locals }) => {
       headers: { 'Content-Type': 'application/json' },
     });
   } catch (err) {
+    if (err instanceof CommentsUnavailableError) {
+      return new Response(JSON.stringify({ error: err.message }), {
+        status: 503,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
     console.error('comments DELETE:', err);
     return new Response(JSON.stringify({ error: 'Erro ao deletar comentário' }), {
       status: 500,

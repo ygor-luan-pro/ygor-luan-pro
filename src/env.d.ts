@@ -14,6 +14,9 @@ interface ImportMetaEnv {
   readonly PUBLIC_SUPABASE_ANON_KEY: string;
   readonly SUPABASE_SERVICE_ROLE_KEY: string;
   readonly CAKTO_WEBHOOK_SECRET?: string;
+  readonly CAKTO_ALLOWED_PRODUCT_IDS?: string;
+  readonly CAKTO_ALLOWED_OFFER_IDS?: string;
+  readonly CAKTO_ALLOWED_REF_IDS?: string;
   readonly PUBLIC_CAKTO_CHECKOUT_URL_VIDEOAULAS?: string;
   readonly PUBLIC_CAKTO_CHECKOUT_URL_MENTORIA?: string;
   readonly VIMEO_ACCESS_TOKEN: string;

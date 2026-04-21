@@ -124,9 +124,9 @@ const mobileNavItems: MobileNavItem[] = [
 
       <div class="px-4 py-5" style="border-top: 1px solid var(--ink);">
         <p class="font-sans text-xs truncate mb-3" style="color: var(--fade);">{user.email}</p>
-        <a href="/api/auth/signout" class="font-sans text-sm link-btn">
-          Sair
-        </a>
+        <form method="post" action="/api/auth/signout">
+          <button type="submit" class="font-sans text-sm link-btn">Sair</button>
+        </form>
       </div>
     </aside>
 
@@ -231,7 +231,9 @@ const mobileNavItems: MobileNavItem[] = [
 
         <div style="padding:1rem 0.75rem; border-top:1px solid var(--ink); margin-top:0.5rem;">
           <p class="font-sans text-xs truncate" style="color:var(--fade); margin-bottom:0.5rem;">{user.email}</p>
-          <a href="/api/auth/signout" class="font-sans text-sm link-btn">Sair</a>
+          <form method="post" action="/api/auth/signout">
+            <button type="submit" class="font-sans text-sm link-btn">Sair</button>
+          </form>
         </div>
       </nav>
     </div>

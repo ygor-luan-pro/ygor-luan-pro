@@ -3,7 +3,16 @@ import { createServerClient, parseCookieHeader } from '@supabase/ssr';
 import type { CookieOptions } from '@supabase/ssr';
 import type { Database } from '../../../types/database.types';
 
-export const GET: APIRoute = async ({ request, cookies, redirect }) => {
+function methodNotAllowed(): Response {
+  return new Response(null, {
+    status: 405,
+    headers: { Allow: 'POST' },
+  });
+}
+
+export const GET: APIRoute = async () => methodNotAllowed();
+
+export const POST: APIRoute = async ({ request, cookies, redirect }) => {
   const supabase = createServerClient<Database>(
     import.meta.env.PUBLIC_SUPABASE_URL,
     import.meta.env.PUBLIC_SUPABASE_ANON_KEY,

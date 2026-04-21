@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { CommentsService } from '../../../src/services/comments.service';
+import { CommentsService, CommentsUnavailableError } from '../../../src/services/comments.service';
 import { supabaseAdmin } from '../../../src/lib/supabase-admin';
 
 vi.mock('../../../src/lib/supabase-admin', () => ({
@@ -87,6 +87,30 @@ describe('CommentsService', () => {
 
       await expect(CommentsService.getByLesson('lesson-1')).rejects.toThrow('DB error');
     });
+
+    it('retorna array vazio quando a tabela de comentários não está disponível', async () => {
+      vi.mocked(supabaseAdmin.from).mockReturnValueOnce({
+        select: vi.fn().mockReturnValue({
+          eq: vi.fn().mockReturnValue({
+            is: vi.fn().mockReturnValue({
+              order: vi.fn().mockReturnValue({
+                limit: vi.fn().mockResolvedValue({
+                  data: null,
+                  error: {
+                    code: 'PGRST205',
+                    message: "Could not find the table 'public.lesson_comments' in the schema cache",
+                  },
+                }),
+              }),
+            }),
+          }),
+        }),
+      } as never);
+
+      const result = await CommentsService.getByLesson('lesson-1');
+
+      expect(result).toEqual([]);
+    });
   });
 
   describe('create', () => {
@@ -118,6 +142,26 @@ describe('CommentsService', () => {
       await expect(
         CommentsService.create('user-1', 'lesson-1', 'conteúdo')
       ).rejects.toThrow('insert error');
+    });
+
+    it('lança erro de indisponibilidade quando a tabela de comentários não existe', async () => {
+      vi.mocked(supabaseAdmin.from).mockReturnValueOnce({
+        insert: vi.fn().mockReturnValue({
+          select: vi.fn().mockReturnValue({
+            single: vi.fn().mockResolvedValue({
+              data: null,
+              error: {
+                code: 'PGRST205',
+                message: "Could not find the table 'public.lesson_comments' in the schema cache",
+              },
+            }),
+          }),
+        }),
+      } as never);
+
+      await expect(
+        CommentsService.create('user-1', 'lesson-1', 'conteúdo')
+      ).rejects.toBeInstanceOf(CommentsUnavailableError);
     });
   });
 
@@ -152,6 +196,26 @@ describe('CommentsService', () => {
       const owner = await CommentsService.getOwner('c-inexistente');
 
       expect(owner).toBeNull();
+    });
+
+    it('lança erro de indisponibilidade quando a tabela de comentários não está disponível', async () => {
+      vi.mocked(supabaseAdmin.from).mockReturnValueOnce({
+        select: vi.fn().mockReturnValue({
+          eq: vi.fn().mockReturnValue({
+            is: vi.fn().mockReturnValue({
+              maybeSingle: vi.fn().mockResolvedValue({
+                data: null,
+                error: {
+                  code: 'PGRST205',
+                  message: "Could not find the table 'public.lesson_comments' in the schema cache",
+                },
+              }),
+            }),
+          }),
+        }),
+      } as never);
+
+      await expect(CommentsService.getOwner('c-indisponivel')).rejects.toBeInstanceOf(CommentsUnavailableError);
     });
   });
 
@@ -225,6 +289,26 @@ describe('CommentsService', () => {
       } as never);
 
       await expect(CommentsService.getAllAdmin()).rejects.toThrow('fetch error');
+    });
+
+    it('retorna array vazio quando a tabela de comentários não está disponível', async () => {
+      vi.mocked(supabaseAdmin.from).mockReturnValueOnce({
+        select: vi.fn().mockReturnValue({
+          order: vi.fn().mockReturnValue({
+            limit: vi.fn().mockResolvedValue({
+              data: null,
+              error: {
+                code: 'PGRST205',
+                message: "Could not find the table 'public.lesson_comments' in the schema cache",
+              },
+            }),
+          }),
+        }),
+      } as never);
+
+      const result = await CommentsService.getAllAdmin();
+
+      expect(result).toEqual([]);
     });
   });
 });
