@@ -1,6 +1,10 @@
 import { supabaseAdmin } from '../lib/supabase-admin';
 import type { Material } from '../types';
 
+function isExternalFileUrl(fileUrl: string): boolean {
+  return /^https?:\/\//i.test(fileUrl);
+}
+
 export class MaterialsService {
   static async getByLessonId(lessonId: string): Promise<Material[]> {
     const { data, error } = await supabaseAdmin
@@ -51,5 +55,21 @@ export class MaterialsService {
 
     if (error) throw new Error(error.message);
     return data.signedUrl;
+  }
+
+  static async removeFile(storagePath: string): Promise<void> {
+    const { error } = await supabaseAdmin.storage
+      .from('materials')
+      .remove([storagePath]);
+
+    if (error) throw new Error(error.message);
+  }
+
+  static async resolveFileUrl(fileUrl: string, expiresInSeconds = 3600): Promise<string> {
+    if (isExternalFileUrl(fileUrl)) {
+      return fileUrl;
+    }
+
+    return this.getSignedUrl(fileUrl, expiresInSeconds);
   }
 }

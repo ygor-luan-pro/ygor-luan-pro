@@ -17,6 +17,16 @@ vi.mock('../../../src/services/lessons.service', () => ({
 vi.mock('../../../src/services/materials.service', () => ({
   MaterialsService: {
     create: vi.fn().mockResolvedValue({ id: 'mat-1', title: 'PDF' }),
+    getById: vi.fn().mockResolvedValue({
+      id: 'mat-1',
+      lesson_id: 'lesson-1',
+      title: 'PDF',
+      file_url: 'lesson-1/material.pdf',
+      file_type: 'PDF',
+      file_size: 128,
+      created_at: new Date().toISOString(),
+    }),
+    removeFile: vi.fn().mockResolvedValue(undefined),
     delete: vi.fn().mockResolvedValue(undefined),
   },
 }));

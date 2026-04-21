@@ -27,6 +27,12 @@ const [lesson, progress, materials, allLessons, existingRating] = await Promise.
 if (!lesson) return Astro.redirect('/dashboard/aulas');
 
 const { prev, next, position, total } = findAdjacentLessons(allLessons, id);
+const resolvedMaterials = await Promise.all(
+  materials.map(async (material) => ({
+    ...material,
+    resolvedUrl: await MaterialsService.resolveFileUrl(material.file_url).catch(() => material.file_url),
+  })),
+);
 ---
 
 <DashboardLayout title={lesson.title} user={user!}>
@@ -58,16 +64,16 @@ const { prev, next, position, total } = findAdjacentLessons(allLessons, id);
     </div>
   )}
 
-  {materials.length > 0 && (
+  {resolvedMaterials.length > 0 && (
     <div class="mt-6" style="background-color: var(--mahogany); border: 1px solid var(--ink); padding: 1.5rem;">
       <h2 class="font-sans font-medium text-xs tracking-[0.15em] uppercase mb-4" style="color: var(--fade);">
         Materiais desta aula
       </h2>
       <ul class="space-y-2">
-        {materials.map((m) => (
+        {resolvedMaterials.map((m) => (
           <li>
             <a
-              href={m.file_url}
+              href={m.resolvedUrl}
               target="_blank"
               rel="noopener noreferrer"
               class="flex items-center gap-3 font-sans text-sm transition-colors"

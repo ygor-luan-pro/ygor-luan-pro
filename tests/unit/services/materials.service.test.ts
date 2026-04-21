@@ -127,6 +127,50 @@ describe('MaterialsService', () => {
     });
   });
 
+  describe('removeFile', () => {
+    it('remove arquivo do bucket materials', async () => {
+      const remove = vi.fn().mockResolvedValue({ data: [], error: null });
+      vi.mocked(supabaseAdmin.storage.from).mockReturnValueOnce({
+        remove,
+      } as never);
+
+      await expect(MaterialsService.removeFile('lesson-1/abc-file.pdf')).resolves.toBeUndefined();
+      expect(remove).toHaveBeenCalledWith(['lesson-1/abc-file.pdf']);
+    });
+
+    it('lança erro quando remoção do storage falha', async () => {
+      vi.mocked(supabaseAdmin.storage.from).mockReturnValueOnce({
+        remove: vi.fn().mockResolvedValue({
+          data: null,
+          error: { message: 'remove failed' },
+        }),
+      } as never);
+
+      await expect(MaterialsService.removeFile('lesson-1/missing.pdf')).rejects.toThrow('remove failed');
+    });
+  });
+
+  describe('resolveFileUrl', () => {
+    it('retorna URL externa sem assinar novamente', async () => {
+      await expect(
+        MaterialsService.resolveFileUrl('https://drive.google.com/file/d/abc/view'),
+      ).resolves.toBe('https://drive.google.com/file/d/abc/view');
+    });
+
+    it('assina caminho relativo de storage', async () => {
+      vi.mocked(supabaseAdmin.storage.from).mockReturnValueOnce({
+        createSignedUrl: vi.fn().mockResolvedValue({
+          data: { signedUrl: 'https://signed.url/material.pdf' },
+          error: null,
+        }),
+      } as never);
+
+      await expect(
+        MaterialsService.resolveFileUrl('lesson-1/material.pdf'),
+      ).resolves.toBe('https://signed.url/material.pdf');
+    });
+  });
+
   describe('getByLessonId', () => {
     it('retorna materiais de uma aula', async () => {
       vi.mocked(supabaseAdmin.from).mockReturnValueOnce({

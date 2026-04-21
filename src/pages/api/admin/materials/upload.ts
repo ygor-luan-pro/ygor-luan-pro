@@ -3,12 +3,27 @@ import { MaterialsService } from '../../../../services/materials.service';
 import { UsersService } from '../../../../services/users.service';
 import { supabaseAdmin } from '../../../../lib/supabase-admin';
 
+const MAX_UPLOAD_BYTES = 50 * 1024 * 1024;
+const ALLOWED_EXTENSIONS: Record<string, string> = {
+  pdf: 'application/pdf',
+  jpg: 'image/jpeg',
+  jpeg: 'image/jpeg',
+  png: 'image/png',
+  zip: 'application/zip',
+  xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+};
+
 export const POST: APIRoute = async ({ request, locals }) => {
   if (!locals.user) {
     return new Response(JSON.stringify({ error: 'Não autenticado' }), { status: 401 });
   }
   if (!(await UsersService.isAdmin(locals.user.id))) {
     return new Response(JSON.stringify({ error: 'Acesso negado' }), { status: 403 });
+  }
+
+  const contentLength = Number(request.headers.get('content-length'));
+  if (Number.isFinite(contentLength) && contentLength > MAX_UPLOAD_BYTES) {
+    return new Response(JSON.stringify({ error: 'Arquivo excede o limite de 50 MB' }), { status: 413 });
   }
 
   const formData = await request.formData();
@@ -25,17 +40,6 @@ export const POST: APIRoute = async ({ request, locals }) => {
     return new Response(JSON.stringify({ error: 'lessonId inválido' }), { status: 400 });
   }
 
-  const ALLOWED_EXTENSIONS: Record<string, string> = {
-    pdf: 'application/pdf',
-    jpg: 'image/jpeg',
-    jpeg: 'image/jpeg',
-    png: 'image/png',
-    webp: 'image/webp',
-    mp4: 'video/mp4',
-    zip: 'application/zip',
-    doc: 'application/msword',
-    docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-  };
   const fileExt = (file.name.split('.').pop() ?? '').toLowerCase();
   const contentType = ALLOWED_EXTENSIONS[fileExt];
   if (!contentType) {
@@ -44,6 +48,11 @@ export const POST: APIRoute = async ({ request, locals }) => {
       { status: 400 },
     );
   }
+
+  if (file.size > MAX_UPLOAD_BYTES) {
+    return new Response(JSON.stringify({ error: 'Arquivo excede o limite de 50 MB' }), { status: 413 });
+  }
+
   const storagePath = `${lessonId}/${crypto.randomUUID()}.${fileExt}`;
 
   const { error: uploadError } = await supabaseAdmin.storage
@@ -58,7 +67,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     lesson_id: lessonId,
     title,
     file_url: storagePath,
-    file_type: file.type || null,
+    file_type: fileExt.toUpperCase(),
     file_size: file.size || null,
   });
 

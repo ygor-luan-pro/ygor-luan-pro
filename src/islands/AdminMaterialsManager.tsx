@@ -9,8 +9,8 @@ interface Props {
 export default function AdminMaterialsManager({ lessonId, initialMaterials }: Props) {
   const [materials, setMaterials] = useState<Material[]>(initialMaterials);
   const [title, setTitle] = useState('');
-  const [fileUrl, setFileUrl] = useState('');
-  const [fileType, setFileType] = useState('PDF');
+  const [file, setFile] = useState<File | null>(null);
+  const [fileInputKey, setFileInputKey] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -28,17 +28,24 @@ export default function AdminMaterialsManager({ lessonId, initialMaterials }: Pr
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch('/api/admin/materials', {
+      if (!file) throw new Error('Selecione um arquivo');
+
+      const formData = new FormData();
+      formData.set('lessonId', lessonId);
+      formData.set('title', title);
+      formData.set('file', file);
+
+      const res = await fetch('/api/admin/materials/upload', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ lesson_id: lessonId, title, file_url: fileUrl, file_type: fileType }),
+        headers: { Accept: 'application/json' },
+        body: formData,
       });
       const data = await res.json() as Material & { error?: string };
       if (!res.ok) throw new Error((data as { error?: string }).error ?? 'Erro ao adicionar');
       setMaterials((prev) => [...prev, data]);
       setTitle('');
-      setFileUrl('');
-      setFileType('PDF');
+      setFile(null);
+      setFileInputKey((prev) => prev + 1);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro inesperado');
     } finally {
@@ -104,28 +111,16 @@ export default function AdminMaterialsManager({ lessonId, initialMaterials }: Pr
           />
         </div>
         <div>
-          <label style={labelStyle}>URL do arquivo *</label>
+          <label htmlFor="material-file" style={labelStyle}>Arquivo *</label>
           <input
-            type="url"
-            value={fileUrl}
-            onChange={(e) => setFileUrl(e.target.value)}
+            key={fileInputKey}
+            id="material-file"
+            type="file"
+            onChange={(e) => setFile(e.target.files?.[0] ?? null)}
             required
             className="input-field"
-            placeholder="https://drive.google.com/..."
+            accept=".pdf,.jpg,.jpeg,.png,.zip,.xlsx"
           />
-        </div>
-        <div>
-          <label style={labelStyle}>Tipo</label>
-          <select
-            value={fileType}
-            onChange={(e) => setFileType(e.target.value)}
-            className="input-field"
-          >
-            <option>PDF</option>
-            <option>DOC</option>
-            <option>ZIP</option>
-            <option>Outro</option>
-          </select>
         </div>
         {error && (
           <div
@@ -141,7 +136,7 @@ export default function AdminMaterialsManager({ lessonId, initialMaterials }: Pr
           </div>
         )}
         <button type="submit" disabled={loading} className="btn-primary">
-          {loading ? 'Adicionando...' : 'Adicionar material'}
+          {loading ? 'Enviando...' : 'Enviar material'}
         </button>
       </form>
     </div>

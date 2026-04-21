@@ -11,7 +11,15 @@ export const DELETE: APIRoute = async ({ locals, params }) => {
   }
 
   try {
+    const material = await MaterialsService.getById(params.id);
     await MaterialsService.delete(params.id);
+    if (!/^https?:\/\//i.test(material.file_url)) {
+      try {
+        await MaterialsService.removeFile(material.file_url);
+      } catch (err) {
+        console.error('materials DELETE storage cleanup:', err);
+      }
+    }
     return new Response(null, { status: 204 });
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Erro ao remover material';
