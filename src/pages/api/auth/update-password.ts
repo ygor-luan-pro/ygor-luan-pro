@@ -3,6 +3,7 @@ import { createServerClient, parseCookieHeader } from '@supabase/ssr';
 import type { CookieOptions } from '@supabase/ssr';
 import type { Database } from '../../../types/database.types';
 import { validatePassword } from '../../../lib/password-policy';
+import { isSameOrigin } from '../../../lib/request-origin';
 
 const RECOVERY_WINDOW_MS = 10 * 60 * 1000;
 
@@ -12,6 +13,13 @@ function isRecoverySession(lastSignInAt: string | undefined): boolean {
 }
 
 export const POST: APIRoute = async ({ request, cookies }) => {
+  if (!isSameOrigin(request)) {
+    return new Response(JSON.stringify({ error: 'Origem inválida.' }), {
+      status: 403,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
   const supabase = createServerClient<Database>(
     import.meta.env.PUBLIC_SUPABASE_URL,
     import.meta.env.PUBLIC_SUPABASE_ANON_KEY,

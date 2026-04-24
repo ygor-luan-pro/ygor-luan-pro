@@ -18,6 +18,7 @@ function makeContext(body: string, ip = '203.0.113.10') {
     headers: {
       'Content-Type': 'application/json',
       'x-forwarded-for': ip,
+      Origin: 'http://localhost:4321',
     },
     body,
   });

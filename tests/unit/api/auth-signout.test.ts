@@ -14,7 +14,10 @@ const { GET, POST } = await import('../../../src/pages/api/auth/signout');
 function makeContext(method: 'GET' | 'POST') {
   const url = new URL('http://localhost/api/auth/signout');
   return {
-    request: new Request(url.toString(), { method }),
+    request: new Request(url.toString(), {
+      method,
+      headers: method === 'POST' ? { Origin: 'http://localhost:4321' } : {},
+    }),
     cookies: { set: vi.fn() },
     redirect: (path: string) =>
       new Response(null, { status: 302, headers: { Location: path } }),

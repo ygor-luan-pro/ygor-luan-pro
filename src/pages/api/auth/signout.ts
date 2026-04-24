@@ -2,6 +2,7 @@ import type { APIRoute } from 'astro';
 import { createServerClient, parseCookieHeader } from '@supabase/ssr';
 import type { CookieOptions } from '@supabase/ssr';
 import type { Database } from '../../../types/database.types';
+import { isSameOrigin } from '../../../lib/request-origin';
 
 function methodNotAllowed(): Response {
   return new Response(null, {
@@ -13,6 +14,10 @@ function methodNotAllowed(): Response {
 export const GET: APIRoute = async () => methodNotAllowed();
 
 export const POST: APIRoute = async ({ request, cookies, redirect }) => {
+  if (!isSameOrigin(request)) {
+    return new Response(null, { status: 403 });
+  }
+
   const supabase = createServerClient<Database>(
     import.meta.env.PUBLIC_SUPABASE_URL,
     import.meta.env.PUBLIC_SUPABASE_ANON_KEY,

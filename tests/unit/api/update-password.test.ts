@@ -35,7 +35,7 @@ function makeCtx(body: unknown, cookies?: Record<string, string>) {
   return {
     request: new Request('http://localhost/api/auth/update-password', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', Cookie: '' },
+      headers: { 'Content-Type': 'application/json', Cookie: '', Origin: 'http://localhost:4321' },
       body: JSON.stringify(body),
     }),
     cookies: {
@@ -64,7 +64,7 @@ describe('POST /api/auth/update-password', () => {
       const ctx = {
         request: new Request('http://localhost/api/auth/update-password', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', Cookie: '' },
+          headers: { 'Content-Type': 'application/json', Cookie: '', Origin: 'http://localhost:4321' },
           body: '{invalid',
         }),
         cookies: { set: vi.fn(), get: vi.fn() },
