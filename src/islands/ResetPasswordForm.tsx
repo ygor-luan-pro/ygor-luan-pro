@@ -43,18 +43,22 @@ export default function ResetPasswordForm() {
       return;
     }
 
-    if (password.length < 6) {
-      setErrorMessage('A senha deve ter no mínimo 6 caracteres.');
-      return;
-    }
-
     setLoading(true);
     setErrorMessage(null);
 
-    const { error } = await supabase.auth.updateUser({ password });
+    const isRecovery = new URLSearchParams(window.location.search).get('recovery') === '1';
 
-    if (error) {
-      setErrorMessage(error.message);
+    const res = await fetch('/api/auth/update-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password, isRecovery }),
+    });
+
+    const data = await res.json() as { error?: string; reasons?: string[] };
+
+    if (!res.ok) {
+      const msg = data.reasons?.join(' ') ?? data.error ?? 'Erro ao redefinir senha.';
+      setErrorMessage(msg);
       setLoading(false);
       return;
     }
@@ -114,7 +118,7 @@ export default function ResetPasswordForm() {
           textAlign: 'center',
         }}
       >
-        Senha redefinida! Redirecionando...
+        Senha redefinida! Redirecionando para o login...
       </div>
     );
   }
@@ -128,7 +132,7 @@ export default function ResetPasswordForm() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
-          minLength={6}
+          minLength={8}
           className="input-field"
           placeholder="••••••••"
         />
@@ -141,7 +145,7 @@ export default function ResetPasswordForm() {
           value={confirm}
           onChange={(e) => setConfirm(e.target.value)}
           required
-          minLength={6}
+          minLength={8}
           className="input-field"
           placeholder="••••••••"
         />

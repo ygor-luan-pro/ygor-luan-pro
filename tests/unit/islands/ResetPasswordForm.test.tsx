@@ -2,27 +2,30 @@
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { mockGetUser, mockUpdateUser } = vi.hoisted(() => ({
+const { mockGetUser } = vi.hoisted(() => ({
   mockGetUser: vi.fn(),
-  mockUpdateUser: vi.fn(),
 }));
 
 vi.mock('@supabase/ssr', () => ({
   createBrowserClient: vi.fn(() => ({
-    auth: {
-      getUser: mockGetUser,
-      updateUser: mockUpdateUser,
-    },
+    auth: { getUser: mockGetUser },
   })),
 }));
 
 import ResetPasswordForm from '../../../src/islands/ResetPasswordForm';
 
+function mockFetch(ok: boolean, body: unknown) {
+  vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
+    ok,
+    json: () => Promise.resolve(body),
+  }));
+}
+
 describe('ResetPasswordForm', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     Object.defineProperty(window, 'location', {
-      value: { href: '' },
+      value: { href: '', search: '?recovery=1' },
       writable: true,
       configurable: true,
     });
@@ -86,9 +89,9 @@ describe('ResetPasswordForm', () => {
     expect(screen.getByText('As senhas não conferem.')).toBeInTheDocument();
   });
 
-  it('mostra erro quando updateUser falhar', async () => {
+  it('mostra erro quando endpoint retornar erro', async () => {
     mockGetUser.mockResolvedValueOnce({ data: { user: { id: 'user-123' } } });
-    mockUpdateUser.mockResolvedValueOnce({ error: { message: 'Senha muito fraca' } });
+    mockFetch(false, { error: 'Senha muito fraca' });
 
     render(<ResetPasswordForm />);
 
@@ -109,9 +112,32 @@ describe('ResetPasswordForm', () => {
     });
   });
 
+  it('mostra razões de política quando endpoint retornar 422', async () => {
+    mockGetUser.mockResolvedValueOnce({ data: { user: { id: 'user-123' } } });
+    mockFetch(false, { error: 'Senha inválida', reasons: ['A senha deve ter no mínimo 8 caracteres.'] });
+
+    render(<ResetPasswordForm />);
+
+    await waitFor(() => {
+      expect(screen.getAllByPlaceholderText('••••••••')).toHaveLength(2);
+    });
+
+    const [novaSenha, confirmar] = screen.getAllByPlaceholderText('••••••••');
+    fireEvent.change(novaSenha, { target: { value: 'curta' } });
+    fireEvent.change(confirmar, { target: { value: 'curta' } });
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /redefinir/i }));
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText('A senha deve ter no mínimo 8 caracteres.')).toBeInTheDocument();
+    });
+  });
+
   it('redireciona para /login após sucesso', async () => {
     mockGetUser.mockResolvedValueOnce({ data: { user: { id: 'user-123' } } });
-    mockUpdateUser.mockResolvedValueOnce({ data: { user: {} }, error: null });
+    mockFetch(true, { ok: true });
 
     vi.useFakeTimers({ shouldAdvanceTime: true });
 
