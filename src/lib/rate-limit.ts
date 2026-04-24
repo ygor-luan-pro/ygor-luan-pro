@@ -109,3 +109,55 @@ export async function consumeRateLimit({
 export function resetRateLimitStore(): void {
   rateLimitStore.clear();
 }
+
+const ACCOUNT_LIMIT = 10;
+const ACCOUNT_WINDOW_MS = 60 * 60 * 1000;
+
+async function hashEmail(email: string): Promise<string> {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(email.toLowerCase()));
+  return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+export async function checkAccountLockout(email: string): Promise<RateLimitDecision> {
+  const hash = await hashEmail(email);
+  const key = `rl:acct:${hash}`;
+  const redisUrl = import.meta.env.UPSTASH_REDIS_REST_URL;
+  const redisToken = import.meta.env.UPSTASH_REDIS_REST_TOKEN;
+
+  if (redisUrl && redisToken) {
+    try {
+      const res = await fetch(`${redisUrl}/get/${encodeURIComponent(key)}`, {
+        headers: { Authorization: `Bearer ${redisToken}` },
+      });
+      if (res.ok) {
+        const data = await res.json() as { result: string | null };
+        const count = data.result ? parseInt(data.result, 10) : 0;
+        return { allowed: count < ACCOUNT_LIMIT, retryAfterSeconds: Math.ceil(ACCOUNT_WINDOW_MS / 1000) };
+      }
+    } catch { /* fallback */ }
+  }
+
+  const now = Date.now();
+  const existing = rateLimitStore.get(key);
+  if (existing && now < existing.resetAt) {
+    return {
+      allowed: existing.count < ACCOUNT_LIMIT,
+      retryAfterSeconds: Math.max(1, Math.ceil((existing.resetAt - now) / 1000)),
+    };
+  }
+  return { allowed: true, retryAfterSeconds: Math.ceil(ACCOUNT_WINDOW_MS / 1000) };
+}
+
+export async function recordAccountFailure(email: string): Promise<void> {
+  const hash = await hashEmail(email);
+  const key = `rl:acct:${hash}`;
+  const redisUrl = import.meta.env.UPSTASH_REDIS_REST_URL;
+  const redisToken = import.meta.env.UPSTASH_REDIS_REST_TOKEN;
+
+  if (redisUrl && redisToken) {
+    await consumeRateLimitRedis(key, ACCOUNT_LIMIT, ACCOUNT_WINDOW_MS, redisUrl, redisToken).catch(() => {});
+    return;
+  }
+
+  consumeRateLimitLocal(key, ACCOUNT_LIMIT, ACCOUNT_WINDOW_MS, Date.now());
+}

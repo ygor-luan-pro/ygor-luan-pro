@@ -1,7 +1,7 @@
 import type { APIRoute } from 'astro';
 import { createServerClient, parseCookieHeader } from '@supabase/ssr';
 import type { CookieOptions } from '@supabase/ssr';
-import { consumeRateLimit, getClientIp } from '../../../lib/rate-limit';
+import { checkAccountLockout, consumeRateLimit, getClientIp, recordAccountFailure } from '../../../lib/rate-limit';
 import { isSameOrigin } from '../../../lib/request-origin';
 import type { Database } from '../../../types/database.types';
 
@@ -44,6 +44,17 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     });
   }
 
+  const accountLockout = await checkAccountLockout(email);
+  if (!accountLockout.allowed) {
+    return new Response(JSON.stringify({ error: 'Muitas tentativas. Tente novamente em instantes.' }), {
+      status: 429,
+      headers: {
+        'Content-Type': 'application/json',
+        'Retry-After': String(accountLockout.retryAfterSeconds),
+      },
+    });
+  }
+
   const supabase = createServerClient<Database>(
     import.meta.env.PUBLIC_SUPABASE_URL,
     import.meta.env.PUBLIC_SUPABASE_ANON_KEY,
@@ -62,6 +73,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
   const { error } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) {
+    void recordAccountFailure(email).catch(() => {});
     return new Response(JSON.stringify({ error: 'E-mail ou senha inválidos' }), {
       status: 401,
       headers: { 'Content-Type': 'application/json' },
