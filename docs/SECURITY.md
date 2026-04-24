@@ -44,7 +44,7 @@
 
 ### Webhook Cakto
 
-- HMAC com `timingSafeEqual` (Node crypto).
+- Validação por shared-secret no corpo do payload (`body.secret`), comparado com `timingSafeEqual` (Node crypto) para evitar timing attacks.
 - Eventos tratados: `purchase_approved` (cria acesso) + `refund`/`chargeback`/`purchase_refunded` (revoga acesso via `orders.status = 'refunded'`).
 
 ### Content-Security-Policy
@@ -64,7 +64,7 @@
 
 - `SUPABASE_SERVICE_ROLE_KEY` nunca exposta no frontend.
 - `supabaseAdmin` usado apenas em webhooks/server-only contexts.
-- HMAC validado com `timingSafeEqual` (Node crypto) nos webhooks.
+- Shared-secret de webhook comparado com `timingSafeEqual` (Node crypto) para evitar timing attacks.
 - Middleware centraliza auth + autorização para rotas protegidas.
 - Nenhum segredo comitado — usar `.env.local` (ignorado pelo git).
 

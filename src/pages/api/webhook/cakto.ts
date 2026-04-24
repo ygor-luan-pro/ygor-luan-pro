@@ -1,6 +1,7 @@
 import { timingSafeEqual } from 'node:crypto';
 import type { APIRoute } from 'astro';
 import { consumeRateLimit, getClientIp } from '../../../lib/rate-limit';
+import { logger } from '../../../lib/logger';
 import { supabaseAdmin } from '../../../lib/supabase-admin';
 import { EmailService } from '../../../services/email.service';
 import { OrdersService } from '../../../services/orders.service';
@@ -79,6 +80,12 @@ function isCaktoWebhookPayload(value: unknown): value is CaktoWebhookPayload {
     && isPayloadData(candidate.data);
 }
 
+function isAlreadyRegisteredError(err: { message?: string; status?: number; code?: string }): boolean {
+  return err.status === 422
+    || err.code === 'email_exists'
+    || (typeof err.message === 'string' && err.message.includes('already registered'));
+}
+
 export const POST: APIRoute = async ({ request }) => {
   const rateLimit = await consumeRateLimit({
     bucket: 'webhook-cakto',
@@ -106,7 +113,7 @@ export const POST: APIRoute = async ({ request }) => {
 
   const secret = import.meta.env.CAKTO_WEBHOOK_SECRET;
   if (!secret) {
-    console.error('CAKTO_WEBHOOK_SECRET não configurado');
+    logger.error('cakto.webhook.secret_missing', {});
     return new Response('Unauthorized', { status: 401 });
   }
   if (!verifyCaktoSecret(body.secret, secret)) {
@@ -114,9 +121,12 @@ export const POST: APIRoute = async ({ request }) => {
   }
 
   if (REFUND_EVENTS.has(body.event)) {
-    void OrdersService.updateStatus(body.data.id, 'refunded').catch((err: unknown) => {
-      console.error('Webhook Cakto: erro ao revogar acesso por refund', err);
-    });
+    try {
+      await OrdersService.updateStatus(body.data.id, 'refunded');
+    } catch (err) {
+      logger.error('cakto.webhook.refund_failed', { paymentId: body.data.id, err: String(err) });
+      return new Response('Error processing refund', { status: 500 });
+    }
     return new Response('OK', { status: 200 });
   }
 
@@ -153,30 +163,31 @@ export const POST: APIRoute = async ({ request }) => {
 
   let userId = authData?.user?.id;
 
-  if (createError?.message?.includes('already registered')) {
-    const { data: profile } = await supabaseAdmin
-      .from('profiles')
-      .select('id')
-      .eq('email', email)
-      .single();
-    userId = profile?.id ?? undefined;
-  } else if (createError) {
-    console.error('Webhook Cakto: erro ao criar usuário', createError);
-    return new Response('Error creating user', { status: 500 });
+  if (createError) {
+    if (isAlreadyRegisteredError(createError)) {
+      const { data: profile } = await supabaseAdmin
+        .from('profiles')
+        .select('id')
+        .eq('email', email)
+        .maybeSingle();
+      userId = profile?.id ?? undefined;
+    } else {
+      logger.error('cakto.webhook.create_user_failed', { email, err: createError.message });
+      return new Response('Error creating user', { status: 500 });
+    }
   }
 
   if (!userId) {
+    logger.error('cakto.webhook.user_not_resolved', { email });
     return new Response('Could not resolve user', { status: 500 });
   }
 
-  await supabaseAdmin.from('profiles').upsert({
-    id: userId,
-    email,
-    full_name: name ?? null,
-    role: 'student',
-  });
+  await supabaseAdmin.from('profiles').upsert(
+    { id: userId, email, full_name: name ?? null },
+    { onConflict: 'id', ignoreDuplicates: true },
+  );
 
-  const { error: orderError } = await supabaseAdmin.from('orders').upsert(
+  const { data: orderData, error: orderError } = await supabaseAdmin.from('orders').upsert(
     {
       user_id: userId,
       payment_id: paymentId,
@@ -186,11 +197,15 @@ export const POST: APIRoute = async ({ request }) => {
       approved_at: new Date().toISOString(),
     },
     { onConflict: 'payment_id', ignoreDuplicates: true },
-  );
+  ).select('id');
 
   if (orderError) {
-    console.error('Webhook Cakto: erro ao criar pedido', orderError);
+    logger.error('cakto.webhook.order_upsert_failed', { paymentId, err: orderError.message });
     return new Response('Error creating order', { status: 500 });
+  }
+
+  if (!orderData || orderData.length === 0) {
+    return new Response('OK', { status: 200 });
   }
 
   const { data: linkData, error: linkError } = await supabaseAdmin.auth.admin.generateLink({
@@ -199,7 +214,7 @@ export const POST: APIRoute = async ({ request }) => {
   });
 
   if (linkError || !linkData?.properties?.action_link) {
-    console.error('Webhook Cakto: erro ao gerar link de acesso', linkError);
+    logger.error('cakto.webhook.generate_link_failed', { email, err: linkError?.message ?? 'no action_link' });
     return new Response('Error generating access link', { status: 500 });
   }
 

@@ -136,11 +136,11 @@ describe('POST /api/webhook/cakto', () => {
       expect(OrdersService.updateStatus).toHaveBeenCalledWith(payload.data.id, 'refunded');
     });
 
-    it('retorna 200 mesmo se updateStatus falhar (fire-and-forget resiliente)', async () => {
+    it('retorna 500 quando updateStatus rejeita no refund', async () => {
       vi.mocked(OrdersService.updateStatus).mockRejectedValueOnce(new Error('DB error'));
       const payload = makeCaktoPayload(CAKTO_TEST_SECRET, { event: 'refund' });
       const res = await POST({ request: buildRequest(payload) } as never);
-      expect(res.status).toBe(200);
+      expect(res.status).toBe(500);
     });
   });
 
@@ -212,10 +212,12 @@ describe('POST /api/webhook/cakto', () => {
           }),
         } as never)
         .mockReturnValueOnce({
-          upsert: vi.fn().mockResolvedValue({ error: null }),
+          upsert: vi.fn().mockResolvedValue({ data: null, error: null }),
         } as never)
         .mockReturnValueOnce({
-          upsert: vi.fn().mockResolvedValue({ error: null }),
+          upsert: vi.fn().mockReturnValue({
+            select: vi.fn().mockResolvedValue({ data: [{ id: 'new-order-id' }], error: null }),
+          }),
         } as never);
 
       vi.mocked(supabaseAdmin.auth.admin.createUser).mockResolvedValueOnce({
