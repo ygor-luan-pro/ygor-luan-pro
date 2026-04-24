@@ -56,6 +56,7 @@ test.describe('Fluxo do aluno autenticado', () => {
     await page.goto('/login');
     const response = await page.request.post('/api/auth/login', {
       data: { email: E2E_EMAIL, password: E2E_PASSWORD },
+      headers: { Origin: process.env.E2E_ORIGIN ?? 'http://localhost:4321' },
     });
     if (!response.ok()) {
       throw new Error(`Login falhou: ${response.status()} ${await response.text()}`);
