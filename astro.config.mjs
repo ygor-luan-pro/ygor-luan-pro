@@ -10,6 +10,9 @@ export default defineConfig({
   site: 'https://ygorluanacademy.com.br',
   output: 'server',
   adapter: vercel(),
+  security: {
+    checkOrigin: false,
+  },
   integrations: [
     react(),
     tailwind({ applyBaseStyles: false }),

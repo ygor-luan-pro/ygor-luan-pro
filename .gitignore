@@ -19,12 +19,15 @@ pnpm-debug.log*
 .env.production
 .env.local
 
-# claude / mcp / opencode
+# claude / mcp / opencode / codex / agent tooling
 .claude/
 .omc/
 .mcp.json
 .opencode.json
 opencode.json
+.agents/
+.codex/
+.codex-plugins/
 
 # test artifacts
 playwright-report/

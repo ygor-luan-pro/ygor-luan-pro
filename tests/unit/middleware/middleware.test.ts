@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mockGetUser = vi.fn();
 
@@ -50,6 +50,15 @@ function makeCtx(pathname: string) {
 }
 
 const next = vi.fn(() => Promise.resolve(new Response('OK', { status: 200 })));
+
+function makeCtxPost(pathname: string, origin?: string) {
+  const headers: Record<string, string> = {};
+  if (origin) headers['Origin'] = origin;
+  return {
+    ...makeCtx(pathname),
+    request: new Request(`http://localhost${pathname}`, { method: 'POST', headers }),
+  };
+}
 
 describe('middleware — rotas públicas', () => {
   beforeEach(() => {
@@ -195,6 +204,51 @@ describe('middleware — aluno com acesso', () => {
     const ctx = makeCtx('/admin');
     const res = await (onRequest as Function)(ctx, next);
     expect(res.headers.get('Location')).toBe('/dashboard');
+  });
+});
+
+describe('middleware — CSRF guard em rotas API mutantes', () => {
+  afterEach(() => vi.unstubAllEnvs());
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    next.mockResolvedValue(new Response('OK', { status: 200 }));
+    vi.stubEnv('PUBLIC_SITE_URL', 'http://localhost:4321');
+  });
+
+  it('retorna 403 em POST /api/progress/complete sem Origin', async () => {
+    const ctx = makeCtxPost('/api/progress/complete');
+    const res = await (onRequest as Function)(ctx, next);
+    expect(res.status).toBe(403);
+    expect(mockGetUser).not.toHaveBeenCalled();
+  });
+
+  it('retorna 403 em POST /api/progress/complete com cross-origin', async () => {
+    const ctx = makeCtxPost('/api/progress/complete', 'https://evil.com');
+    const res = await (onRequest as Function)(ctx, next);
+    expect(res.status).toBe(403);
+    expect(mockGetUser).not.toHaveBeenCalled();
+  });
+
+  it('GET /api/progress sem Origin passa CSRF e cai em auth (401 sem user)', async () => {
+    mockGetUser.mockResolvedValue({ data: { user: null } });
+    const ctx = makeCtx('/api/progress/complete');
+    const res = await (onRequest as Function)(ctx, next);
+    expect(res.status).toBe(401);
+  });
+
+  it('POST com origin correto passa CSRF e cai em auth (401 sem user)', async () => {
+    mockGetUser.mockResolvedValue({ data: { user: null } });
+    const ctx = makeCtxPost('/api/progress/complete', 'http://localhost:4321');
+    const res = await (onRequest as Function)(ctx, next);
+    expect(res.status).toBe(401);
+  });
+
+  it('retorna 403 em DELETE /api/comments/123 sem Origin', async () => {
+    const ctx = makeCtxPost('/api/comments/123');
+    const res = await (onRequest as Function)(ctx, next);
+    expect(res.status).toBe(403);
+    expect(mockGetUser).not.toHaveBeenCalled();
   });
 });
 

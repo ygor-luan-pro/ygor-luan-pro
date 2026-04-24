@@ -33,6 +33,20 @@ describe('/api/auth/signout', () => {
     expect(mockSignOut).not.toHaveBeenCalled();
   });
 
+  it('retorna 403 em POST com cross-origin', async () => {
+    const ctx = {
+      request: new Request('http://localhost/api/auth/signout', {
+        method: 'POST',
+        headers: { Origin: 'https://evil.com' },
+      }),
+      cookies: { set: vi.fn() },
+      redirect: vi.fn(),
+    } as never;
+    const res = await POST(ctx);
+    expect(res.status).toBe(403);
+    expect(mockSignOut).not.toHaveBeenCalled();
+  });
+
   it('encerra a sessão no POST e redireciona para /', async () => {
     mockSignOut.mockResolvedValueOnce({ error: null });
 

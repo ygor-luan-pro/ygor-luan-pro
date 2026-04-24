@@ -5,7 +5,9 @@ import type { Database } from '../types/database.types';
 import { UsersService } from '../services/users.service';
 import { OrdersService } from '../services/orders.service';
 import { applySecurityHeaders } from '../lib/security-headers';
+import { isSameOrigin } from '../lib/request-origin';
 
+const MUTATING_METHODS = ['POST', 'PUT', 'PATCH', 'DELETE'];
 const PROTECTED_PREFIXES = ['/dashboard', '/admin', '/api/progress', '/api/admin', '/api/quiz', '/api/lessons', '/api/comments'];
 const ADMIN_PREFIXES = ['/admin', '/api/admin'];
 const DASHBOARD_PREFIXES = ['/dashboard'];
@@ -23,6 +25,14 @@ export const onRequest = defineMiddleware(async (
 
   if (!isProtected && !isAuthAware) {
     return respond(await next());
+  }
+
+  const isApiPath = API_PREFIXES.some((p) => pathname.startsWith(p));
+  if (isApiPath && MUTATING_METHODS.includes(request.method) && !isSameOrigin(request)) {
+    return respond(new Response(JSON.stringify({ error: 'Origem inválida' }), {
+      status: 403,
+      headers: { 'Content-Type': 'application/json' },
+    }));
   }
 
   const supabase = createServerClient<Database>(
