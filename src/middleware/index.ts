@@ -10,6 +10,7 @@ const PROTECTED_PREFIXES = ['/dashboard', '/admin', '/api/progress', '/api/admin
 const ADMIN_PREFIXES = ['/admin', '/api/admin'];
 const DASHBOARD_PREFIXES = ['/dashboard'];
 const API_PREFIXES = ['/api/progress', '/api/admin', '/api/quiz', '/api/lessons', '/api/comments'];
+const AUTH_AWARE_PREFIXES = ['/login', '/redefinir-senha'];
 
 export const onRequest = defineMiddleware(async (
   { url, request, cookies, locals, redirect },
@@ -18,8 +19,9 @@ export const onRequest = defineMiddleware(async (
   const respond = (response: Response) => applySecurityHeaders(response, url);
   const { pathname } = url;
   const isProtected = PROTECTED_PREFIXES.some((p) => pathname.startsWith(p));
+  const isAuthAware = AUTH_AWARE_PREFIXES.some((p) => pathname.startsWith(p));
 
-  if (!isProtected) {
+  if (!isProtected && !isAuthAware) {
     return respond(await next());
   }
 
@@ -44,6 +46,10 @@ export const onRequest = defineMiddleware(async (
 
   const { data: { user } } = await supabase.auth.getUser();
   locals.user = user;
+
+  if (isAuthAware && !isProtected) {
+    return respond(await next());
+  }
 
   const isApiRoute = API_PREFIXES.some((p) => pathname.startsWith(p));
 

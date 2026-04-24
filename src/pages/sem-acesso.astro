@@ -1,0 +1,59 @@
+---
+import Header from '../components/layout/Header.astro';
+import Footer from '../components/layout/Footer.astro';
+import '../styles/global.css';
+
+const { user } = Astro.locals;
+if (!user) return Astro.redirect('/login');
+---
+
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="robots" content="noindex" />
+    <title>Acesso Pendente – Ygor Luan Academy</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <Header />
+
+    <main class="max-w-2xl mx-auto px-6 pt-32 pb-20 text-center">
+      <div class="mb-8" style="color: var(--copper); font-size: 3rem;">⏳</div>
+
+      <h1 class="font-display text-4xl font-semibold mb-4" style="color: var(--cream);">
+        Acesso pendente
+      </h1>
+
+      <p class="font-sans text-base mb-6" style="color: var(--fade); line-height: 1.75;">
+        Sua conta existe, mas ainda não identificamos um pagamento aprovado vinculado a ela.
+        Se você acabou de comprar, pode levar alguns minutos para o acesso ser liberado — tente novamente em instantes.
+      </p>
+
+      <p class="font-sans text-sm mb-10" style="color: var(--fade);">
+        Se acredita que houve um erro, entre em contato pelo e-mail
+        <a href="mailto:suporte@ygorluanacademy.com.br" style="color: var(--copper); text-decoration: underline; text-underline-offset: 3px;">
+          suporte@ygorluanacademy.com.br
+        </a>.
+      </p>
+
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a href="/#comprar" class="btn-primary">
+          Adquirir o curso
+        </a>
+
+        <form method="POST" action="/api/auth/signout">
+          <button type="submit" class="btn-secondary w-full sm:w-auto">
+            Sair da conta
+          </button>
+        </form>
+      </div>
+    </main>
+
+    <Footer />
+  </body>
+</html>
