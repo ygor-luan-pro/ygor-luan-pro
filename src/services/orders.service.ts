@@ -35,6 +35,28 @@ export class OrdersService {
     }
   }
 
+  static async getLatestByUserId(userId: string): Promise<Order | null> {
+    if (!userId) throw new Error('getLatestByUserId: userId required');
+    try {
+      const { data, error } = await supabaseAdmin
+        .from('orders')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (error) {
+        logger.error('orders.getLatestByUserId failed', { userId, code: error.code, message: error.message });
+        return null;
+      }
+      return data;
+    } catch (err) {
+      logger.error('orders.getLatestByUserId threw', { userId, err: err instanceof Error ? err.message : String(err) });
+      return null;
+    }
+  }
+
   static async getByPaymentId(paymentId: string): Promise<Order | null> {
     const { data } = await supabaseAdmin
       .from('orders')

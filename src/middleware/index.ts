@@ -12,7 +12,7 @@ const PROTECTED_PREFIXES = ['/dashboard', '/admin', '/api/progress', '/api/admin
 const ADMIN_PREFIXES = ['/admin', '/api/admin'];
 const DASHBOARD_PREFIXES = ['/dashboard'];
 const API_PREFIXES = ['/api/progress', '/api/admin', '/api/quiz', '/api/lessons', '/api/comments'];
-const AUTH_AWARE_PREFIXES = ['/login', '/redefinir-senha'];
+const AUTH_AWARE_PREFIXES = ['/login', '/redefinir-senha', '/api/auth/access-status'];
 
 export const onRequest = defineMiddleware(async (
   { url, request, cookies, locals, redirect },

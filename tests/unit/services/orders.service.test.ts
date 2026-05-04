@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { OrdersService } from '../../../src/services/orders.service';
 import { supabaseAdmin } from '../../../src/lib/supabase-admin';
 import { logger } from '../../../src/lib/logger';
+import type { Order } from '../../../src/types';
 
 vi.mock('../../../src/lib/logger', () => ({
   logger: { info: vi.fn(), warn: vi.fn(), error: vi.fn() },
@@ -222,6 +223,69 @@ describe('OrdersService', () => {
       } as never);
 
       await expect(OrdersService.updateStatus('pay-001', 'refunded')).rejects.toThrow('update failed');
+    });
+  });
+
+  describe('getLatestByUserId', () => {
+    it('returns the most recent order for user', async () => {
+      const mockOrderLatest: Order = {
+        id: '1',
+        user_id: 'user-1',
+        payment_id: 'pay-1',
+        status: 'pending',
+        amount: 99700,
+        payment_method: 'pix',
+        created_at: '2026-01-01T00:00:00Z',
+        approved_at: null,
+      };
+      vi.mocked(supabaseAdmin.from).mockReturnValueOnce({
+        select: vi.fn().mockReturnValue({
+          eq: vi.fn().mockReturnValue({
+            order: vi.fn().mockReturnValue({
+              limit: vi.fn().mockReturnValue({
+                maybeSingle: vi.fn().mockResolvedValue({ data: mockOrderLatest, error: null }),
+              }),
+            }),
+          }),
+        }),
+      } as never);
+
+      const result = await OrdersService.getLatestByUserId('user-1');
+      expect(result).toEqual(mockOrderLatest);
+    });
+
+    it('returns null when user has no orders', async () => {
+      vi.mocked(supabaseAdmin.from).mockReturnValueOnce({
+        select: vi.fn().mockReturnValue({
+          eq: vi.fn().mockReturnValue({
+            order: vi.fn().mockReturnValue({
+              limit: vi.fn().mockReturnValue({
+                maybeSingle: vi.fn().mockResolvedValue({ data: null, error: null }),
+              }),
+            }),
+          }),
+        }),
+      } as never);
+
+      const result = await OrdersService.getLatestByUserId('user-2');
+      expect(result).toBeNull();
+    });
+
+    it('returns null and logs when supabase returns error', async () => {
+      vi.mocked(supabaseAdmin.from).mockReturnValueOnce({
+        select: vi.fn().mockReturnValue({
+          eq: vi.fn().mockReturnValue({
+            order: vi.fn().mockReturnValue({
+              limit: vi.fn().mockReturnValue({
+                maybeSingle: vi.fn().mockResolvedValue({ data: null, error: { code: 'PGRST301', message: 'DB error' } }),
+              }),
+            }),
+          }),
+        }),
+      } as never);
+
+      const result = await OrdersService.getLatestByUserId('user-3');
+      expect(result).toBeNull();
     });
   });
 
