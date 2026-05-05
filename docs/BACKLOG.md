@@ -2,7 +2,7 @@
 
 Visao rapida do estado do projeto. Quando voltar de outro projeto, bata o olho aqui.
 
-**Ultima atualizacao**: 2026-04-12 (revisado)
+**Ultima atualizacao**: 2026-05-05
 
 ---
 
@@ -12,14 +12,14 @@ Itens obrigatorios antes do deploy em producao. Nenhum feature nova ate resolver
 
 | # | Item | Status | Notas |
 |---|------|--------|-------|
-| B1 | Rodar migrations no Supabase remoto (`supabase db push`) | A fazer | Inclui 005, 006, 008, 012 |
+| B1 | Rodar migrations no Supabase remoto (`supabase db push`) | A fazer | Inclui 005-008, 010-013, 015-016 |
 | B2 | Configurar `CAKTO_WEBHOOK_SECRET` no Vercel | A fazer | Webhook retorna 401 sem ele |
 | B3 | Configurar `CAL_WEBHOOK_SECRET` no Vercel | A fazer | Necessario para webhook Cal.com |
 | B4 | Configurar webhook no Cal.com apontando para `POST /api/webhook/cal-booking` | A fazer | |
 | B5 | Deploy Edge Function: `supabase functions deploy send-mentorship-reminders` | A fazer | Cron de lembretes 24h |
 | B6 | Testar fluxo completo de pagamento em sandbox Cakto | A fazer | |
-| B7 | Criar imagem OG (`/public/images/og-cover.jpg`) | A fazer | SEO social sharing |
-| B8 | Configurar dominio na Vercel | A fazer | ygorluanpro.com.br |
+| B7 | Criar imagem OG (`/public/images/og-cover.jpg`) | A fazer | SEO social sharing, 1200x630px |
+| B8 | Configurar dominio na Vercel | A fazer | Resolver: `astro.config.mjs` usa `ygorluanacademy.com.br` mas docs dizem `ygorluanpro.com.br` — definir dominio final antes do deploy |
 
 ---
 
@@ -52,6 +52,15 @@ Features entregues e testadas.
 ### V1.2
 - [x] Comunidade (comentarios por aula) — CommentsService, LessonComments island, AdminCommentsManager, moderacao admin
 
+### Auditoria Pre-Lancamento (2026-05-05)
+- [x] Quality Gate com ratchet instalado (cobertura 88.91%, violations 0)
+- [x] 21 violacoes de acessibilidade corrigidas (labels/inputs, fieldset/legend nos radios)
+- [x] Bundle size documentado: 428.5KB / limite 500KB
+- [x] Bug CI corrigido: path do bundle check `dist/_astro` -> `dist/client/_astro`
+- [x] Astro atualizado para 6.2.2, @astrojs/node 10.0.6, @astrojs/vercel 10.0.6
+- [x] Auditoria de seguranca documentada (`docs/SECURITY_AUDIT_2026-05.md`)
+- [x] 448 testes unitarios passando
+
 ---
 
 ## Em Andamento
@@ -66,8 +75,8 @@ Proximo a implementar, em ordem de prioridade.
 
 | # | Feature | Versao | Complexidade | Descricao |
 |---|---------|--------|--------------|-----------|
-| 1 | Live classes (streaming) | V1.2 | Alta | Aulas ao vivo com notificacao |
-| 2 | App mobile (React Native) | V1.2 | Muito Alta | App nativo com acesso ao conteudo |
+| 1 | Live classes (streaming) | V1.3 | Alta | Aulas ao vivo com notificacao |
+| 2 | App mobile (React Native) | V1.3 | Muito Alta | App nativo com acesso ao conteudo |
 
 ---
 
@@ -84,13 +93,15 @@ Ideias sem prioridade definida. Avaliar quando V1.2 estiver completa.
 
 ---
 
-## Checklist de Seguranca Pendente
+## Checklist de Seguranca
 
-Itens do `docs/SECURITY.md` ainda nao confirmados em producao.
-
-- [ ] CSP headers configurados
-- [ ] Rate limiting verificado
-- [ ] CORS configurado corretamente
+| Item | Status | Notas |
+|---|---|---|
+| CORS same-origin | ✅ Confirmado | Middleware: POST/PUT/PATCH/DELETE bloqueiam cross-origin |
+| Rate limiting | ⚠️ Pendente | `UPSTASH_REDIS_*` nas env vars mas nao verificado em producao |
+| CSP headers | ⚠️ Report-Only | Enforce apos 14 dias em producao sem violations — ver `docs/SECURITY_AUDIT_2026-05.md` |
+| Dependencias criticas | ✅ 0 encontradas | `pnpm audit --audit-level=critical` limpo |
+| Dependencias high | ⚠️ 11 transitivas | Todas em dev tooling, risco zero em producao — decisao documentada |
 
 ---
 
