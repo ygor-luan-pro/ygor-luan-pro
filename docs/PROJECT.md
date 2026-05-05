@@ -4,6 +4,11 @@
 
 Plataforma exclusiva de venda de mentoria de barbeiro com curso em video + sessoes 1:1. **NAO e marketplace** - apenas o Ygor Luan pode vender. Sistema focado em conversao, performance e experiencia do aluno.
 
+## Licenca e Reuso
+
+O repositorio e publico para referencia tecnica e transparencia, mas o codigo permanece proprietario.
+Nao ha permissao para copiar, modificar, distribuir ou usar comercialmente o software sem autorizacao por escrito.
+
 ## Objetivo do Produto
 
 Funil completo:
@@ -30,7 +35,7 @@ Funil completo:
 ### Integracoes
 - **Pagamento**: Cakto (checkout + webhook)
 - **Videos**: Vimeo (privado, protecao de conteudo)
-- **Agendamento**: Cal.com (open source)
+- **Agendamento**: Cal.com
 - **Email**: Resend (transacional)
 
 ### Deploy

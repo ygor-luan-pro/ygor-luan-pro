@@ -1,5 +1,11 @@
 # Segurança — Ygor Luan Pro
 
+## Publicacao e Repositorio
+
+Este repositorio e publico para referencia tecnica e transparencia, mas o codigo e proprietario.
+Nao reutilize trechos sensiveis fora do contexto do projeto sem autorizacao por escrito.
+Vulnerabilidades e falhas de seguranca devem ser reportadas em privado, sem abrir issue publica com detalhes de exploracao.
+
 ## Fluxo de Autenticação — Garantias e Limites
 
 ### Prefixos do middleware
