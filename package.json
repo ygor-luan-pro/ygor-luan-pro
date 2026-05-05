@@ -2,6 +2,8 @@
   "name": "ygor-luan-pro",
   "type": "module",
   "version": "0.0.1",
+  "private": true,
+  "license": "UNLICENSED",
   "packageManager": "pnpm@10.28.2",
   "scripts": {
     "dev": "astro dev",

@@ -31,4 +31,5 @@ git push origin feature/nome-da-feature
 
 ## Licenca
 
-Projeto proprietario - Todos os direitos reservados (c) 2025 Ygor Luan Pro
+Projeto proprietario - Todos os direitos reservados.
+Consulte o arquivo `LICENSE` na raiz para os termos completos.
