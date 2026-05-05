@@ -15,7 +15,10 @@
     "test:integration": "vitest run tests/integration",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
-    "prepare": "simple-git-hooks"
+    "prepare": "simple-git-hooks",
+    "quality-gate:init": "pnpm test:unit --coverage && node scripts/quality-gate.js init",
+    "quality-gate:check": "node scripts/quality-gate.js check",
+    "quality-gate:update": "pnpm test:unit --coverage && node scripts/quality-gate.js update"
   },
   "simple-git-hooks": {
     "pre-commit": "pnpm type-check"

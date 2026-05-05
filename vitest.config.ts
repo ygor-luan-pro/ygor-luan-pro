@@ -9,7 +9,7 @@ export default defineConfig({
     include: ['tests/unit/**/*.test.{ts,tsx}', 'tests/integration/**/*.test.ts'],
     coverage: {
       provider: 'v8',
-      reporter: ['text', 'lcov'],
+      reporter: ['text', 'lcov', 'json-summary'],
       include: ['src/lib/**', 'src/services/**'],
       thresholds: {
         lines: 80,

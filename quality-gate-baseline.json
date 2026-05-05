@@ -1,0 +1,13 @@
+{
+  "timestamp": "2026-05-05T00:55:47.922Z",
+  "coverage": {
+    "lines": 88.91,
+    "statements": 88.36,
+    "functions": 95.08,
+    "branches": 83.78
+  },
+  "violations": {
+    "oversizedFiles": 0,
+    "anyTypeUsage": 0
+  }
+}
