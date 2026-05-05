@@ -84,7 +84,7 @@ CAKTO_WEBHOOK_SECRET=xxx
 VIMEO_ACCESS_TOKEN=xxx
 RESEND_API_KEY=re_xxx
 
-SITE_URL=https://ygorluanpro.com.br
+SITE_URL=https://ygorluanacademy.com.br
 ```
 
 ## Metricas e Monitoramento

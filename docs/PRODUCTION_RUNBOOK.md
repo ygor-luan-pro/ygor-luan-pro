@@ -84,7 +84,7 @@ vercel env add <NOME> production  # apenas em producao
 | `VIMEO_ACCESS_TOKEN` | Token de acesso Vimeo |
 | `RESEND_API_KEY` | Chave API Resend (emails) |
 | `RESEND_FROM_EMAIL` | Email remetente |
-| `PUBLIC_SITE_URL` | URL publica do site (ex: https://ygorluanpro.com.br) |
+| `PUBLIC_SITE_URL` | URL publica do site (ex: https://ygorluanacademy.com.br) |
 | `PUBLIC_CALCOM_LINK` | Link de agendamento Cal.com |
 | `PUBLIC_CAKTO_CHECKOUT_URL_VIDEOAULAS` | URL checkout Cakto videoaulas |
 | `PUBLIC_CAKTO_CHECKOUT_URL_MENTORIA` | URL checkout Cakto mentoria |
@@ -191,9 +191,7 @@ pnpm audit --audit-level=critical
 Ver [BACKLOG.md — Bloqueadores Pre-Producao](BACKLOG.md) para lista completa B1-B8.
 
 Ordem recomendada:
-1. Definir dominio final (resolver inconsistencia `ygorluanacademy.com.br` vs `ygorluanpro.com.br`)
-2. Atualizar `site` em `astro.config.mjs` com dominio correto
-3. `supabase db push` (B1)
+1. `supabase db push` (B1)
 4. Configurar todos os secrets no Vercel (B2, B3)
 5. Configurar webhook Cal.com (B4)
 6. Deploy edge function (B5)

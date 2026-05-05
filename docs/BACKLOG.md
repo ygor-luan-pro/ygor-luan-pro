@@ -19,7 +19,7 @@ Itens obrigatorios antes do deploy em producao. Nenhum feature nova ate resolver
 | B5 | Deploy Edge Function: `supabase functions deploy send-mentorship-reminders` | A fazer | Cron de lembretes 24h |
 | B6 | Testar fluxo completo de pagamento em sandbox Cakto | A fazer | |
 | B7 | Criar imagem OG (`/public/images/og-cover.jpg`) | A fazer | SEO social sharing, 1200x630px |
-| B8 | Configurar dominio na Vercel | A fazer | Resolver: `astro.config.mjs` usa `ygorluanacademy.com.br` mas docs dizem `ygorluanpro.com.br` — definir dominio final antes do deploy |
+| B8 | Configurar dominio na Vercel | A fazer | ygorluanacademy.com.br |
 
 ---
 
