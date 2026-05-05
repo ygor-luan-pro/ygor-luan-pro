@@ -142,12 +142,12 @@ jobs:
         run: pnpm build && node -e "
           const fs = require('fs');
           const path = require('path');
-          const dir = 'dist/_astro';
-          if (!fs.existsSync(dir)) { console.log('No dist/_astro found'); process.exit(0); }
+          const dir = 'dist/client/_astro';
+          if (!fs.existsSync(dir)) { console.log('No dist/client/_astro found'); process.exit(0); }
           const files = fs.readdirSync(dir).filter(f => f.endsWith('.js'));
           const totalBytes = files.reduce((sum, f) => sum + fs.statSync(path.join(dir, f)).size, 0);
           const totalKb = Math.round(totalBytes / 1024);
-          const MAX_KB = 600;
+          const MAX_KB = 500;
           console.log('JS bundle: ' + totalKb + 'kb (limit: ' + MAX_KB + 'kb)');
           if (totalKb > MAX_KB) { console.error('Bundle too large: ' + totalKb + 'kb > ' + MAX_KB + 'kb'); process.exit(1); }
         "
