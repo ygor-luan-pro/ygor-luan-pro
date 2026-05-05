@@ -79,8 +79,9 @@ export default function AdminLessonForm({ mode, lesson }: AdminLessonFormProps) 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       <div>
-        <label style={labelStyle}>Título *</label>
+        <label htmlFor="lesson-title" style={labelStyle}>Título *</label>
         <input
+          id="lesson-title"
           type="text"
           value={title}
           onChange={(e) => handleTitleChange(e.target.value)}
@@ -91,8 +92,9 @@ export default function AdminLessonForm({ mode, lesson }: AdminLessonFormProps) 
       </div>
 
       <div>
-        <label style={labelStyle}>Slug *</label>
+        <label htmlFor="lesson-slug" style={labelStyle}>Slug *</label>
         <input
+          id="lesson-slug"
           type="text"
           value={slug}
           onChange={(e) => setSlug(e.target.value)}
@@ -103,8 +105,9 @@ export default function AdminLessonForm({ mode, lesson }: AdminLessonFormProps) 
       </div>
 
       <div>
-        <label style={labelStyle}>URL do Vídeo (Vimeo) *</label>
+        <label htmlFor="lesson-video-url" style={labelStyle}>URL do Vídeo (Vimeo) *</label>
         <input
+          id="lesson-video-url"
           type="url"
           value={videoUrl}
           onChange={(e) => setVideoUrl(e.target.value)}
@@ -115,8 +118,9 @@ export default function AdminLessonForm({ mode, lesson }: AdminLessonFormProps) 
       </div>
 
       <div>
-        <label style={labelStyle}>Descrição</label>
+        <label htmlFor="lesson-description" style={labelStyle}>Descrição</label>
         <textarea
+          id="lesson-description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           rows={3}
@@ -127,8 +131,9 @@ export default function AdminLessonForm({ mode, lesson }: AdminLessonFormProps) 
 
       <div className="grid grid-cols-3 gap-4">
         <div>
-          <label style={labelStyle}>Módulo</label>
+          <label htmlFor="lesson-module" style={labelStyle}>Módulo</label>
           <input
+            id="lesson-module"
             type="number"
             value={moduleNumber}
             onChange={(e) => setModuleNumber(Number(e.target.value))}
@@ -138,8 +143,9 @@ export default function AdminLessonForm({ mode, lesson }: AdminLessonFormProps) 
           />
         </div>
         <div>
-          <label style={labelStyle}>Ordem</label>
+          <label htmlFor="lesson-order" style={labelStyle}>Ordem</label>
           <input
+            id="lesson-order"
             type="number"
             value={orderNumber}
             onChange={(e) => setOrderNumber(Number(e.target.value))}
@@ -149,8 +155,9 @@ export default function AdminLessonForm({ mode, lesson }: AdminLessonFormProps) 
           />
         </div>
         <div>
-          <label style={labelStyle}>Duração (min)</label>
+          <label htmlFor="lesson-duration" style={labelStyle}>Duração (min)</label>
           <input
+            id="lesson-duration"
             type="number"
             value={durationMinutes}
             onChange={(e) => setDurationMinutes(Number(e.target.value))}

@@ -67,8 +67,9 @@ export default function AdminQuizForm({ moduleNumber, question, mode }: AdminQui
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       <div>
-        <label style={labelStyle}>Pergunta *</label>
+        <label htmlFor="quiz-question" style={labelStyle}>Pergunta *</label>
         <textarea
+          id="quiz-question"
           value={questionText}
           onChange={(e) => setQuestionText(e.target.value)}
           rows={3}
@@ -77,15 +78,17 @@ export default function AdminQuizForm({ moduleNumber, question, mode }: AdminQui
           placeholder="Ex: Qual ferramenta é indicada para degradê?"
         />
       </div>
-      <div className="space-y-2">
-        <label style={labelStyle}>Opções (marque a correta) *</label>
+      <fieldset className="space-y-2" style={{ border: 'none', padding: 0, margin: 0 }}>
+        <legend style={labelStyle}>Opções (marque a correta) *</legend>
         {options.map((opt, i) => (
           <div key={i} className="flex items-center gap-3">
             <input
               type="radio"
+              id={`quiz-option-radio-${i}`}
               name="correct"
               checked={correctIndex === i}
               onChange={() => setCorrectIndex(i)}
+              aria-label={`Marcar opção ${LABELS[i]} como correta`}
               style={{ accentColor: 'var(--copper)', flexShrink: 0 }}
             />
             <span className="font-mono text-xs" style={{ color: 'var(--fade)', minWidth: '1rem' }}>{LABELS[i]}</span>
@@ -94,15 +97,17 @@ export default function AdminQuizForm({ moduleNumber, question, mode }: AdminQui
               value={opt}
               onChange={(e) => handleOptionChange(i, e.target.value)}
               required
+              aria-label={`Texto da opção ${LABELS[i]}`}
               className="input-field flex-1"
               placeholder={`Opção ${LABELS[i]}`}
             />
           </div>
         ))}
-      </div>
+      </fieldset>
       <div>
-        <label style={labelStyle}>Ordem</label>
+        <label htmlFor="quiz-order" style={labelStyle}>Ordem</label>
         <input
+          id="quiz-order"
           type="number"
           value={orderNumber}
           onChange={(e) => setOrderNumber(Number(e.target.value))}

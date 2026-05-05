@@ -74,8 +74,9 @@ export default function LoginForm({ next = '/dashboard' }: LoginFormProps) {
         ) : (
           <>
             <div>
-              <label style={labelStyle}>E-mail</label>
+              <label htmlFor="reset-email" style={labelStyle}>E-mail</label>
               <input
+                id="reset-email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -102,8 +103,9 @@ export default function LoginForm({ next = '/dashboard' }: LoginFormProps) {
   return (
     <form onSubmit={handleLogin} className="space-y-4">
       <div>
-        <label style={labelStyle}>E-mail</label>
+        <label htmlFor="login-email" style={labelStyle}>E-mail</label>
         <input
+          id="login-email"
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
@@ -114,8 +116,9 @@ export default function LoginForm({ next = '/dashboard' }: LoginFormProps) {
       </div>
 
       <div>
-        <label style={labelStyle}>Senha</label>
+        <label htmlFor="login-password" style={labelStyle}>Senha</label>
         <input
+          id="login-password"
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}

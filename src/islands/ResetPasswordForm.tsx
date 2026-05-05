@@ -126,8 +126,9 @@ export default function ResetPasswordForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label style={labelStyle}>Nova senha</label>
+        <label htmlFor="new-password" style={labelStyle}>Nova senha</label>
         <input
+          id="new-password"
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
@@ -139,8 +140,9 @@ export default function ResetPasswordForm() {
       </div>
 
       <div>
-        <label style={labelStyle}>Confirmar nova senha</label>
+        <label htmlFor="confirm-password" style={labelStyle}>Confirmar nova senha</label>
         <input
+          id="confirm-password"
           type="password"
           value={confirm}
           onChange={(e) => setConfirm(e.target.value)}
