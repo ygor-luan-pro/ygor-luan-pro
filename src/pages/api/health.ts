@@ -18,11 +18,8 @@ export const GET: APIRoute = async () => {
   const allOk = Object.values(checks).every((s) => s === "ok");
   const status = allOk ? 200 : 503;
 
-  return new Response(
-    JSON.stringify({ status: allOk ? "healthy" : "unhealthy", checks }),
-    {
-      status,
-      headers: { "Content-Type": "application/json" },
-    },
-  );
+  return new Response(JSON.stringify({ status: allOk ? "healthy" : "unhealthy", checks }), {
+    status,
+    headers: { "Content-Type": "application/json" },
+  });
 };

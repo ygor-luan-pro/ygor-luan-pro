@@ -1,6 +1,6 @@
 import type { APIRoute } from "astro";
-import { consumeRateLimit, getClientIp } from "../../lib/rate-limit";
 import { logger } from "../../lib/logger";
+import { consumeRateLimit, getClientIp } from "../../lib/rate-limit";
 
 export const POST: APIRoute = async ({ request }) => {
   const rateLimit = await consumeRateLimit({
