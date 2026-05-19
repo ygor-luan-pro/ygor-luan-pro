@@ -67,9 +67,15 @@ Antes de marcar qualquer tarefa como concluida:
 - [Contribuindo](docs/CONTRIBUTING.md)
 - [Design Brief](docs/design-brief.md)
 
+## Security Rules
+- CI roda Semgrep SAST em todo PR (regras OWASP)
+- `pnpm audit` bloqueia vulnerabilidades critical
+- Avoid vulnerable dependencies
+- Prefer secure defaults
+
 ## Active Technologies
-- TypeScript 5 / Node 20 + Astro 5 (SSR), React 19, @supabase/ssr, Vitest 4, @testing-library/reac (20260425-000000-sem-acesso-ux-gate)
-- Supabase PostgreSQL (tabela `orders`) (20260425-000000-sem-acesso-ux-gate)
+- TypeScript 5 / Node 20 + Astro 5 (SSR), React 19, @supabase/ssr, Vitest 4, @testing-library/react
+- Supabase PostgreSQL (tabela `orders`)
 
 ## Recent Changes
-- 20260425-000000-sem-acesso-ux-gate: Added TypeScript 5 / Node 20 + Astro 5 (SSR), React 19, @supabase/ssr, Vitest 4, @testing-library/reac
+- 20260425-000000-sem-acesso-ux-gate: Added TypeScript 5 / Node 20 + Astro 5 (SSR), React 19, @supabase/ssr, Vitest 4, @testing-library/react

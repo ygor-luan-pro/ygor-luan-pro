@@ -19,6 +19,8 @@
     "test:integration": "vitest run tests/integration",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
+    "agent:check": "node scripts/check-agent-context-sync.js",
+    "agent:sync": "node scripts/check-agent-context-sync.js --write",
     "prepare": "simple-git-hooks",
     "quality-gate:init": "pnpm test:unit --coverage && node scripts/quality-gate.js init",
     "quality-gate:check": "node scripts/quality-gate.js check",
@@ -26,8 +28,8 @@
     "pr-check": "pnpm type-check && pnpm lint && pnpm audit --audit-level=critical && pnpm test:unit && pnpm test:integration && node scripts/quality-gate.js check && pnpm build"
   },
   "simple-git-hooks": {
-    "pre-commit": "node scripts/check-branch.js && node scripts/check-test-only.js && pnpm type-check && pnpm vitest run tests/unit --changed HEAD --passWithNoTests",
-    "pre-push": "pnpm type-check && pnpm lint && pnpm test:unit"
+    "pre-commit": "node scripts/check-branch.js && node scripts/check-test-only.js && pnpm type-check && pnpm agent:check && pnpm vitest run tests/unit --changed HEAD --passWithNoTests",
+    "pre-push": "pnpm type-check && pnpm lint && pnpm test:unit && pnpm agent:check"
   },
   "dependencies": {
     "@astrojs/node": "10.1.0",
@@ -35,6 +37,7 @@
     "@astrojs/sitemap": "^3.7.1",
     "@astrojs/tailwind": "^6.0.2",
     "@astrojs/vercel": "10.0.6",
+    "@sentry/astro": "10.53.1",
     "@supabase/ssr": "^0.6.1",
     "@supabase/supabase-js": "^2.98.0",
     "@vimeo/player": "^2.30.3",
