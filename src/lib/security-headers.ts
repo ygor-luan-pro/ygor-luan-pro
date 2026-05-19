@@ -1,11 +1,13 @@
 const CSP_REPORT_ONLY = [
   "default-src 'self'",
-  "script-src 'self' https://player.vimeo.com",
-  "img-src 'self' data: https:",
+  "script-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://*.cakto.com.br",
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-  "font-src https://fonts.gstatic.com",
-  "frame-src https://player.vimeo.com",
-  "connect-src 'self' https://*.supabase.co https://api.resend.com",
+  "font-src 'self' https://fonts.gstatic.com",
+  "img-src 'self' data: https:",
+  "frame-src https://player.vimeo.com https://cal.com https://*.cal.com",
+  "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.resend.com https://cal.com https://api.cal.com",
+  "object-src 'none'",
+  "base-uri 'self'",
   "report-uri /api/csp-report",
 ].join("; ");
 

@@ -138,38 +138,25 @@ describe('OrdersService', () => {
   });
 
   describe('getTotalRevenue', () => {
-    it('retorna soma dos pedidos aprovados', async () => {
-      const orders = [
-        { ...mockOrder, amount: 997 },
-        { ...mockOrder, id: 'order-2', amount: 297 },
-      ];
-
-      vi.mocked(supabaseAdmin.from).mockReturnValueOnce({
-        select: vi.fn().mockReturnValue({
-          eq: vi.fn().mockResolvedValue({ data: orders, error: null }),
-        }),
-      } as never);
+    it('retorna receita total via RPC', async () => {
+      vi.mocked(supabaseAdmin.rpc).mockResolvedValueOnce({ data: 1294, error: null } as never);
 
       const total = await OrdersService.getTotalRevenue();
       expect(total).toBe(1294);
+      expect(supabaseAdmin.rpc).toHaveBeenCalledWith('get_total_revenue');
     });
 
-    it('retorna 0 quando não há pedidos aprovados', async () => {
-      vi.mocked(supabaseAdmin.from).mockReturnValueOnce({
-        select: vi.fn().mockReturnValue({
-          eq: vi.fn().mockResolvedValue({ data: null, error: null }),
-        }),
-      } as never);
+    it('retorna 0 quando RPC retorna null', async () => {
+      vi.mocked(supabaseAdmin.rpc).mockResolvedValueOnce({ data: null, error: null } as never);
 
       const total = await OrdersService.getTotalRevenue();
       expect(total).toBe(0);
     });
 
-    it('lança erro quando Supabase retorna erro', async () => {
-      vi.mocked(supabaseAdmin.from).mockReturnValueOnce({
-        select: vi.fn().mockReturnValue({
-          eq: vi.fn().mockResolvedValue({ data: null, error: { message: 'permission denied' } }),
-        }),
+    it('lança erro quando RPC retorna erro', async () => {
+      vi.mocked(supabaseAdmin.rpc).mockResolvedValueOnce({
+        data: null,
+        error: { message: 'permission denied' },
       } as never);
 
       await expect(OrdersService.getTotalRevenue()).rejects.toThrow('permission denied');

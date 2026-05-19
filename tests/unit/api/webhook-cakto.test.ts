@@ -58,11 +58,14 @@ describe('POST /api/webhook/cakto', () => {
 
     it('retorna 429 após muitas tentativas do mesmo IP', async () => {
       vi.mocked(supabaseAdmin.from).mockReturnValue({
-        select: vi.fn().mockReturnValue({
-          eq: vi.fn().mockReturnValue({
-            single: vi.fn().mockResolvedValue({ data: { id: 'existing-order' }, error: null }),
-          }),
+        upsert: vi.fn().mockReturnValue({
+          select: vi.fn().mockResolvedValue({ data: [], error: null }),
         }),
+      } as never);
+
+      vi.mocked(supabaseAdmin.auth.admin.createUser).mockResolvedValue({
+        data: { user: { id: 'user-123' } },
+        error: null,
       } as never);
 
       for (let attempt = 0; attempt < 30; attempt += 1) {
@@ -186,31 +189,31 @@ describe('POST /api/webhook/cakto', () => {
   });
 
   describe('idempotência', () => {
-    it('retorna 200 sem criar usuário quando order já existe', async () => {
-      vi.mocked(supabaseAdmin.from).mockReturnValueOnce({
-        select: vi.fn().mockReturnValue({
-          eq: vi.fn().mockReturnValue({
-            single: vi.fn().mockResolvedValue({ data: { id: 'existing-order' }, error: null }),
+    it('retorna 200 sem enviar email quando order já existe (upsert ignorado)', async () => {
+      vi.mocked(supabaseAdmin.from)
+        .mockReturnValueOnce({
+          upsert: vi.fn().mockResolvedValue({ data: null, error: null }),
+        } as never)
+        .mockReturnValueOnce({
+          upsert: vi.fn().mockReturnValue({
+            select: vi.fn().mockResolvedValue({ data: [], error: null }),
           }),
-        }),
+        } as never);
+
+      vi.mocked(supabaseAdmin.auth.admin.createUser).mockResolvedValueOnce({
+        data: { user: { id: 'user-123' } },
+        error: null,
       } as never);
 
       const res = await POST({ request: buildRequest(makeCaktoPayload()) } as never);
       expect(res.status).toBe(200);
-      expect(supabaseAdmin.auth.admin.createUser).not.toHaveBeenCalled();
+      expect(supabaseAdmin.auth.admin.generateLink).not.toHaveBeenCalled();
     });
   });
 
   describe('falha no generateLink', () => {
     it('retorna 500 quando generateLink falha', async () => {
       vi.mocked(supabaseAdmin.from)
-        .mockReturnValueOnce({
-          select: vi.fn().mockReturnValue({
-            eq: vi.fn().mockReturnValue({
-              single: vi.fn().mockResolvedValue({ data: null, error: null }),
-            }),
-          }),
-        } as never)
         .mockReturnValueOnce({
           upsert: vi.fn().mockResolvedValue({ data: null, error: null }),
         } as never)

@@ -82,13 +82,10 @@ export class OrdersService {
   }
 
   static async getTotalRevenue(): Promise<number> {
-    const { data, error } = await supabaseAdmin
-      .from("orders")
-      .select("amount")
-      .eq("status", "approved");
+    const { data, error } = await supabaseAdmin.rpc("get_total_revenue");
 
     if (error) throw new Error(error.message);
-    return (data ?? []).reduce((sum, o) => sum + o.amount, 0);
+    return data ?? 0;
   }
 
   static async updateStatus(paymentId: string, status: Order["status"]): Promise<void> {

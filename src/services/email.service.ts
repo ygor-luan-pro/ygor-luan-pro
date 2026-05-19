@@ -48,15 +48,24 @@ export class EmailService {
       lessonUrl,
     });
 
-    await Promise.allSettled(
-      students.map((student) =>
-        resend.emails
-          .send({ from: FROM_EMAIL, to: student.email, subject, html })
-          .catch((error) => {
-            console.error("EmailService: falha ao enviar email:", error);
-          }),
-      ),
-    );
+    const BATCH_SIZE = 10;
+    const BATCH_DELAY_MS = 100;
+
+    for (let i = 0; i < students.length; i += BATCH_SIZE) {
+      const batch = students.slice(i, i + BATCH_SIZE);
+      await Promise.allSettled(
+        batch.map((student) =>
+          resend.emails
+            .send({ from: FROM_EMAIL, to: student.email, subject, html })
+            .catch((error) => {
+              console.error("EmailService: falha ao enviar email:", error);
+            }),
+        ),
+      );
+      if (i + BATCH_SIZE < students.length) {
+        await new Promise((resolve) => setTimeout(resolve, BATCH_DELAY_MS));
+      }
+    }
   }
 
   static async notifyCertificateAvailable(email: string, name: string | null): Promise<void> {

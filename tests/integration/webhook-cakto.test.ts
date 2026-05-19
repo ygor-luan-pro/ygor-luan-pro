@@ -63,18 +63,25 @@ describe('POST /api/webhook/cakto', () => {
   });
 
   describe('idempotência', () => {
-    it('retorna 200 sem criar usuário quando order já existe', async () => {
-      vi.mocked(supabaseAdmin.from).mockReturnValueOnce({
-        select: vi.fn().mockReturnValue({
-          eq: vi.fn().mockReturnValue({
-            single: vi.fn().mockResolvedValue({ data: { id: 'existing-order' }, error: null }),
+    it('retorna 200 sem enviar email quando order já existe (upsert ignorado)', async () => {
+      vi.mocked(supabaseAdmin.from)
+        .mockReturnValueOnce({
+          upsert: vi.fn().mockResolvedValue({ data: null, error: null }),
+        } as never)
+        .mockReturnValueOnce({
+          upsert: vi.fn().mockReturnValue({
+            select: vi.fn().mockResolvedValue({ data: [], error: null }),
           }),
-        }),
+        } as never);
+
+      vi.mocked(supabaseAdmin.auth.admin.createUser).mockResolvedValueOnce({
+        data: { user: { id: 'new-user-id' } },
+        error: null,
       } as never);
 
       const res = await POST(makeCtx(makeCaktoPayload()));
       expect(res.status).toBe(200);
-      expect(supabaseAdmin.auth.admin.createUser).not.toHaveBeenCalled();
+      expect(resend.emails.send).not.toHaveBeenCalled();
     });
   });
 
@@ -86,13 +93,6 @@ describe('POST /api/webhook/cakto', () => {
       } as never);
 
       vi.mocked(supabaseAdmin.from)
-        .mockReturnValueOnce({
-          select: vi.fn().mockReturnValue({
-            eq: vi.fn().mockReturnValue({
-              single: vi.fn().mockResolvedValue({ data: null, error: null }),
-            }),
-          }),
-        } as never)
         .mockReturnValueOnce({
           upsert: vi.fn().mockResolvedValue({ data: null, error: null }),
         } as never)
@@ -120,6 +120,16 @@ describe('POST /api/webhook/cakto', () => {
         error: null,
       } as never);
 
+      vi.mocked(supabaseAdmin.from)
+        .mockReturnValueOnce({
+          upsert: vi.fn().mockResolvedValue({ data: null, error: null }),
+        } as never)
+        .mockReturnValueOnce({
+          upsert: vi.fn().mockReturnValue({
+            select: vi.fn().mockResolvedValue({ data: [{ id: 'new-order-id' }], error: null }),
+          }),
+        } as never);
+
       await POST(makeCtx(makeCaktoPayload()));
 
       const ordersFromIndex = vi.mocked(supabaseAdmin.from).mock.calls.findLastIndex(
@@ -144,13 +154,6 @@ describe('POST /api/webhook/cakto', () => {
       } as never);
 
       vi.mocked(supabaseAdmin.from)
-        .mockReturnValueOnce({
-          select: vi.fn().mockReturnValue({
-            eq: vi.fn().mockReturnValue({
-              single: vi.fn().mockResolvedValue({ data: null, error: null }),
-            }),
-          }),
-        } as never)
         .mockReturnValueOnce({
           select: vi.fn().mockReturnValue({
             eq: vi.fn().mockReturnValue({
@@ -211,13 +214,6 @@ describe('POST /api/webhook/cakto', () => {
 
       vi.mocked(supabaseAdmin.from)
         .mockReturnValueOnce({
-          select: vi.fn().mockReturnValue({
-            eq: vi.fn().mockReturnValue({
-              single: vi.fn().mockResolvedValue({ data: null, error: null }),
-            }),
-          }),
-        } as never)
-        .mockReturnValueOnce({
           upsert: profilesUpsertMock,
         } as never)
         .mockReturnValueOnce({
@@ -243,13 +239,6 @@ describe('POST /api/webhook/cakto', () => {
       } as never);
 
       vi.mocked(supabaseAdmin.from)
-        .mockReturnValueOnce({
-          select: vi.fn().mockReturnValue({
-            eq: vi.fn().mockReturnValue({
-              single: vi.fn().mockResolvedValue({ data: null, error: null }),
-            }),
-          }),
-        } as never)
         .mockReturnValueOnce({
           select: vi.fn().mockReturnValue({
             eq: vi.fn().mockReturnValue({
@@ -283,13 +272,6 @@ describe('POST /api/webhook/cakto', () => {
         .mockReturnValueOnce({
           select: vi.fn().mockReturnValue({
             eq: vi.fn().mockReturnValue({
-              single: vi.fn().mockResolvedValue({ data: null, error: null }),
-            }),
-          }),
-        } as never)
-        .mockReturnValueOnce({
-          select: vi.fn().mockReturnValue({
-            eq: vi.fn().mockReturnValue({
               maybeSingle: vi.fn().mockResolvedValue({ data: null, error: null }),
             }),
           }),
@@ -308,13 +290,6 @@ describe('POST /api/webhook/cakto', () => {
       } as never);
 
       vi.mocked(supabaseAdmin.from)
-        .mockReturnValueOnce({
-          select: vi.fn().mockReturnValue({
-            eq: vi.fn().mockReturnValue({
-              single: vi.fn().mockResolvedValue({ data: null, error: null }),
-            }),
-          }),
-        } as never)
         .mockReturnValueOnce({
           upsert: vi.fn().mockResolvedValue({ data: null, error: null }),
         } as never)
@@ -336,13 +311,6 @@ describe('POST /api/webhook/cakto', () => {
       } as never);
 
       vi.mocked(supabaseAdmin.from)
-        .mockReturnValueOnce({
-          select: vi.fn().mockReturnValue({
-            eq: vi.fn().mockReturnValue({
-              single: vi.fn().mockResolvedValue({ data: null, error: null }),
-            }),
-          }),
-        } as never)
         .mockReturnValueOnce({
           upsert: vi.fn().mockResolvedValue({ data: null, error: null }),
         } as never)

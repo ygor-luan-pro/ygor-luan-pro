@@ -284,6 +284,14 @@ export interface Database {
           total_watch_time: number;
         }[];
       };
+      get_total_revenue: {
+        Args: Record<string, never>;
+        Returns: number;
+      };
+      get_completion_date: {
+        Args: { p_user_id: string };
+        Returns: string | null;
+      };
       is_admin: {
         Args: Record<string, never>;
         Returns: boolean;

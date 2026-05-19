@@ -1,6 +1,5 @@
 import { supabaseAdmin } from "../lib/supabase-admin";
 import type { Certificate } from "../types";
-import { LessonsService } from "./lessons.service";
 import { ProgressService } from "./progress.service";
 
 type CertWithProfile = Certificate & {
@@ -24,19 +23,12 @@ export class CertificateService {
   }
 
   static async getCompletionDate(userId: string): Promise<string | null> {
-    const [lessons, progressList] = await Promise.all([
-      LessonsService.getAll(),
-      ProgressService.getUserProgress(userId),
-    ]);
+    const { data, error } = await supabaseAdmin.rpc("get_completion_date", {
+      p_user_id: userId,
+    });
 
-    const publishedIds = new Set(lessons.map((l) => l.id));
-
-    return progressList
-      .filter((p) => p.completed && p.completed_at !== null && publishedIds.has(p.lesson_id))
-      .reduce<string | null>(
-        (latest, p) => (!latest || p.completed_at! > latest ? p.completed_at : latest),
-        null,
-      );
+    if (error) throw new Error(error.message);
+    return data ?? null;
   }
 
   static async issue(userId: string, completedAt: string): Promise<Certificate> {

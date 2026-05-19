@@ -159,16 +159,6 @@ export const POST: APIRoute = async ({ request }) => {
 
   const paymentId = body.data.id;
 
-  const { data: existingOrder } = await supabaseAdmin
-    .from("orders")
-    .select("id")
-    .eq("payment_id", paymentId)
-    .single();
-
-  if (existingOrder) {
-    return new Response("OK", { status: 200 });
-  }
-
   const { data: authData, error: createError } = await supabaseAdmin.auth.admin.createUser({
     email,
     password: crypto.randomUUID(),
