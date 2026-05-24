@@ -7,17 +7,9 @@ import {
   getClientIp,
   recordAccountFailure,
 } from "../../../lib/rate-limit";
-import { isSameOrigin } from "../../../lib/request-origin";
 import type { Database } from "../../../types/database.types";
 
 export const POST: APIRoute = async ({ request, cookies }) => {
-  if (!isSameOrigin(request)) {
-    return new Response(JSON.stringify({ error: "Origem inválida." }), {
-      status: 403,
-      headers: { "Content-Type": "application/json" },
-    });
-  }
-
   const rateLimit = await consumeRateLimit({
     bucket: "auth-login",
     identifier: getClientIp(request.headers),

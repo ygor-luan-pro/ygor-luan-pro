@@ -1,7 +1,6 @@
 import type { CookieOptions } from "@supabase/ssr";
 import { createServerClient, parseCookieHeader } from "@supabase/ssr";
 import type { APIRoute } from "astro";
-import { isSameOrigin } from "../../../lib/request-origin";
 import type { Database } from "../../../types/database.types";
 
 function methodNotAllowed(): Response {
@@ -14,10 +13,6 @@ function methodNotAllowed(): Response {
 export const GET: APIRoute = async () => methodNotAllowed();
 
 export const POST: APIRoute = async ({ request, cookies, redirect }) => {
-  if (!isSameOrigin(request)) {
-    return new Response(null, { status: 403 });
-  }
-
   const supabase = createServerClient<Database>(
     import.meta.env.PUBLIC_SUPABASE_URL,
     import.meta.env.PUBLIC_SUPABASE_ANON_KEY,

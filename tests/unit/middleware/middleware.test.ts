@@ -213,7 +213,7 @@ describe('middleware — aluno com acesso', () => {
   });
 });
 
-describe('middleware — CSRF guard em rotas API mutantes', () => {
+describe('middleware — auth gate em rotas API', () => {
   afterEach(() => vi.unstubAllEnvs());
 
   beforeEach(() => {
@@ -222,39 +222,25 @@ describe('middleware — CSRF guard em rotas API mutantes', () => {
     vi.stubEnv('PUBLIC_SITE_URL', 'http://localhost:4321');
   });
 
-  it('retorna 403 em POST /api/progress/complete sem Origin', async () => {
-    const ctx = makeCtxPost('/api/progress/complete');
-    const res = await (onRequest as Function)(ctx, next);
-    expect(res.status).toBe(403);
-    expect(mockGetUser).not.toHaveBeenCalled();
-  });
-
-  it('retorna 403 em POST /api/progress/complete com cross-origin', async () => {
-    const ctx = makeCtxPost('/api/progress/complete', 'https://evil.com');
-    const res = await (onRequest as Function)(ctx, next);
-    expect(res.status).toBe(403);
-    expect(mockGetUser).not.toHaveBeenCalled();
-  });
-
-  it('GET /api/progress sem Origin passa CSRF e cai em auth (401 sem user)', async () => {
+  it('GET /api/progress sem user retorna 401', async () => {
     mockGetUser.mockResolvedValue({ data: { user: null } });
     const ctx = makeCtx('/api/progress/complete');
     const res = await (onRequest as Function)(ctx, next);
     expect(res.status).toBe(401);
   });
 
-  it('POST com origin correto passa CSRF e cai em auth (401 sem user)', async () => {
+  it('POST /api/progress sem user retorna 401', async () => {
     mockGetUser.mockResolvedValue({ data: { user: null } });
-    const ctx = makeCtxPost('/api/progress/complete', 'http://localhost:4321');
+    const ctx = makeCtxPost('/api/progress/complete');
     const res = await (onRequest as Function)(ctx, next);
     expect(res.status).toBe(401);
   });
 
-  it('retorna 403 em DELETE /api/comments/123 sem Origin', async () => {
+  it('DELETE /api/comments/123 sem user retorna 401', async () => {
+    mockGetUser.mockResolvedValue({ data: { user: null } });
     const ctx = makeCtxPost('/api/comments/123');
     const res = await (onRequest as Function)(ctx, next);
-    expect(res.status).toBe(403);
-    expect(mockGetUser).not.toHaveBeenCalled();
+    expect(res.status).toBe(401);
   });
 });
 

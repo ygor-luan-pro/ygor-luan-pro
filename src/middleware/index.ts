@@ -1,7 +1,6 @@
 import { defineMiddleware } from "astro:middleware";
 import type { CookieOptions } from "@supabase/ssr";
 import { createServerClient, parseCookieHeader } from "@supabase/ssr";
-import { isSameOrigin } from "../lib/request-origin";
 import { applySecurityHeaders } from "../lib/security-headers";
 import { OrdersService } from "../services/orders.service";
 import { UsersService } from "../services/users.service";
@@ -31,16 +30,6 @@ export const onRequest = defineMiddleware(
 
     if (!isProtected && !isAuthAware) {
       return respond(await next());
-    }
-
-    const isApiPath = API_PREFIXES.some((p) => pathname.startsWith(p));
-    if (isApiPath && MUTATING_METHODS.includes(request.method) && !isSameOrigin(request)) {
-      return respond(
-        new Response(JSON.stringify({ error: "Origem inválida" }), {
-          status: 403,
-          headers: { "Content-Type": "application/json" },
-        }),
-      );
     }
 
     const supabase = createServerClient<Database>(
