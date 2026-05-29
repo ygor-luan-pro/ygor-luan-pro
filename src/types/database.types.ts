@@ -128,6 +128,7 @@ export interface Database {
           status: "scheduled" | "completed" | "cancelled" | "no_show";
           meeting_url: string | null;
           notes: string | null;
+          reminder_sent: boolean;
           created_at: string;
         };
         Insert: {
@@ -138,6 +139,7 @@ export interface Database {
           status: "scheduled" | "completed" | "cancelled" | "no_show";
           meeting_url?: string | null;
           notes?: string | null;
+          reminder_sent?: boolean;
           created_at?: string;
         };
         Update: Partial<Database["public"]["Tables"]["mentorship_sessions"]["Insert"]>;
@@ -291,6 +293,21 @@ export interface Database {
       get_completion_date: {
         Args: { p_user_id: string };
         Returns: string | null;
+      };
+      provision_cakto_purchase: {
+        Args: {
+          p_user_id: string;
+          p_email: string;
+          p_full_name: string | null;
+          p_payment_id: string;
+          p_amount: number;
+          p_payment_method: string | null;
+          p_approved_at: string;
+        };
+        Returns: {
+          order_id: string | null;
+          created: boolean;
+        };
       };
       is_admin: {
         Args: Record<string, never>;

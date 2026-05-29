@@ -186,34 +186,29 @@ export const POST: APIRoute = async ({ request }) => {
     return new Response("Could not resolve user", { status: 500 });
   }
 
-  await supabaseAdmin
-    .from("profiles")
-    .upsert(
-      { id: userId, email, full_name: name ?? null },
-      { onConflict: "id", ignoreDuplicates: true },
-    );
+  const { data: provisionData, error: provisionError } = await supabaseAdmin.rpc(
+    "provision_cakto_purchase",
+    {
+      p_user_id: userId,
+      p_email: email,
+      p_full_name: name ?? null,
+      p_payment_id: paymentId,
+      p_amount: body.data.amount / 100,
+      p_payment_method: body.data.paymentMethod ?? null,
+      p_approved_at: new Date().toISOString(),
+    },
+  );
 
-  const { data: orderData, error: orderError } = await supabaseAdmin
-    .from("orders")
-    .upsert(
-      {
-        user_id: userId,
-        payment_id: paymentId,
-        status: "approved",
-        amount: body.data.amount / 100,
-        payment_method: body.data.paymentMethod ?? null,
-        approved_at: new Date().toISOString(),
-      },
-      { onConflict: "payment_id", ignoreDuplicates: true },
-    )
-    .select("id");
-
-  if (orderError) {
-    logger.error("cakto.webhook.order_upsert_failed", { paymentId, err: orderError.message });
+  if (provisionError) {
+    logger.error("cakto.webhook.provision_purchase_failed", {
+      paymentId,
+      userId,
+      err: provisionError.message,
+    });
     return new Response("Error creating order", { status: 500 });
   }
 
-  if (!orderData || orderData.length === 0) {
+  if (!provisionData?.created) {
     return new Response("OK", { status: 200 });
   }
 

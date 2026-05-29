@@ -5,6 +5,7 @@ import { resetRateLimitStore } from '../../../src/lib/rate-limit';
 vi.mock('../../../src/lib/supabase-admin', () => ({
   supabaseAdmin: {
     from: vi.fn(),
+    rpc: vi.fn(),
     auth: {
       admin: {
         createUser: vi.fn(),
@@ -28,6 +29,20 @@ vi.mock('../../../src/services/orders.service', () => ({
 import { POST } from '../../../src/pages/api/webhook/cakto';
 import { supabaseAdmin } from '../../../src/lib/supabase-admin';
 import { OrdersService } from '../../../src/services/orders.service';
+
+function mockSuccessfulPurchaseRpc(created = true) {
+  vi.mocked(supabaseAdmin.rpc).mockResolvedValueOnce({
+    data: { order_id: 'order-123', created },
+    error: null,
+  } as never);
+}
+
+function mockCreateUserSuccess() {
+  vi.mocked(supabaseAdmin.auth.admin.createUser).mockResolvedValueOnce({
+    data: { user: { id: 'user-123' } },
+    error: null,
+  } as never);
+}
 
 function buildRequest(body: unknown, ip = '198.51.100.10'): Request {
   return new Request('http://localhost/api/webhook/cakto', {
@@ -57,14 +72,12 @@ describe('POST /api/webhook/cakto', () => {
     });
 
     it('retorna 429 após muitas tentativas do mesmo IP', async () => {
-      vi.mocked(supabaseAdmin.from).mockReturnValue({
-        upsert: vi.fn().mockReturnValue({
-          select: vi.fn().mockResolvedValue({ data: [], error: null }),
-        }),
-      } as never);
-
       vi.mocked(supabaseAdmin.auth.admin.createUser).mockResolvedValue({
         data: { user: { id: 'user-123' } },
+        error: null,
+      } as never);
+      vi.mocked(supabaseAdmin.rpc).mockResolvedValue({
+        data: { order_id: 'order-123', created: false },
         error: null,
       } as never);
 
@@ -190,43 +203,46 @@ describe('POST /api/webhook/cakto', () => {
 
   describe('idempotência', () => {
     it('retorna 200 sem enviar email quando order já existe (upsert ignorado)', async () => {
-      vi.mocked(supabaseAdmin.from)
-        .mockReturnValueOnce({
-          upsert: vi.fn().mockResolvedValue({ data: null, error: null }),
-        } as never)
-        .mockReturnValueOnce({
-          upsert: vi.fn().mockReturnValue({
-            select: vi.fn().mockResolvedValue({ data: [], error: null }),
-          }),
-        } as never);
+      mockCreateUserSuccess();
+      mockSuccessfulPurchaseRpc(false);
 
-      vi.mocked(supabaseAdmin.auth.admin.createUser).mockResolvedValueOnce({
-        data: { user: { id: 'user-123' } },
+      const res = await POST({ request: buildRequest(makeCaktoPayload()) } as never);
+      expect(res.status).toBe(200);
+      expect(supabaseAdmin.auth.admin.generateLink).not.toHaveBeenCalled();
+    });
+
+    it('envia acesso quando o RPC marca a compra como nova', async () => {
+      mockCreateUserSuccess();
+      mockSuccessfulPurchaseRpc(true);
+      vi.mocked(supabaseAdmin.auth.admin.generateLink).mockResolvedValueOnce({
+        data: { properties: { action_link: 'https://example.com/access' } },
         error: null,
       } as never);
 
       const res = await POST({ request: buildRequest(makeCaktoPayload()) } as never);
+
       expect(res.status).toBe(200);
+      expect(supabaseAdmin.auth.admin.generateLink).toHaveBeenCalledOnce();
+    });
+
+    it('retorna 500 quando o RPC de provisão falha', async () => {
+      mockCreateUserSuccess();
+      vi.mocked(supabaseAdmin.rpc).mockResolvedValueOnce({
+        data: null,
+        error: { message: 'rpc failed' },
+      } as never);
+
+      const res = await POST({ request: buildRequest(makeCaktoPayload()) } as never);
+
+      expect(res.status).toBe(500);
       expect(supabaseAdmin.auth.admin.generateLink).not.toHaveBeenCalled();
     });
   });
 
   describe('falha no generateLink', () => {
     it('retorna 500 quando generateLink falha', async () => {
-      vi.mocked(supabaseAdmin.from)
-        .mockReturnValueOnce({
-          upsert: vi.fn().mockResolvedValue({ data: null, error: null }),
-        } as never)
-        .mockReturnValueOnce({
-          upsert: vi.fn().mockReturnValue({
-            select: vi.fn().mockResolvedValue({ data: [{ id: 'new-order-id' }], error: null }),
-          }),
-        } as never);
-
-      vi.mocked(supabaseAdmin.auth.admin.createUser).mockResolvedValueOnce({
-        data: { user: { id: 'user-123' } },
-        error: null,
-      } as never);
+      mockCreateUserSuccess();
+      mockSuccessfulPurchaseRpc(true);
 
       vi.mocked(supabaseAdmin.auth.admin.generateLink).mockResolvedValueOnce({
         data: null,
