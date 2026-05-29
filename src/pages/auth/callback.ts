@@ -1,6 +1,7 @@
-import { type CookieOptions, createServerClient, parseCookieHeader } from "@supabase/ssr";
+import { createServerClient } from "@supabase/ssr";
 import type { APIRoute } from "astro";
 import { resolveCallbackRedirect } from "../../lib/auth-navigation";
+import { getSupabaseCookies, setSupabaseCookies } from "../../lib/supabase-cookie-bridge";
 
 export const GET: APIRoute = async ({ url, request, cookies, redirect }) => {
   const code = url.searchParams.get("code");
@@ -14,12 +15,8 @@ export const GET: APIRoute = async ({ url, request, cookies, redirect }) => {
     import.meta.env.PUBLIC_SUPABASE_ANON_KEY,
     {
       cookies: {
-        getAll: () => parseCookieHeader(request.headers.get("Cookie") ?? ""),
-        setAll: (cookiesToSet: { name: string; value: string; options: CookieOptions }[]) => {
-          for (const { name, value, options } of cookiesToSet) {
-            cookies.set(name, value, options);
-          }
-        },
+        getAll: () => getSupabaseCookies(request.headers.get("Cookie")),
+        setAll: (cookiesToSet) => setSupabaseCookies(cookies, cookiesToSet),
       },
     },
   );

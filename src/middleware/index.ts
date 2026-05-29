@@ -1,12 +1,11 @@
 import { defineMiddleware } from "astro:middleware";
-import type { CookieOptions } from "@supabase/ssr";
-import { createServerClient, parseCookieHeader } from "@supabase/ssr";
+import { createServerClient } from "@supabase/ssr";
 import { applySecurityHeaders } from "../lib/security-headers";
+import { getSupabaseCookies, setSupabaseCookies } from "../lib/supabase-cookie-bridge";
 import { OrdersService } from "../services/orders.service";
 import { UsersService } from "../services/users.service";
 import type { Database } from "../types/database.types";
 
-const MUTATING_METHODS = ["POST", "PUT", "PATCH", "DELETE"];
 const PROTECTED_PREFIXES = [
   "/dashboard",
   "/admin",
@@ -37,14 +36,12 @@ export const onRequest = defineMiddleware(
       import.meta.env.PUBLIC_SUPABASE_ANON_KEY,
       {
         cookies: {
-          getAll: () => parseCookieHeader(request.headers.get("Cookie") ?? ""),
-          setAll: (cookiesToSet: { name: string; value: string; options: CookieOptions }[]) => {
-            for (const { name, value, options } of cookiesToSet) {
-              try {
-                cookies.set(name, value, options);
-              } catch {
-                // _emitInitialSession fires via setTimeout after response is sent; ignore
-              }
+          getAll: () => getSupabaseCookies(request.headers.get("Cookie")),
+          setAll: (cookiesToSet) => {
+            try {
+              setSupabaseCookies(cookies, cookiesToSet);
+            } catch {
+              // _emitInitialSession fires via setTimeout after response is sent; ignore
             }
           },
         },
