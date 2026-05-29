@@ -19,6 +19,7 @@ import { supabaseAdmin } from '../../../src/lib/supabase-admin';
 
 const mockUser = { id: 'admin-user-id' };
 const lessonId = '714b19ea-3e06-404b-9084-f1201ba47db3';
+const zipLikeBytes = new Uint8Array([0x50, 0x4b, 0x03, 0x04, 0x14, 0x00, 0x00, 0x00]);
 
 function buildRequest(file: File) {
   const formData = new FormData();
@@ -70,7 +71,7 @@ describe('POST /api/admin/materials/upload', () => {
       upload,
     } as never);
 
-    const file = new File(['xlsx'], 'apoio.xlsx', {
+    const file = new File([zipLikeBytes], 'apoio.xlsx', {
       type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     });
 
@@ -107,6 +108,21 @@ describe('POST /api/admin/materials/upload', () => {
 
     expect(response.status).toBe(400);
     expect(await response.text()).toContain('Tipo de arquivo não permitido');
+    expect(MaterialsService.create).not.toHaveBeenCalled();
+  });
+
+  it('rejeita arquivo com extensão permitida e assinatura inválida', async () => {
+    const file = new File(['not-a-real-xlsx'], 'apoio.xlsx', {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    });
+
+    const response = await POST({
+      request: buildRequest(file),
+      locals: { user: mockUser },
+    } as never);
+
+    expect(response.status).toBe(400);
+    expect(await response.text()).toContain('Assinatura do arquivo inválida');
     expect(MaterialsService.create).not.toHaveBeenCalled();
   });
 });

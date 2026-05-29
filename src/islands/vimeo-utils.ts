@@ -2,11 +2,7 @@ export function shouldSaveWatchTime(currentSeconds: number, lastSavedSeconds: nu
   return currentSeconds - lastSavedSeconds >= 30;
 }
 
-export function shouldAutoComplete(
-  seconds: number,
-  duration: number,
-  threshold = 0.9,
-): boolean {
+export function shouldAutoComplete(seconds: number, duration: number, threshold = 0.9): boolean {
   return duration > 0 && seconds / duration >= threshold;
 }
 

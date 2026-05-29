@@ -1,6 +1,6 @@
-import Player from '@vimeo/player';
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { shouldSaveWatchTime, shouldAutoComplete, extractVimeoId } from './vimeo-utils';
+import Player from "@vimeo/player";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { extractVimeoId, shouldAutoComplete, shouldSaveWatchTime } from "./vimeo-utils";
 
 interface VideoPlayerProps {
   lessonId: string;
@@ -31,13 +31,13 @@ export default function VideoPlayer({
     completedRef.current = true;
     setCompleted(true);
     try {
-      const res = await fetch('/api/progress/complete', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/progress/complete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ lessonId }),
       });
-      if (!res.ok) throw new Error('Falha ao marcar aula como concluída');
-      window.dispatchEvent(new CustomEvent('lesson-completed', { detail: { lessonId } }));
+      if (!res.ok) throw new Error("Falha ao marcar aula como concluída");
+      window.dispatchEvent(new CustomEvent("lesson-completed", { detail: { lessonId } }));
     } catch {
       completedRef.current = false;
       setCompleted(false);
@@ -51,29 +51,32 @@ export default function VideoPlayer({
 
     const player = new Player(iframeRef.current);
 
-    player.on('timeupdate', async ({ seconds, duration }: { seconds: number; duration: number }) => {
-      if (shouldSaveWatchTime(seconds, lastSavedRef.current)) {
-        lastSavedRef.current = seconds;
-        try {
-          const res = await fetch('/api/progress/watch-time', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ lessonId, watchTime: Math.floor(seconds) }),
-          });
-          if (!res.ok) {
-            setProgressError(true);
-          } else {
-            setProgressError(false);
+    player.on(
+      "timeupdate",
+      async ({ seconds, duration }: { seconds: number; duration: number }) => {
+        if (shouldSaveWatchTime(seconds, lastSavedRef.current)) {
+          lastSavedRef.current = seconds;
+          try {
+            const res = await fetch("/api/progress/watch-time", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ lessonId, watchTime: Math.floor(seconds) }),
+            });
+            if (!res.ok) {
+              setProgressError(true);
+            } else {
+              setProgressError(false);
+            }
+          } catch {
+            console.error("VideoPlayer: falha ao salvar progresso");
           }
-        } catch {
-          console.error('VideoPlayer: falha ao salvar progresso');
         }
-      }
 
-      if (shouldAutoComplete(seconds, duration)) {
-        await markComplete();
-      }
-    });
+        if (shouldAutoComplete(seconds, duration)) {
+          await markComplete();
+        }
+      },
+    );
 
     return () => {
       player.destroy();
@@ -84,7 +87,7 @@ export default function VideoPlayer({
     return (
       <div
         className="aspect-video flex items-center justify-center font-sans text-sm"
-        style={{ backgroundColor: 'var(--tobacco)', color: 'var(--fade)' }}
+        style={{ backgroundColor: "var(--tobacco)", color: "var(--fade)" }}
       >
         URL de vídeo inválida
       </div>
@@ -93,7 +96,7 @@ export default function VideoPlayer({
 
   return (
     <div className="space-y-4">
-      <div className="aspect-video overflow-hidden" style={{ backgroundColor: 'var(--mahogany)' }}>
+      <div className="aspect-video overflow-hidden" style={{ backgroundColor: "var(--mahogany)" }}>
         <iframe
           ref={iframeRef}
           src={embedUrl}
@@ -105,19 +108,19 @@ export default function VideoPlayer({
       </div>
 
       {progressError && (
-        <p className="font-sans text-sm" style={{ color: '#f87171' }}>
+        <p className="font-sans text-sm" style={{ color: "#f87171" }}>
           Não foi possível salvar seu progresso. Verifique sua conexão.
         </p>
       )}
 
       {!completed && (
-        <button onClick={markComplete} className="btn-ghost text-sm px-4 py-2">
+        <button type="button" onClick={markComplete} className="btn-ghost text-sm px-4 py-2">
           Marcar como concluída
         </button>
       )}
 
       {completed && (
-        <p className="font-sans text-sm" style={{ color: 'var(--copper)' }}>
+        <p className="font-sans text-sm" style={{ color: "var(--copper)" }}>
           — Aula concluída
         </p>
       )}

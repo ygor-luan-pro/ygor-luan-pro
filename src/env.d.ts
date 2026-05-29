@@ -3,7 +3,7 @@
 
 declare namespace App {
   interface Locals {
-    user: import('@supabase/supabase-js').User | null;
+    user: import("@supabase/supabase-js").User | null;
     isAdmin: boolean;
     hasAccess: boolean;
   }
@@ -26,6 +26,7 @@ interface ImportMetaEnv {
   readonly PUBLIC_CALCOM_LINK?: string;
   readonly UPSTASH_REDIS_REST_URL?: string;
   readonly UPSTASH_REDIS_REST_TOKEN?: string;
+  readonly RATE_LIMIT_PEPPER?: string;
 }
 
 interface ImportMeta {

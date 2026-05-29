@@ -1,24 +1,22 @@
 export function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('pt-BR', {
-    style: 'currency',
-    currency: 'BRL',
+  return new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
   }).format(value);
 }
 
 export function formatDate(date: string | Date): string {
-  return new Intl.DateTimeFormat('pt-BR').format(
-    typeof date === 'string' ? new Date(date) : date,
-  );
+  return new Intl.DateTimeFormat("pt-BR").format(typeof date === "string" ? new Date(date) : date);
 }
 
 export function slugify(text: string): string {
   return text
     .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9\s-]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-')
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
     .trim();
 }
 
@@ -30,10 +28,12 @@ export function formatDuration(minutes: number): string {
 }
 
 export function cn(...classes: (string | undefined | null | boolean)[]): string {
-  return classes.filter(Boolean).join(' ');
+  return classes.filter(Boolean).join(" ");
 }
 
-export function groupLessonsByModule<T extends { module_number: number }>(lessons: T[]): Map<number, T[]> {
+export function groupLessonsByModule<T extends { module_number: number }>(
+  lessons: T[],
+): Map<number, T[]> {
   return lessons.reduce<Map<number, T[]>>((acc, lesson) => {
     const arr = acc.get(lesson.module_number) ?? [];
     arr.push(lesson);

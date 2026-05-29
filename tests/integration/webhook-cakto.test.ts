@@ -25,6 +25,13 @@ beforeEach(() => {
   vi.stubEnv('CAKTO_WEBHOOK_SECRET', CAKTO_TEST_SECRET);
 });
 
+function mockProvisionPurchase(created = true) {
+  vi.mocked(supabaseAdmin.rpc).mockResolvedValueOnce({
+    data: { order_id: 'new-order-id', created },
+    error: null,
+  } as never);
+}
+
 describe('POST /api/webhook/cakto', () => {
   describe('secret inválido', () => {
     it('retorna 401 quando secret não está configurado', async () => {
@@ -63,18 +70,16 @@ describe('POST /api/webhook/cakto', () => {
   });
 
   describe('idempotência', () => {
-    it('retorna 200 sem criar usuário quando order já existe', async () => {
-      vi.mocked(supabaseAdmin.from).mockReturnValueOnce({
-        select: vi.fn().mockReturnValue({
-          eq: vi.fn().mockReturnValue({
-            single: vi.fn().mockResolvedValue({ data: { id: 'existing-order' }, error: null }),
-          }),
-        }),
+    it('retorna 200 sem enviar email quando order já existe (upsert ignorado)', async () => {
+      vi.mocked(supabaseAdmin.auth.admin.createUser).mockResolvedValueOnce({
+        data: { user: { id: 'new-user-id' } },
+        error: null,
       } as never);
+      mockProvisionPurchase(false);
 
       const res = await POST(makeCtx(makeCaktoPayload()));
       expect(res.status).toBe(200);
-      expect(supabaseAdmin.auth.admin.createUser).not.toHaveBeenCalled();
+      expect(resend.emails.send).not.toHaveBeenCalled();
     });
   });
 
@@ -84,31 +89,21 @@ describe('POST /api/webhook/cakto', () => {
         data: { user: { id: 'new-user-id' } },
         error: null,
       } as never);
-
-      vi.mocked(supabaseAdmin.from)
-        .mockReturnValueOnce({
-          select: vi.fn().mockReturnValue({
-            eq: vi.fn().mockReturnValue({
-              single: vi.fn().mockResolvedValue({ data: null, error: null }),
-            }),
-          }),
-        } as never)
-        .mockReturnValueOnce({
-          upsert: vi.fn().mockResolvedValue({ data: null, error: null }),
-        } as never)
-        .mockReturnValueOnce({
-          upsert: vi.fn().mockReturnValue({
-            select: vi.fn().mockResolvedValue({ data: [{ id: 'new-order-id' }], error: null }),
-          }),
-        } as never);
+      mockProvisionPurchase(true);
 
       const res = await POST(makeCtx(makeCaktoPayload()));
       expect(res.status).toBe(200);
       expect(supabaseAdmin.auth.admin.createUser).toHaveBeenCalledWith(
         expect.objectContaining({ email: 'aluno@example.com', email_confirm: true }),
       );
-      expect(supabaseAdmin.from).toHaveBeenCalledWith('profiles');
-      expect(supabaseAdmin.from).toHaveBeenCalledWith('orders');
+      expect(supabaseAdmin.rpc).toHaveBeenCalledWith(
+        'provision_cakto_purchase',
+        expect.objectContaining({
+          p_user_id: 'new-user-id',
+          p_email: 'aluno@example.com',
+          p_payment_id: 'order-test-001',
+        }),
+      );
       expect(resend.emails.send).toHaveBeenCalledWith(
         expect.objectContaining({ to: 'aluno@example.com' }),
       );
@@ -119,19 +114,13 @@ describe('POST /api/webhook/cakto', () => {
         data: { user: { id: 'new-user-id' } },
         error: null,
       } as never);
+      mockProvisionPurchase(true);
 
       await POST(makeCtx(makeCaktoPayload()));
 
-      const ordersFromIndex = vi.mocked(supabaseAdmin.from).mock.calls.findLastIndex(
-        ([table]: [string]) => table === 'orders',
-      );
-      expect(ordersFromIndex).toBeGreaterThanOrEqual(0);
-
-      const ordersInstance = vi.mocked(supabaseAdmin.from).mock.results[ordersFromIndex]
-        ?.value as { upsert: ReturnType<typeof vi.fn> };
-      expect(ordersInstance.upsert).toHaveBeenCalledWith(
-        expect.objectContaining({ amount: 997 }),
-        expect.any(Object),
+      expect(supabaseAdmin.rpc).toHaveBeenCalledWith(
+        'provision_cakto_purchase',
+        expect.objectContaining({ p_amount: 997 }),
       );
     });
   });
@@ -147,30 +136,19 @@ describe('POST /api/webhook/cakto', () => {
         .mockReturnValueOnce({
           select: vi.fn().mockReturnValue({
             eq: vi.fn().mockReturnValue({
-              single: vi.fn().mockResolvedValue({ data: null, error: null }),
-            }),
-          }),
-        } as never)
-        .mockReturnValueOnce({
-          select: vi.fn().mockReturnValue({
-            eq: vi.fn().mockReturnValue({
               maybeSingle: vi.fn().mockResolvedValue({ data: { id: 'existing-user-id' }, error: null }),
             }),
           }),
-        } as never)
-        .mockReturnValueOnce({
-          upsert: vi.fn().mockResolvedValue({ data: null, error: null }),
-        } as never)
-        .mockReturnValueOnce({
-          upsert: vi.fn().mockReturnValue({
-            select: vi.fn().mockResolvedValue({ data: null, error: null }),
-          }),
         } as never);
+      mockProvisionPurchase(false);
 
       const res = await POST(makeCtx(makeCaktoPayload()));
       expect(res.status).toBe(200);
       expect(supabaseAdmin.from).toHaveBeenCalledWith('profiles');
-      expect(supabaseAdmin.from).toHaveBeenCalledWith('orders');
+      expect(supabaseAdmin.rpc).toHaveBeenCalledWith(
+        'provision_cakto_purchase',
+        expect.objectContaining({ p_user_id: 'existing-user-id' }),
+      );
     });
   });
 
@@ -180,6 +158,7 @@ describe('POST /api/webhook/cakto', () => {
         data: { user: { id: 'new-user-id' } },
         error: null,
       } as never);
+      mockProvisionPurchase(true);
       vi.mocked(resend.emails.send).mockRejectedValueOnce(new Error('Resend unavailable'));
 
       const res = await POST(makeCtx(makeCaktoPayload()));
@@ -201,36 +180,18 @@ describe('POST /api/webhook/cakto', () => {
   });
 
   describe('Bug 2 — profile upsert não sobrescreve role', () => {
-    it('não envia role=student no upsert quando profile já existe com role admin', async () => {
+    it('não envia role=student na provisão quando profile já existe com role admin', async () => {
       vi.mocked(supabaseAdmin.auth.admin.createUser).mockResolvedValueOnce({
         data: { user: { id: 'admin-user-id' } },
         error: null,
       } as never);
-
-      const profilesUpsertMock = vi.fn().mockResolvedValue({ data: null, error: null });
-
-      vi.mocked(supabaseAdmin.from)
-        .mockReturnValueOnce({
-          select: vi.fn().mockReturnValue({
-            eq: vi.fn().mockReturnValue({
-              single: vi.fn().mockResolvedValue({ data: null, error: null }),
-            }),
-          }),
-        } as never)
-        .mockReturnValueOnce({
-          upsert: profilesUpsertMock,
-        } as never)
-        .mockReturnValueOnce({
-          upsert: vi.fn().mockReturnValue({
-            select: vi.fn().mockResolvedValue({ data: null, error: null }),
-          }),
-        } as never);
+      mockProvisionPurchase(false);
 
       await POST(makeCtx(makeCaktoPayload()));
 
-      expect(profilesUpsertMock).not.toHaveBeenCalledWith(
-        expect.objectContaining({ role: 'student' }),
-        expect.anything(),
+      expect(supabaseAdmin.rpc).toHaveBeenCalledWith(
+        'provision_cakto_purchase',
+        expect.not.objectContaining({ role: 'student' }),
       );
     });
   });
@@ -246,29 +207,19 @@ describe('POST /api/webhook/cakto', () => {
         .mockReturnValueOnce({
           select: vi.fn().mockReturnValue({
             eq: vi.fn().mockReturnValue({
-              single: vi.fn().mockResolvedValue({ data: null, error: null }),
-            }),
-          }),
-        } as never)
-        .mockReturnValueOnce({
-          select: vi.fn().mockReturnValue({
-            eq: vi.fn().mockReturnValue({
               maybeSingle: vi.fn().mockResolvedValue({ data: { id: 'existing-user-id' }, error: null }),
             }),
           }),
-        } as never)
-        .mockReturnValueOnce({
-          upsert: vi.fn().mockResolvedValue({ data: null, error: null }),
-        } as never)
-        .mockReturnValueOnce({
-          upsert: vi.fn().mockReturnValue({
-            select: vi.fn().mockResolvedValue({ data: null, error: null }),
-          }),
         } as never);
+      mockProvisionPurchase(false);
 
       const res = await POST(makeCtx(makeCaktoPayload()));
       expect(res.status).toBe(200);
       expect(supabaseAdmin.from).toHaveBeenCalledWith('profiles');
+      expect(supabaseAdmin.rpc).toHaveBeenCalledWith(
+        'provision_cakto_purchase',
+        expect.objectContaining({ p_user_id: 'existing-user-id' }),
+      );
     });
   });
 
@@ -283,13 +234,6 @@ describe('POST /api/webhook/cakto', () => {
         .mockReturnValueOnce({
           select: vi.fn().mockReturnValue({
             eq: vi.fn().mockReturnValue({
-              single: vi.fn().mockResolvedValue({ data: null, error: null }),
-            }),
-          }),
-        } as never)
-        .mockReturnValueOnce({
-          select: vi.fn().mockReturnValue({
-            eq: vi.fn().mockReturnValue({
               maybeSingle: vi.fn().mockResolvedValue({ data: null, error: null }),
             }),
           }),
@@ -301,56 +245,24 @@ describe('POST /api/webhook/cakto', () => {
   });
 
   describe('Bug 1 — sendWelcome idempotente', () => {
-    it('não envia email quando order upsert retorna data vazio (conflito)', async () => {
+    it('não envia email quando RPC marca a compra como já existente', async () => {
       vi.mocked(supabaseAdmin.auth.admin.createUser).mockResolvedValueOnce({
         data: { user: { id: 'new-user-id' } },
         error: null,
       } as never);
-
-      vi.mocked(supabaseAdmin.from)
-        .mockReturnValueOnce({
-          select: vi.fn().mockReturnValue({
-            eq: vi.fn().mockReturnValue({
-              single: vi.fn().mockResolvedValue({ data: null, error: null }),
-            }),
-          }),
-        } as never)
-        .mockReturnValueOnce({
-          upsert: vi.fn().mockResolvedValue({ data: null, error: null }),
-        } as never)
-        .mockReturnValueOnce({
-          upsert: vi.fn().mockReturnValue({
-            select: vi.fn().mockResolvedValue({ data: [], error: null }),
-          }),
-        } as never);
+      mockProvisionPurchase(false);
 
       await POST(makeCtx(makeCaktoPayload()));
 
       expect(resend.emails.send).not.toHaveBeenCalled();
     });
 
-    it('envia email quando order upsert retorna row inserida (insert novo)', async () => {
+    it('envia email quando RPC marca a compra como nova', async () => {
       vi.mocked(supabaseAdmin.auth.admin.createUser).mockResolvedValueOnce({
         data: { user: { id: 'new-user-id' } },
         error: null,
       } as never);
-
-      vi.mocked(supabaseAdmin.from)
-        .mockReturnValueOnce({
-          select: vi.fn().mockReturnValue({
-            eq: vi.fn().mockReturnValue({
-              single: vi.fn().mockResolvedValue({ data: null, error: null }),
-            }),
-          }),
-        } as never)
-        .mockReturnValueOnce({
-          upsert: vi.fn().mockResolvedValue({ data: null, error: null }),
-        } as never)
-        .mockReturnValueOnce({
-          upsert: vi.fn().mockReturnValue({
-            select: vi.fn().mockResolvedValue({ data: [{ id: 'new-order-id' }], error: null }),
-          }),
-        } as never);
+      mockProvisionPurchase(true);
 
       await POST(makeCtx(makeCaktoPayload()));
 

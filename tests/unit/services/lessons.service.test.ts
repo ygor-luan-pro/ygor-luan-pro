@@ -22,6 +22,44 @@ describe('LessonsService', () => {
     vi.clearAllMocks();
   });
 
+  describe('getAllMinimal', () => {
+    it('retorna aulas com campos mínimos', async () => {
+      const minimal = [
+        { id: 'lesson-1', title: 'Técnicas', module_number: 1, order_number: 1 },
+      ];
+
+      vi.mocked(supabaseAdmin.from).mockReturnValueOnce({
+        select: vi.fn().mockReturnValue({
+          eq: vi.fn().mockReturnValue({
+            order: vi.fn().mockReturnValue({
+              order: vi.fn().mockResolvedValue({ data: minimal, error: null }),
+            }),
+          }),
+        }),
+      } as never);
+
+      const lessons = await LessonsService.getAllMinimal();
+      expect(lessons).toHaveLength(1);
+      expect(lessons[0]).toHaveProperty('id');
+      expect(lessons[0]).toHaveProperty('title');
+      expect(lessons[0]).not.toHaveProperty('video_url');
+    });
+
+    it('lança erro quando Supabase retorna erro', async () => {
+      vi.mocked(supabaseAdmin.from).mockReturnValueOnce({
+        select: vi.fn().mockReturnValue({
+          eq: vi.fn().mockReturnValue({
+            order: vi.fn().mockReturnValue({
+              order: vi.fn().mockResolvedValue({ data: null, error: { message: 'DB error' } }),
+            }),
+          }),
+        }),
+      } as never);
+
+      await expect(LessonsService.getAllMinimal()).rejects.toThrow('DB error');
+    });
+  });
+
   describe('getAll', () => {
     it('retorna aulas publicadas', async () => {
       vi.mocked(supabaseAdmin.from).mockReturnValueOnce({
@@ -96,6 +134,33 @@ describe('LessonsService', () => {
       } as never);
 
       await expect(LessonsService.getById('invalid-id')).rejects.toThrow('Not found');
+    });
+  });
+
+  describe('getBySlug', () => {
+    it('retorna a aula pelo slug', async () => {
+      vi.mocked(supabaseAdmin.from).mockReturnValueOnce({
+        select: vi.fn().mockReturnValue({
+          eq: vi.fn().mockReturnValue({
+            single: vi.fn().mockResolvedValue({ data: mockLesson, error: null }),
+          }),
+        }),
+      } as never);
+
+      const lesson = await LessonsService.getBySlug('tecnicas-de-navalha');
+      expect(lesson.slug).toBe('tecnicas-de-navalha');
+    });
+
+    it('lança erro quando aula não existe', async () => {
+      vi.mocked(supabaseAdmin.from).mockReturnValueOnce({
+        select: vi.fn().mockReturnValue({
+          eq: vi.fn().mockReturnValue({
+            single: vi.fn().mockResolvedValue({ data: null, error: { message: 'Not found' } }),
+          }),
+        }),
+      } as never);
+
+      await expect(LessonsService.getBySlug('invalid-slug')).rejects.toThrow('Not found');
     });
   });
 

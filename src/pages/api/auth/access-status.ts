@@ -1,11 +1,11 @@
-import type { APIRoute } from 'astro';
-import { OrdersService } from '../../../services/orders.service';
+import type { APIRoute } from "astro";
+import { OrdersService } from "../../../services/orders.service";
 
 export const GET: APIRoute = async ({ locals }) => {
   if (!locals.user) {
-    return new Response(JSON.stringify({ error: 'Não autenticado' }), {
+    return new Response(JSON.stringify({ error: "Não autenticado" }), {
       status: 401,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { "Content-Type": "application/json" },
     });
   }
 
@@ -17,15 +17,13 @@ export const GET: APIRoute = async ({ locals }) => {
   return new Response(
     JSON.stringify({
       hasAccess,
-      lastOrder: lastOrder
-        ? { status: lastOrder.status, created_at: lastOrder.created_at }
-        : null,
+      lastOrder: lastOrder ? { status: lastOrder.status, created_at: lastOrder.created_at } : null,
     }),
     {
       status: 200,
       headers: {
-        'Content-Type': 'application/json',
-        'Cache-Control': 'no-store, must-revalidate',
+        "Content-Type": "application/json",
+        "Cache-Control": "no-store, must-revalidate",
       },
     },
   );

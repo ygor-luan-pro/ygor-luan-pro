@@ -1,15 +1,15 @@
 export interface CaktoWebhookPayload {
   event:
-    | 'purchase_approved'
-    | 'purchase_refused'
-    | 'refund'
-    | 'chargeback'
-    | 'initiate_checkout'
-    | 'checkout_abandonment'
-    | 'subscription_created'
-    | 'subscription_canceled'
-    | 'subscription_renewed'
-    | 'subscription_renewal_refused'
+    | "purchase_approved"
+    | "purchase_refused"
+    | "refund"
+    | "chargeback"
+    | "initiate_checkout"
+    | "checkout_abandonment"
+    | "subscription_created"
+    | "subscription_canceled"
+    | "subscription_renewed"
+    | "subscription_renewal_refused"
     | (string & {});
   secret: string;
   sentAt: string;

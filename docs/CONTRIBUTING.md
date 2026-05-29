@@ -24,6 +24,15 @@ git push origin feature/nome-da-feature
 - `test`: Adiciona testes
 - `chore`: Manutencao
 
+## Definition of Done (Produto)
+
+Antes de considerar feature pronta para producao:
+
+- [ ] Funciona no mobile (testar viewport 375px)
+- [ ] Spec em `docs/specs/` atendida (se feature >2h)
+- [ ] Quality Gate CI verde
+- [ ] Rollback plan definido (flag, revert, ou deploy anterior)
+
 ## Contato
 
 **Cliente**: Ygor Luan

@@ -1,26 +1,17 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { CertificateService } from '../../../src/services/certificate.service';
 import { ProgressService } from '../../../src/services/progress.service';
-import { LessonsService } from '../../../src/services/lessons.service';
 import { supabaseAdmin } from '../../../src/lib/supabase-admin';
 
 vi.mock('../../../src/services/progress.service');
-vi.mock('../../../src/services/lessons.service');
 
-const mockLessons = [
-  { id: 'l1', is_published: true },
-  { id: 'l2', is_published: true },
-  { id: 'l3', is_published: true },
-] as never[];
-
-const makeProgress = (lessonId: string, completedAt: string) => ({
-  id: `p-${lessonId}`,
+const mockCertificate = {
+  id: 'cert-1',
   user_id: 'user-1',
-  lesson_id: lessonId,
-  completed: true,
-  watch_time: 100,
-  completed_at: completedAt,
-});
+  certificate_number: 'YLP-2026-00001',
+  issued_at: '2026-01-15T12:00:00Z',
+  completed_at: '2026-01-15T12:00:00Z',
+};
 
 describe('CertificateService', () => {
   beforeEach(() => {
@@ -69,55 +60,33 @@ describe('CertificateService', () => {
   });
 
   describe('getCompletionDate', () => {
-    it('retorna o maior completed_at entre aulas publicadas concluídas', async () => {
-      vi.mocked(LessonsService.getAll).mockResolvedValueOnce(mockLessons);
-      vi.mocked(ProgressService.getUserProgress).mockResolvedValueOnce([
-        makeProgress('l1', '2026-01-01T10:00:00Z'),
-        makeProgress('l2', '2026-01-15T12:00:00Z'),
-        makeProgress('l3', '2026-01-10T08:00:00Z'),
-      ]);
+    it('retorna data de conclusão via RPC', async () => {
+      vi.mocked(supabaseAdmin.rpc).mockResolvedValueOnce({
+        data: '2026-01-15T12:00:00Z',
+        error: null,
+      } as never);
 
       const result = await CertificateService.getCompletionDate('user-1');
       expect(result).toBe('2026-01-15T12:00:00Z');
+      expect(supabaseAdmin.rpc).toHaveBeenCalledWith('get_completion_date', { p_user_id: 'user-1' });
     });
 
-    it('retorna null quando não há aulas concluídas', async () => {
-      vi.mocked(LessonsService.getAll).mockResolvedValueOnce(mockLessons);
-      vi.mocked(ProgressService.getUserProgress).mockResolvedValueOnce([]);
+    it('retorna null quando RPC retorna null', async () => {
+      vi.mocked(supabaseAdmin.rpc).mockResolvedValueOnce({ data: null, error: null } as never);
 
       const result = await CertificateService.getCompletionDate('user-1');
       expect(result).toBeNull();
     });
 
-    it('ignora aulas não publicadas no cálculo da data', async () => {
-      vi.mocked(LessonsService.getAll).mockResolvedValueOnce(mockLessons);
-      vi.mocked(ProgressService.getUserProgress).mockResolvedValueOnce([
-        makeProgress('l1', '2026-01-01T10:00:00Z'),
-        { ...makeProgress('l-unpublished', '2026-03-01T10:00:00Z') },
-      ]);
+    it('propaga erro da RPC', async () => {
+      vi.mocked(supabaseAdmin.rpc).mockResolvedValueOnce({
+        data: null,
+        error: { message: 'DB error' },
+      } as never);
 
-      const result = await CertificateService.getCompletionDate('user-1');
-      expect(result).toBe('2026-01-01T10:00:00Z');
-    });
-
-    it('retorna null quando completed_at é null em todos os registros', async () => {
-      vi.mocked(LessonsService.getAll).mockResolvedValueOnce(mockLessons);
-      vi.mocked(ProgressService.getUserProgress).mockResolvedValueOnce([
-        { ...makeProgress('l1', ''), completed_at: null } as never,
-      ]);
-
-      const result = await CertificateService.getCompletionDate('user-1');
-      expect(result).toBeNull();
+      await expect(CertificateService.getCompletionDate('user-1')).rejects.toThrow('DB error');
     });
   });
-
-  const mockCertificate = {
-    id: 'cert-1',
-    user_id: 'user-1',
-    certificate_number: 'YLP-2026-00001',
-    issued_at: '2026-01-15T12:00:00Z',
-    completed_at: '2026-01-15T12:00:00Z',
-  };
 
   describe('issue', () => {
     it('insere e retorna certificado emitido', async () => {

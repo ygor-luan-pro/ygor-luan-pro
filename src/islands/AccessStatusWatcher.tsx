@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from "react";
 
 interface AccessStatusResponse {
   hasAccess: boolean;
@@ -22,15 +22,15 @@ export default function AccessStatusWatcher({ pollingRelevant }: Props) {
     fetching.current = true;
     setChecking(true);
     try {
-      const res = await fetch('/api/auth/access-status');
+      const res = await fetch("/api/auth/access-status");
       if (res.status === 401) {
-        window.location.href = '/login';
+        window.location.href = "/login";
         return;
       }
       if (!res.ok) return;
       const data: AccessStatusResponse = await res.json();
       if (data.hasAccess) {
-        window.location.href = '/dashboard';
+        window.location.href = "/dashboard";
       }
     } catch {
       // network error — will retry on next tick
@@ -58,6 +58,7 @@ export default function AccessStatusWatcher({ pollingRelevant }: Props) {
     }, 5000);
 
     return () => clearInterval(interval);
+    // biome-ignore lint/correctness/useExhaustiveDependencies: checkAccess is stable by design — adding it causes infinite re-render
   }, [pollingRelevant]);
 
   if (!pollingRelevant) return null;
@@ -70,11 +71,11 @@ export default function AccessStatusWatcher({ pollingRelevant }: Props) {
         className="btn-secondary"
         type="button"
       >
-        {checking ? 'Verificando...' : 'Verificar agora'}
+        {checking ? "Verificando..." : "Verificar agora"}
       </button>
       {lastChecked && !checking && (
-        <p className="text-sm" style={{ color: 'var(--fade)' }}>
-          Última verificação: {lastChecked.toLocaleTimeString('pt-BR')}
+        <p className="text-sm" style={{ color: "var(--fade)" }}>
+          Última verificação: {lastChecked.toLocaleTimeString("pt-BR")}
         </p>
       )}
     </div>

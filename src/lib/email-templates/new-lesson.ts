@@ -1,5 +1,5 @@
-import type { EmailTemplate } from './types';
-import { escapeHtml, safeUrl } from './escape-html';
+import { escapeHtml, safeUrl } from "./escape-html";
+import type { EmailTemplate } from "./types";
 
 interface NewLessonData {
   lessonTitle: string;
@@ -165,6 +165,6 @@ export function newLessonTemplate(data: NewLessonData): EmailTemplate {
 
   return {
     subject: `Nova aula disponível: ${lessonTitle}`,
-    html
+    html,
   };
 }

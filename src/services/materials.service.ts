@@ -1,5 +1,5 @@
-import { supabaseAdmin } from '../lib/supabase-admin';
-import type { Material } from '../types';
+import { supabaseAdmin } from "../lib/supabase-admin";
+import type { Material } from "../types";
 
 function isExternalFileUrl(fileUrl: string): boolean {
   return /^https?:\/\//i.test(fileUrl);
@@ -8,49 +8,38 @@ function isExternalFileUrl(fileUrl: string): boolean {
 export class MaterialsService {
   static async getByLessonId(lessonId: string): Promise<Material[]> {
     const { data, error } = await supabaseAdmin
-      .from('materials')
-      .select('*')
-      .eq('lesson_id', lessonId)
-      .order('created_at');
+      .from("materials")
+      .select("*")
+      .eq("lesson_id", lessonId)
+      .order("created_at");
 
     if (error) throw new Error(error.message);
     return data ?? [];
   }
 
-  static async create(input: Omit<Material, 'id' | 'created_at'>): Promise<Material> {
-    const { data, error } = await supabaseAdmin
-      .from('materials')
-      .insert(input)
-      .select()
-      .single();
+  static async create(input: Omit<Material, "id" | "created_at">): Promise<Material> {
+    const { data, error } = await supabaseAdmin.from("materials").insert(input).select().single();
 
     if (error) throw new Error(error.message);
     return data;
   }
 
   static async getById(id: string): Promise<Material> {
-    const { data, error } = await supabaseAdmin
-      .from('materials')
-      .select('*')
-      .eq('id', id)
-      .single();
+    const { data, error } = await supabaseAdmin.from("materials").select("*").eq("id", id).single();
 
     if (error) throw new Error(error.message);
     return data;
   }
 
   static async delete(id: string): Promise<void> {
-    const { error } = await supabaseAdmin
-      .from('materials')
-      .delete()
-      .eq('id', id);
+    const { error } = await supabaseAdmin.from("materials").delete().eq("id", id);
 
     if (error) throw new Error(error.message);
   }
 
   static async getSignedUrl(storagePath: string, expiresInSeconds = 3600): Promise<string> {
     const { data, error } = await supabaseAdmin.storage
-      .from('materials')
+      .from("materials")
       .createSignedUrl(storagePath, expiresInSeconds);
 
     if (error) throw new Error(error.message);
@@ -58,9 +47,7 @@ export class MaterialsService {
   }
 
   static async removeFile(storagePath: string): Promise<void> {
-    const { error } = await supabaseAdmin.storage
-      .from('materials')
-      .remove([storagePath]);
+    const { error } = await supabaseAdmin.storage.from("materials").remove([storagePath]);
 
     if (error) throw new Error(error.message);
   }
@@ -70,6 +57,6 @@ export class MaterialsService {
       return fileUrl;
     }
 
-    return this.getSignedUrl(fileUrl, expiresInSeconds);
+    return MaterialsService.getSignedUrl(fileUrl, expiresInSeconds);
   }
 }

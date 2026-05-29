@@ -1,17 +1,17 @@
-import { useState } from 'react';
-import type { Lesson } from '../types';
-import { slugify } from '../lib/utils';
+import { useState } from "react";
+import { slugify } from "../lib/utils";
+import type { Lesson } from "../types";
 
 interface AdminLessonFormProps {
-  mode: 'create' | 'edit';
+  mode: "create" | "edit";
   lesson?: Lesson;
 }
 
 export default function AdminLessonForm({ mode, lesson }: AdminLessonFormProps) {
-  const [title, setTitle] = useState(lesson?.title ?? '');
-  const [slug, setSlug] = useState(lesson?.slug ?? '');
-  const [description, setDescription] = useState(lesson?.description ?? '');
-  const [videoUrl, setVideoUrl] = useState(lesson?.video_url ?? '');
+  const [title, setTitle] = useState(lesson?.title ?? "");
+  const [slug, setSlug] = useState(lesson?.slug ?? "");
+  const [description, setDescription] = useState(lesson?.description ?? "");
+  const [videoUrl, setVideoUrl] = useState(lesson?.video_url ?? "");
   const [moduleNumber, setModuleNumber] = useState(lesson?.module_number ?? 1);
   const [orderNumber, setOrderNumber] = useState(lesson?.order_number ?? 1);
   const [durationMinutes, setDurationMinutes] = useState(lesson?.duration_minutes ?? 0);
@@ -22,7 +22,7 @@ export default function AdminLessonForm({ mode, lesson }: AdminLessonFormProps) 
 
   const handleTitleChange = (value: string) => {
     setTitle(value);
-    if (mode === 'create') setSlug(slugify(value));
+    if (mode === "create") setSlug(slugify(value));
   };
 
   const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
@@ -30,15 +30,12 @@ export default function AdminLessonForm({ mode, lesson }: AdminLessonFormProps) 
     setLoading(true);
     setError(null);
 
-    const endpoint =
-      mode === 'create'
-        ? '/api/admin/lessons'
-        : `/api/admin/lessons/${lesson?.id}`;
+    const endpoint = mode === "create" ? "/api/admin/lessons" : `/api/admin/lessons/${lesson?.id}`;
 
     try {
       const res = await fetch(endpoint, {
-        method: mode === 'create' ? 'POST' : 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        method: mode === "create" ? "POST" : "PUT",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           title,
           slug,
@@ -51,35 +48,37 @@ export default function AdminLessonForm({ mode, lesson }: AdminLessonFormProps) 
         }),
       });
 
-      const data = await res.json() as { error?: string };
+      const data = (await res.json()) as { error?: string };
 
-      if (!res.ok) throw new Error(data.error ?? 'Erro ao salvar aula');
+      if (!res.ok) throw new Error(data.error ?? "Erro ao salvar aula");
 
-      if (mode === 'create') {
-        window.location.href = '/admin/aulas';
+      if (mode === "create") {
+        window.location.href = "/admin/aulas";
       } else {
         setSuccess(true);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro inesperado');
+      setError(err instanceof Error ? err.message : "Erro inesperado");
     } finally {
       setLoading(false);
     }
   };
 
   const labelStyle = {
-    display: 'block',
-    fontSize: '0.75rem',
-    letterSpacing: '0.1em',
-    textTransform: 'uppercase' as const,
-    color: 'var(--fade)',
-    marginBottom: '0.375rem',
+    display: "block",
+    fontSize: "0.75rem",
+    letterSpacing: "0.1em",
+    textTransform: "uppercase" as const,
+    color: "var(--fade)",
+    marginBottom: "0.375rem",
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       <div>
-        <label htmlFor="lesson-title" style={labelStyle}>Título *</label>
+        <label htmlFor="lesson-title" style={labelStyle}>
+          Título *
+        </label>
         <input
           id="lesson-title"
           type="text"
@@ -92,7 +91,9 @@ export default function AdminLessonForm({ mode, lesson }: AdminLessonFormProps) 
       </div>
 
       <div>
-        <label htmlFor="lesson-slug" style={labelStyle}>Slug *</label>
+        <label htmlFor="lesson-slug" style={labelStyle}>
+          Slug *
+        </label>
         <input
           id="lesson-slug"
           type="text"
@@ -105,7 +106,9 @@ export default function AdminLessonForm({ mode, lesson }: AdminLessonFormProps) 
       </div>
 
       <div>
-        <label htmlFor="lesson-video-url" style={labelStyle}>URL do Vídeo (Vimeo) *</label>
+        <label htmlFor="lesson-video-url" style={labelStyle}>
+          URL do Vídeo (Vimeo) *
+        </label>
         <input
           id="lesson-video-url"
           type="url"
@@ -118,7 +121,9 @@ export default function AdminLessonForm({ mode, lesson }: AdminLessonFormProps) 
       </div>
 
       <div>
-        <label htmlFor="lesson-description" style={labelStyle}>Descrição</label>
+        <label htmlFor="lesson-description" style={labelStyle}>
+          Descrição
+        </label>
         <textarea
           id="lesson-description"
           value={description}
@@ -131,7 +136,9 @@ export default function AdminLessonForm({ mode, lesson }: AdminLessonFormProps) 
 
       <div className="grid grid-cols-3 gap-4">
         <div>
-          <label htmlFor="lesson-module" style={labelStyle}>Módulo</label>
+          <label htmlFor="lesson-module" style={labelStyle}>
+            Módulo
+          </label>
           <input
             id="lesson-module"
             type="number"
@@ -143,7 +150,9 @@ export default function AdminLessonForm({ mode, lesson }: AdminLessonFormProps) 
           />
         </div>
         <div>
-          <label htmlFor="lesson-order" style={labelStyle}>Ordem</label>
+          <label htmlFor="lesson-order" style={labelStyle}>
+            Ordem
+          </label>
           <input
             id="lesson-order"
             type="number"
@@ -155,7 +164,9 @@ export default function AdminLessonForm({ mode, lesson }: AdminLessonFormProps) 
           />
         </div>
         <div>
-          <label htmlFor="lesson-duration" style={labelStyle}>Duração (min)</label>
+          <label htmlFor="lesson-duration" style={labelStyle}>
+            Duração (min)
+          </label>
           <input
             id="lesson-duration"
             type="number"
@@ -173,28 +184,44 @@ export default function AdminLessonForm({ mode, lesson }: AdminLessonFormProps) 
           checked={isPublished}
           onChange={(e) => setIsPublished(e.target.checked)}
           className="w-4 h-4"
-          style={{ accentColor: 'var(--copper)' }}
+          style={{ accentColor: "var(--copper)" }}
         />
-        <span className="font-sans text-sm" style={{ color: 'var(--parchment)' }}>
+        <span className="font-sans text-sm" style={{ color: "var(--parchment)" }}>
           Publicar aula (visível para alunos)
         </span>
       </label>
 
       {error && (
-        <div style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.20)', padding: '0.75rem 1rem', color: '#f87171', fontSize: '0.875rem' }}>
+        <div
+          style={{
+            background: "rgba(239,68,68,0.08)",
+            border: "1px solid rgba(239,68,68,0.20)",
+            padding: "0.75rem 1rem",
+            color: "#f87171",
+            fontSize: "0.875rem",
+          }}
+        >
           {error}
         </div>
       )}
 
       {success && (
-        <div style={{ background: 'rgba(201,133,58,0.10)', border: '1px solid var(--blade)', padding: '0.75rem 1rem', color: 'var(--copper)', fontSize: '0.875rem' }}>
+        <div
+          style={{
+            background: "rgba(201,133,58,0.10)",
+            border: "1px solid var(--blade)",
+            padding: "0.75rem 1rem",
+            color: "var(--copper)",
+            fontSize: "0.875rem",
+          }}
+        >
           Aula atualizada com sucesso.
         </div>
       )}
 
       <div className="flex gap-3 pt-2">
         <button type="submit" disabled={loading} className="btn-primary">
-          {loading ? 'Salvando...' : mode === 'create' ? 'Criar Aula' : 'Salvar Alterações'}
+          {loading ? "Salvando..." : mode === "create" ? "Criar Aula" : "Salvar Alterações"}
         </button>
         <a href="/admin/aulas" className="btn-ghost">
           Cancelar

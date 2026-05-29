@@ -1,13 +1,9 @@
-import { supabase } from '../lib/supabase';
-import type { Profile } from '../types';
+import { supabase } from "../lib/supabase";
+import type { Profile } from "../types";
 
 export class AuthService {
   static async getProfile(userId: string): Promise<Profile | null> {
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', userId)
-      .single();
+    const { data, error } = await supabase.from("profiles").select("*").eq("id", userId).single();
 
     if (error) return null;
     return data;
@@ -15,12 +11,12 @@ export class AuthService {
 
   static async updateProfile(
     userId: string,
-    updates: Pick<Profile, 'full_name' | 'avatar_url'>,
+    updates: Pick<Profile, "full_name" | "avatar_url">,
   ): Promise<void> {
     const { error } = await supabase
-      .from('profiles')
+      .from("profiles")
       .update({ ...updates, updated_at: new Date().toISOString() })
-      .eq('id', userId);
+      .eq("id", userId);
 
     if (error) throw new Error(error.message);
   }

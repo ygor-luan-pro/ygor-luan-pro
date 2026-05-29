@@ -1,28 +1,41 @@
-import type { APIRoute } from 'astro';
-import { LessonsService } from '../../../../services/lessons.service';
-import { EmailService } from '../../../../services/email.service';
-import type { Lesson } from '../../../../types';
+import type { APIRoute } from "astro";
+import { EmailService } from "../../../../services/email.service";
+import { LessonsService } from "../../../../services/lessons.service";
+import type { Lesson } from "../../../../types";
 
 export const PUT: APIRoute = async ({ params, request, locals }) => {
   if (!locals.isAdmin) {
-    return new Response(JSON.stringify({ error: 'Acesso negado' }), { status: 403, headers: { 'Content-Type': 'application/json' } });
+    return new Response(JSON.stringify({ error: "Acesso negado" }), {
+      status: 403,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 
   const { id } = params;
   if (!id) {
-    return new Response(JSON.stringify({ error: 'ID obrigatório' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
+    return new Response(JSON.stringify({ error: "ID obrigatório" }), {
+      status: 400,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 
-  const raw = await request.json() as Record<string, unknown>;
+  const raw = (await request.json()) as Record<string, unknown>;
 
-  const allowed: (keyof Omit<Lesson, 'id' | 'created_at' | 'updated_at'>)[] = [
-    'title', 'slug', 'description', 'video_url', 'thumbnail_url',
-    'duration_minutes', 'module_number', 'order_number', 'is_published',
+  const allowed: (keyof Omit<Lesson, "id" | "created_at" | "updated_at">)[] = [
+    "title",
+    "slug",
+    "description",
+    "video_url",
+    "thumbnail_url",
+    "duration_minutes",
+    "module_number",
+    "order_number",
+    "is_published",
   ];
 
   const body = Object.fromEntries(
     allowed.filter((k) => k in raw).map((k) => [k, raw[k]]),
-  ) as Partial<Omit<Lesson, 'id' | 'created_at' | 'updated_at'>>;
+  ) as Partial<Omit<Lesson, "id" | "created_at" | "updated_at">>;
 
   const previous = await LessonsService.getById(id);
   const lesson = await LessonsService.update(id, body);
@@ -33,18 +46,24 @@ export const PUT: APIRoute = async ({ params, request, locals }) => {
 
   return new Response(JSON.stringify(lesson), {
     status: 200,
-    headers: { 'Content-Type': 'application/json' },
+    headers: { "Content-Type": "application/json" },
   });
 };
 
 export const DELETE: APIRoute = async ({ params, locals }) => {
   if (!locals.isAdmin) {
-    return new Response(JSON.stringify({ error: 'Acesso negado' }), { status: 403, headers: { 'Content-Type': 'application/json' } });
+    return new Response(JSON.stringify({ error: "Acesso negado" }), {
+      status: 403,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 
   const { id } = params;
   if (!id) {
-    return new Response(JSON.stringify({ error: 'ID obrigatório' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
+    return new Response(JSON.stringify({ error: "ID obrigatório" }), {
+      status: 400,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 
   await LessonsService.togglePublish(id, false);

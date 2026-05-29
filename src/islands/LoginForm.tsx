@@ -1,17 +1,17 @@
-import { useState } from 'react';
-import { isSafeRedirectTarget } from '../lib/safe-redirect';
+import { useState } from "react";
+import { isSafeRedirectTarget } from "../lib/safe-redirect";
 
 interface LoginFormProps {
   next?: string;
 }
 
-export default function LoginForm({ next = '/dashboard' }: LoginFormProps) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+export default function LoginForm({ next = "/dashboard" }: LoginFormProps) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [resetSent, setResetSent] = useState(false);
-  const [mode, setMode] = useState<'login' | 'reset'>('login');
+  const [mode, setMode] = useState<"login" | "reset">("login");
 
   const handleLogin = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -19,22 +19,22 @@ export default function LoginForm({ next = '/dashboard' }: LoginFormProps) {
     setError(null);
 
     try {
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
 
-      const data = await res.json() as { error?: string };
+      const data = (await res.json()) as { error?: string };
 
       if (!res.ok) {
-        throw new Error(data.error ?? 'Credenciais inválidas');
+        throw new Error(data.error ?? "Credenciais inválidas");
       }
 
-      const target = isSafeRedirectTarget(next) ? next : '/dashboard';
+      const target = isSafeRedirectTarget(next) ? next : "/dashboard";
       window.location.href = target;
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao fazer login');
+      setError(err instanceof Error ? err.message : "Erro ao fazer login");
       setLoading(false);
     }
   };
@@ -45,36 +45,62 @@ export default function LoginForm({ next = '/dashboard' }: LoginFormProps) {
     setError(null);
 
     try {
-      const res = await fetch('/api/auth/reset-password', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/auth/reset-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
       });
 
-      if (!res.ok) throw new Error('Erro ao enviar e-mail');
+      if (!res.ok) throw new Error("Erro ao enviar e-mail");
 
       setResetSent(true);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Tente novamente');
+      setError(err instanceof Error ? err.message : "Tente novamente");
     } finally {
       setLoading(false);
     }
   };
 
-  const labelStyle = { color: 'var(--parchment)', fontSize: '0.75rem', letterSpacing: '0.1em', textTransform: 'uppercase' as const, display: 'block', marginBottom: '0.375rem' };
-  const linkStyle = { fontSize: '0.875rem', background: 'none', border: 'none', cursor: 'pointer', width: '100%', textAlign: 'center' as const, padding: '0.25rem 0' };
+  const labelStyle = {
+    color: "var(--parchment)",
+    fontSize: "0.75rem",
+    letterSpacing: "0.1em",
+    textTransform: "uppercase" as const,
+    display: "block",
+    marginBottom: "0.375rem",
+  };
+  const linkStyle = {
+    fontSize: "0.875rem",
+    background: "none",
+    border: "none",
+    cursor: "pointer",
+    width: "100%",
+    textAlign: "center" as const,
+    padding: "0.25rem 0",
+  };
 
-  if (mode === 'reset') {
+  if (mode === "reset") {
     return (
       <form onSubmit={handleReset} className="space-y-4">
         {resetSent ? (
-          <div style={{ background: 'rgba(201,133,58,0.10)', border: '1px solid rgba(201,133,58,0.25)', padding: '1rem', color: 'var(--copper)', fontSize: '0.875rem', textAlign: 'center' }}>
+          <div
+            style={{
+              background: "rgba(201,133,58,0.10)",
+              border: "1px solid rgba(201,133,58,0.25)",
+              padding: "1rem",
+              color: "var(--copper)",
+              fontSize: "0.875rem",
+              textAlign: "center",
+            }}
+          >
             Link enviado. Verifique seu e-mail.
           </div>
         ) : (
           <>
             <div>
-              <label htmlFor="reset-email" style={labelStyle}>E-mail</label>
+              <label htmlFor="reset-email" style={labelStyle}>
+                E-mail
+              </label>
               <input
                 id="reset-email"
                 type="email"
@@ -85,15 +111,18 @@ export default function LoginForm({ next = '/dashboard' }: LoginFormProps) {
                 placeholder="seu@email.com"
               />
             </div>
-            {error && (
-              <p style={{ color: '#f87171', fontSize: '0.875rem' }}>{error}</p>
-            )}
+            {error && <p style={{ color: "#f87171", fontSize: "0.875rem" }}>{error}</p>}
             <button type="submit" disabled={loading} className="btn-primary w-full">
-              {loading ? 'Enviando...' : 'Enviar link de redefinição'}
+              {loading ? "Enviando..." : "Enviar link de redefinição"}
             </button>
           </>
         )}
-        <button type="button" onClick={() => setMode('login')} style={linkStyle} className="link-btn">
+        <button
+          type="button"
+          onClick={() => setMode("login")}
+          style={linkStyle}
+          className="link-btn"
+        >
           Voltar ao login
         </button>
       </form>
@@ -103,7 +132,9 @@ export default function LoginForm({ next = '/dashboard' }: LoginFormProps) {
   return (
     <form onSubmit={handleLogin} className="space-y-4">
       <div>
-        <label htmlFor="login-email" style={labelStyle}>E-mail</label>
+        <label htmlFor="login-email" style={labelStyle}>
+          E-mail
+        </label>
         <input
           id="login-email"
           type="email"
@@ -116,7 +147,9 @@ export default function LoginForm({ next = '/dashboard' }: LoginFormProps) {
       </div>
 
       <div>
-        <label htmlFor="login-password" style={labelStyle}>Senha</label>
+        <label htmlFor="login-password" style={labelStyle}>
+          Senha
+        </label>
         <input
           id="login-password"
           type="password"
@@ -128,13 +161,13 @@ export default function LoginForm({ next = '/dashboard' }: LoginFormProps) {
         />
       </div>
 
-      {error && <p style={{ color: '#f87171', fontSize: '0.875rem' }}>{error}</p>}
+      {error && <p style={{ color: "#f87171", fontSize: "0.875rem" }}>{error}</p>}
 
       <button type="submit" disabled={loading} className="btn-primary w-full">
-        {loading ? 'Entrando...' : 'Entrar'}
+        {loading ? "Entrando..." : "Entrar"}
       </button>
 
-      <button type="button" onClick={() => setMode('reset')} style={linkStyle} className="link-btn">
+      <button type="button" onClick={() => setMode("reset")} style={linkStyle} className="link-btn">
         Esqueceu a senha?
       </button>
     </form>

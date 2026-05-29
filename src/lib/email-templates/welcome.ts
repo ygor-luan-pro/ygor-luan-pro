@@ -1,5 +1,5 @@
-import type { EmailTemplate } from './types';
-import { escapeHtml, safeUrl } from './escape-html';
+import { escapeHtml, safeUrl } from "./escape-html";
+import type { EmailTemplate } from "./types";
 
 interface WelcomeData {
   name: string | null;
@@ -7,7 +7,7 @@ interface WelcomeData {
 }
 
 export function welcomeTemplate(data: WelcomeData): EmailTemplate {
-  const displayName = escapeHtml(data.name || 'Aluno');
+  const displayName = escapeHtml(data.name || "Aluno");
   const loginUrl = safeUrl(data.loginUrl);
 
   const html = `
@@ -194,7 +194,7 @@ export function welcomeTemplate(data: WelcomeData): EmailTemplate {
   `.trim();
 
   return {
-    subject: 'Bem-vindo à Ygor Luan Academy! 🎉',
-    html
+    subject: "Bem-vindo à Ygor Luan Academy! 🎉",
+    html,
   };
 }

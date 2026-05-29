@@ -1,30 +1,30 @@
-import type { APIRoute } from 'astro';
-import { ProgressService } from '../../../services/progress.service';
-import { CertificateService } from '../../../services/certificate.service';
-import { EmailService } from '../../../services/email.service';
-import { supabaseAdmin } from '../../../lib/supabase-admin';
+import type { APIRoute } from "astro";
+import { supabaseAdmin } from "../../../lib/supabase-admin";
+import { CertificateService } from "../../../services/certificate.service";
+import { EmailService } from "../../../services/email.service";
+import { ProgressService } from "../../../services/progress.service";
 
 export const POST: APIRoute = async ({ request, locals }) => {
   if (!locals.user) {
-    return new Response(JSON.stringify({ error: 'Não autenticado' }), {
+    return new Response(JSON.stringify({ error: "Não autenticado" }), {
       status: 401,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { "Content-Type": "application/json" },
     });
   }
 
   if (!locals.hasAccess) {
-    return new Response(JSON.stringify({ error: 'Sem acesso' }), {
+    return new Response(JSON.stringify({ error: "Sem acesso" }), {
       status: 403,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { "Content-Type": "application/json" },
     });
   }
 
-  const { lessonId } = await request.json() as { lessonId?: string };
+  const { lessonId } = (await request.json()) as { lessonId?: string };
 
   if (!lessonId) {
-    return new Response(JSON.stringify({ error: 'lessonId obrigatório' }), {
+    return new Response(JSON.stringify({ error: "lessonId obrigatório" }), {
       status: 400,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { "Content-Type": "application/json" },
     });
   }
 
@@ -34,10 +34,10 @@ export const POST: APIRoute = async ({ request, locals }) => {
     wasAlreadyComplete = existing?.completed === true;
     await ProgressService.markComplete(locals.user.id, lessonId);
   } catch (err) {
-    console.error('progress/complete:', err);
-    return new Response(JSON.stringify({ error: 'Erro ao marcar aula como concluída' }), {
+    console.error("progress/complete:", err);
+    return new Response(JSON.stringify({ error: "Erro ao marcar aula como concluída" }), {
       status: 500,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { "Content-Type": "application/json" },
     });
   }
 
@@ -50,21 +50,21 @@ export const POST: APIRoute = async ({ request, locals }) => {
           await CertificateService.issue(locals.user.id, completionDate);
         }
         const { data: profile } = await supabaseAdmin
-          .from('profiles')
-          .select('email, full_name')
-          .eq('id', locals.user.id)
+          .from("profiles")
+          .select("email, full_name")
+          .eq("id", locals.user.id)
           .single();
         if (profile) {
           void EmailService.notifyCertificateAvailable(profile.email, profile.full_name);
         }
       }
     } catch (err) {
-      console.error('progress/complete: erro ao verificar certificado', err);
+      console.error("progress/complete: erro ao verificar certificado", err);
     }
   }
 
   return new Response(JSON.stringify({ ok: true }), {
     status: 200,
-    headers: { 'Content-Type': 'application/json' },
+    headers: { "Content-Type": "application/json" },
   });
 };

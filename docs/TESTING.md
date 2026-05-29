@@ -1,16 +1,38 @@
-# Estrategia de Testes (TDD)
+# Estrategia de Testes (TDD Seletivo)
 
-## Piramide de Testes
+## Testing Trophy (2026)
 
 ```
          /\
-        /  \  E2E (10%)
+        /  \  E2E (20%) — fluxos criticos end-to-end
        /────\
-      /      \  Integration (20%)
+      /      \  Integration (40%) — limites entre modulos
      /────────\
-    /          \  Unit (70%)
+    /          \  Unit (40%) — logica pura, utils, regras
    /────────────\
+  / Static (base) \  types + lint (sempre)
+ /──────────────────\
 ```
+
+Modelo "Testing Trophy" prioriza integration tests: codigo gerado por IA
+quebra mais nos limites entre modulos do que dentro de funcoes puras.
+
+## TDD Seletivo
+
+**Dominio critico (TDD obrigatorio — Red -> Green -> Refactor)**:
+- `src/services/**` — logica de negocio
+- `src/lib/supabase/**` — auth, RLS, queries
+- `src/pages/api/**` — handlers, webhooks Cakto
+- Migrations SQL com RLS
+- Templates de email (snapshot obrigatorio)
+- Helpers de checkout, orders, pagamentos
+
+**UI pura / scaffolding (test-after aceito)**:
+- Componentes de apresentacao sem estado
+- Layouts, estilos, rotas estaticas
+- Configuracoes Astro
+
+Cobertura protegida pelo Quality Gate Ratchet — nao regride independente da abordagem.
 
 ## Unit Tests
 

@@ -1,5 +1,5 @@
-import type { EmailTemplate } from './types';
-import { escapeHtml, safeUrl } from './escape-html';
+import { escapeHtml, safeUrl } from "./escape-html";
+import type { EmailTemplate } from "./types";
 
 interface MentorshipReminderData {
   studentName: string | null;
@@ -9,26 +9,26 @@ interface MentorshipReminderData {
 
 function formatDatePtBR(date: Date): string {
   const options: Intl.DateTimeFormatOptions = {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    timeZone: 'America/Sao_Paulo'
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    timeZone: "America/Sao_Paulo",
   };
-  return date.toLocaleDateString('pt-BR', options);
+  return date.toLocaleDateString("pt-BR", options);
 }
 
 function formatTimePtBR(date: Date): string {
   const options: Intl.DateTimeFormatOptions = {
-    hour: '2-digit',
-    minute: '2-digit',
-    timeZone: 'America/Sao_Paulo'
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: "America/Sao_Paulo",
   };
-  return date.toLocaleTimeString('pt-BR', options);
+  return date.toLocaleTimeString("pt-BR", options);
 }
 
 export function mentorshipReminderTemplate(data: MentorshipReminderData): EmailTemplate {
-  const displayName = escapeHtml(data.studentName || 'Aluno');
+  const displayName = escapeHtml(data.studentName || "Aluno");
   const meetingUrl = safeUrl(data.meetingUrl);
   const formattedDate = formatDatePtBR(data.scheduledAt);
   const formattedTime = formatTimePtBR(data.scheduledAt);
@@ -256,7 +256,7 @@ export function mentorshipReminderTemplate(data: MentorshipReminderData): EmailT
   `.trim();
 
   return {
-    subject: 'Lembrete: sua mentoria é amanhã!',
-    html
+    subject: "Lembrete: sua mentoria é amanhã!",
+    html,
   };
 }

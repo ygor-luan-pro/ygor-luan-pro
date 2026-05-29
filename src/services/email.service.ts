@@ -1,19 +1,19 @@
-import { resend, FROM_EMAIL } from '../lib/resend';
-import { supabaseAdmin } from '../lib/supabase-admin';
-import { welcomeTemplate } from '../lib/email-templates/welcome';
-import { newLessonTemplate } from '../lib/email-templates/new-lesson';
-import { certificateAvailableTemplate } from '../lib/email-templates/certificate-available';
-import { mentorshipReminderTemplate } from '../lib/email-templates/mentorship-reminder';
-import type { Lesson } from '../types';
+import { certificateAvailableTemplate } from "../lib/email-templates/certificate-available";
+import { mentorshipReminderTemplate } from "../lib/email-templates/mentorship-reminder";
+import { newLessonTemplate } from "../lib/email-templates/new-lesson";
+import { welcomeTemplate } from "../lib/email-templates/welcome";
+import { FROM_EMAIL, resend } from "../lib/resend";
+import { supabaseAdmin } from "../lib/supabase-admin";
+import type { Lesson } from "../types";
 
 type ActiveStudent = { email: string; full_name: string | null };
 
 export class EmailService {
   static async getActiveStudents(): Promise<ActiveStudent[]> {
     const { data: orders, error: ordersError } = await supabaseAdmin
-      .from('orders')
-      .select('user_id')
-      .eq('status', 'approved');
+      .from("orders")
+      .select("user_id")
+      .eq("status", "approved");
 
     if (ordersError) throw new Error(ordersError.message);
 
@@ -21,24 +21,20 @@ export class EmailService {
     if (userIds.length === 0) return [];
 
     const { data, error } = await supabaseAdmin
-      .from('profiles')
-      .select('email, full_name')
-      .in('id', userIds);
+      .from("profiles")
+      .select("email, full_name")
+      .in("id", userIds);
 
     if (error) throw new Error(error.message);
     return data ?? [];
   }
 
-  static async sendWelcome(
-    email: string,
-    name: string | null,
-    loginUrl: string,
-  ): Promise<void> {
+  static async sendWelcome(email: string, name: string | null, loginUrl: string): Promise<void> {
     const { subject, html } = welcomeTemplate({ name, loginUrl });
     try {
       await resend.emails.send({ from: FROM_EMAIL, to: email, subject, html });
     } catch (error) {
-      console.error('EmailService: falha ao enviar email:', error);
+      console.error("EmailService: falha ao enviar email:", error);
     }
   }
 
@@ -52,19 +48,27 @@ export class EmailService {
       lessonUrl,
     });
 
-    await Promise.allSettled(
-      students.map((student) =>
-        resend.emails.send({ from: FROM_EMAIL, to: student.email, subject, html }).catch((error) => {
-          console.error('EmailService: falha ao enviar email:', error);
-        }),
-      ),
-    );
+    const BATCH_SIZE = 10;
+    const BATCH_DELAY_MS = 100;
+
+    for (let i = 0; i < students.length; i += BATCH_SIZE) {
+      const batch = students.slice(i, i + BATCH_SIZE);
+      await Promise.allSettled(
+        batch.map((student) =>
+          resend.emails
+            .send({ from: FROM_EMAIL, to: student.email, subject, html })
+            .catch((error) => {
+              console.error("EmailService: falha ao enviar email:", error);
+            }),
+        ),
+      );
+      if (i + BATCH_SIZE < students.length) {
+        await new Promise((resolve) => setTimeout(resolve, BATCH_DELAY_MS));
+      }
+    }
   }
 
-  static async notifyCertificateAvailable(
-    email: string,
-    name: string | null,
-  ): Promise<void> {
+  static async notifyCertificateAvailable(email: string, name: string | null): Promise<void> {
     const certificateUrl = `${import.meta.env.PUBLIC_SITE_URL}/dashboard/certificado`;
     const { subject, html } = certificateAvailableTemplate({
       studentName: name,
@@ -73,7 +77,7 @@ export class EmailService {
     try {
       await resend.emails.send({ from: FROM_EMAIL, to: email, subject, html });
     } catch (error) {
-      console.error('EmailService: falha ao enviar email:', error);
+      console.error("EmailService: falha ao enviar email:", error);
     }
   }
 
@@ -91,7 +95,7 @@ export class EmailService {
     try {
       await resend.emails.send({ from: FROM_EMAIL, to: email, subject, html });
     } catch (error) {
-      console.error('EmailService: falha ao enviar email:', error);
+      console.error("EmailService: falha ao enviar email:", error);
     }
   }
 }

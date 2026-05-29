@@ -1,24 +1,30 @@
-import type { APIRoute } from 'astro';
-import { LessonsService } from '../../../services/lessons.service';
+import type { APIRoute } from "astro";
+import { LessonsService } from "../../../services/lessons.service";
 
 export const GET: APIRoute = async ({ locals }) => {
   if (!locals.isAdmin) {
-    return new Response(JSON.stringify({ error: 'Acesso negado' }), { status: 403, headers: { 'Content-Type': 'application/json' } });
+    return new Response(JSON.stringify({ error: "Acesso negado" }), {
+      status: 403,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 
   const lessons = await LessonsService.getAllAdmin();
   return new Response(JSON.stringify(lessons), {
     status: 200,
-    headers: { 'Content-Type': 'application/json' },
+    headers: { "Content-Type": "application/json" },
   });
 };
 
 export const POST: APIRoute = async ({ request, locals }) => {
   if (!locals.isAdmin) {
-    return new Response(JSON.stringify({ error: 'Acesso negado' }), { status: 403, headers: { 'Content-Type': 'application/json' } });
+    return new Response(JSON.stringify({ error: "Acesso negado" }), {
+      status: 403,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 
-  const body = await request.json() as {
+  const body = (await request.json()) as {
     title?: string;
     slug?: string;
     video_url?: string;
@@ -31,8 +37,10 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
   if (!body.title || !body.slug || !body.video_url || !body.module_number || !body.order_number) {
     return new Response(
-      JSON.stringify({ error: 'title, slug, video_url, module_number e order_number são obrigatórios' }),
-      { status: 400, headers: { 'Content-Type': 'application/json' } },
+      JSON.stringify({
+        error: "title, slug, video_url, module_number e order_number são obrigatórios",
+      }),
+      { status: 400, headers: { "Content-Type": "application/json" } },
     );
   }
 
@@ -50,6 +58,6 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
   return new Response(JSON.stringify(lesson), {
     status: 201,
-    headers: { 'Content-Type': 'application/json' },
+    headers: { "Content-Type": "application/json" },
   });
 };

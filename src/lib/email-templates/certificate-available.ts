@@ -1,5 +1,5 @@
-import type { EmailTemplate } from './types';
-import { escapeHtml, safeUrl } from './escape-html';
+import { escapeHtml, safeUrl } from "./escape-html";
+import type { EmailTemplate } from "./types";
 
 interface CertificateData {
   studentName: string | null;
@@ -7,7 +7,7 @@ interface CertificateData {
 }
 
 export function certificateAvailableTemplate(data: CertificateData): EmailTemplate {
-  const displayName = escapeHtml(data.studentName || 'Aluno');
+  const displayName = escapeHtml(data.studentName || "Aluno");
   const certificateUrl = safeUrl(data.certificateUrl);
 
   const html = `
@@ -199,7 +199,7 @@ export function certificateAvailableTemplate(data: CertificateData): EmailTempla
   `.trim();
 
   return {
-    subject: 'Seu certificado está disponível!',
-    html
+    subject: "Seu certificado está disponível!",
+    html,
   };
 }

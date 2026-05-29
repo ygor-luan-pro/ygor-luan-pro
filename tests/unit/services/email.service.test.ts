@@ -119,6 +119,31 @@ describe('EmailService', () => {
 
       expect(resend.emails.send).toHaveBeenCalledTimes(2);
     });
+
+    it('processa emails em batches com delay entre batches', async () => {
+      vi.useFakeTimers({ shouldAdvanceTime: true });
+
+      const students = Array.from({ length: 12 }, (_, i) => ({
+        email: `aluno${i}@exemplo.com`,
+        full_name: `Aluno ${i}`,
+      }));
+      const userIds = students.map((_, i) => `user-${i}`);
+
+      mockOrdersQuery(userIds);
+      mockProfilesQuery(students);
+
+      vi.mocked(resend.emails.send).mockResolvedValue({ data: { id: 'msg-id' }, error: null });
+
+      const promise = EmailService.notifyNewLesson(mockLesson);
+      await vi.advanceTimersByTimeAsync(0);
+      expect(resend.emails.send).toHaveBeenCalledTimes(10);
+
+      await vi.advanceTimersByTimeAsync(100);
+      await promise;
+      expect(resend.emails.send).toHaveBeenCalledTimes(12);
+
+      vi.useRealTimers();
+    });
   });
 
   describe('notifyCertificateAvailable', () => {

@@ -1,5 +1,5 @@
-import { supabaseAdmin } from '../lib/supabase-admin';
-import type { LessonRating } from '../types';
+import { supabaseAdmin } from "../lib/supabase-admin";
+import type { LessonRating } from "../types";
 
 type RatingWithJoins = LessonRating & {
   lessons: { title: string } | null;
@@ -7,15 +7,12 @@ type RatingWithJoins = LessonRating & {
 };
 
 export class RatingsService {
-  static async getUserLessonRating(
-    userId: string,
-    lessonId: string
-  ): Promise<LessonRating | null> {
+  static async getUserLessonRating(userId: string, lessonId: string): Promise<LessonRating | null> {
     const { data, error } = await supabaseAdmin
-      .from('lesson_ratings')
-      .select('*')
-      .eq('user_id', userId)
-      .eq('lesson_id', lessonId)
+      .from("lesson_ratings")
+      .select("*")
+      .eq("user_id", userId)
+      .eq("lesson_id", lessonId)
       .maybeSingle();
 
     if (error) throw new Error(error.message);
@@ -26,10 +23,10 @@ export class RatingsService {
     userId: string,
     lessonId: string,
     rating: number,
-    comment?: string
+    comment?: string,
   ): Promise<LessonRating> {
     const { data, error } = await supabaseAdmin
-      .from('lesson_ratings')
+      .from("lesson_ratings")
       .upsert(
         {
           user_id: userId,
@@ -38,7 +35,7 @@ export class RatingsService {
           comment: comment ?? null,
           updated_at: new Date().toISOString(),
         },
-        { onConflict: 'user_id,lesson_id' }
+        { onConflict: "user_id,lesson_id" },
       )
       .select()
       .single();
@@ -47,13 +44,11 @@ export class RatingsService {
     return data;
   }
 
-  static async getLessonStats(
-    lessonId: string
-  ): Promise<{ average: number; count: number }> {
+  static async getLessonStats(lessonId: string): Promise<{ average: number; count: number }> {
     const { data, error } = await supabaseAdmin
-      .from('lesson_ratings')
-      .select('rating')
-      .eq('lesson_id', lessonId);
+      .from("lesson_ratings")
+      .select("rating")
+      .eq("lesson_id", lessonId);
 
     if (error) throw new Error(error.message);
 
@@ -66,9 +61,9 @@ export class RatingsService {
 
   static async getAllRatings(): Promise<RatingWithJoins[]> {
     const { data, error } = await supabaseAdmin
-      .from('lesson_ratings')
-      .select('*, lessons(title), profiles(full_name, email)')
-      .order('created_at', { ascending: false });
+      .from("lesson_ratings")
+      .select("*, lessons(title), profiles(full_name, email)")
+      .order("created_at", { ascending: false });
 
     if (error) throw new Error(error.message);
     return (data ?? []) as unknown as RatingWithJoins[];

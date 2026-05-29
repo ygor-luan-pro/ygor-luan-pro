@@ -9,7 +9,7 @@ export interface Database {
           email: string;
           full_name: string | null;
           avatar_url: string | null;
-          role: 'student' | 'admin';
+          role: "student" | "admin";
           created_at: string;
           updated_at: string;
         };
@@ -18,11 +18,11 @@ export interface Database {
           email: string;
           full_name?: string | null;
           avatar_url?: string | null;
-          role?: 'student' | 'admin';
+          role?: "student" | "admin";
           created_at?: string;
           updated_at?: string;
         };
-        Update: Partial<Database['public']['Tables']['profiles']['Insert']>;
+        Update: Partial<Database["public"]["Tables"]["profiles"]["Insert"]>;
         Relationships: [];
       };
       orders: {
@@ -30,7 +30,7 @@ export interface Database {
           id: string;
           user_id: string;
           payment_id: string;
-          status: 'pending' | 'approved' | 'rejected' | 'refunded';
+          status: "pending" | "approved" | "rejected" | "refunded";
           amount: number;
           payment_method: string | null;
           created_at: string;
@@ -40,13 +40,13 @@ export interface Database {
           id?: string;
           user_id: string;
           payment_id: string;
-          status: 'pending' | 'approved' | 'rejected' | 'refunded';
+          status: "pending" | "approved" | "rejected" | "refunded";
           amount: number;
           payment_method?: string | null;
           created_at?: string;
           approved_at?: string | null;
         };
-        Update: Partial<Database['public']['Tables']['orders']['Insert']>;
+        Update: Partial<Database["public"]["Tables"]["orders"]["Insert"]>;
         Relationships: [];
       };
       lessons: {
@@ -78,7 +78,7 @@ export interface Database {
           created_at?: string;
           updated_at?: string;
         };
-        Update: Partial<Database['public']['Tables']['lessons']['Insert']>;
+        Update: Partial<Database["public"]["Tables"]["lessons"]["Insert"]>;
         Relationships: [];
       };
       modules: {
@@ -96,7 +96,7 @@ export interface Database {
           order_number: number;
           created_at?: string;
         };
-        Update: Partial<Database['public']['Tables']['modules']['Insert']>;
+        Update: Partial<Database["public"]["Tables"]["modules"]["Insert"]>;
         Relationships: [];
       };
       user_progress: {
@@ -116,7 +116,7 @@ export interface Database {
           watch_time?: number;
           completed_at?: string | null;
         };
-        Update: Partial<Database['public']['Tables']['user_progress']['Insert']>;
+        Update: Partial<Database["public"]["Tables"]["user_progress"]["Insert"]>;
         Relationships: [];
       };
       mentorship_sessions: {
@@ -125,9 +125,10 @@ export interface Database {
           user_id: string;
           scheduled_at: string;
           duration_minutes: number;
-          status: 'scheduled' | 'completed' | 'cancelled' | 'no_show';
+          status: "scheduled" | "completed" | "cancelled" | "no_show";
           meeting_url: string | null;
           notes: string | null;
+          reminder_sent: boolean;
           created_at: string;
         };
         Insert: {
@@ -135,12 +136,13 @@ export interface Database {
           user_id: string;
           scheduled_at: string;
           duration_minutes?: number;
-          status: 'scheduled' | 'completed' | 'cancelled' | 'no_show';
+          status: "scheduled" | "completed" | "cancelled" | "no_show";
           meeting_url?: string | null;
           notes?: string | null;
+          reminder_sent?: boolean;
           created_at?: string;
         };
-        Update: Partial<Database['public']['Tables']['mentorship_sessions']['Insert']>;
+        Update: Partial<Database["public"]["Tables"]["mentorship_sessions"]["Insert"]>;
         Relationships: [];
       };
       materials: {
@@ -162,7 +164,7 @@ export interface Database {
           file_size?: number | null;
           created_at?: string;
         };
-        Update: Partial<Database['public']['Tables']['materials']['Insert']>;
+        Update: Partial<Database["public"]["Tables"]["materials"]["Insert"]>;
         Relationships: [];
       };
       quiz_questions: {
@@ -184,7 +186,7 @@ export interface Database {
           order_number?: number;
           created_at?: string;
         };
-        Update: Partial<Database['public']['Tables']['quiz_questions']['Insert']>;
+        Update: Partial<Database["public"]["Tables"]["quiz_questions"]["Insert"]>;
         Relationships: [];
       };
       quiz_attempts: {
@@ -206,7 +208,7 @@ export interface Database {
           answers: Json;
           completed_at?: string;
         };
-        Update: Partial<Database['public']['Tables']['quiz_attempts']['Insert']>;
+        Update: Partial<Database["public"]["Tables"]["quiz_attempts"]["Insert"]>;
         Relationships: [];
       };
       lesson_ratings: {
@@ -228,7 +230,7 @@ export interface Database {
           created_at?: string;
           updated_at?: string;
         };
-        Update: Partial<Database['public']['Tables']['lesson_ratings']['Insert']>;
+        Update: Partial<Database["public"]["Tables"]["lesson_ratings"]["Insert"]>;
         Relationships: [];
       };
       certificates: {
@@ -246,7 +248,7 @@ export interface Database {
           issued_at?: string;
           completed_at: string;
         };
-        Update: Partial<Database['public']['Tables']['certificates']['Insert']>;
+        Update: Partial<Database["public"]["Tables"]["certificates"]["Insert"]>;
         Relationships: [];
       };
       lesson_comments: {
@@ -268,7 +270,7 @@ export interface Database {
           created_at?: string;
           updated_at?: string;
         };
-        Update: Partial<Database['public']['Tables']['lesson_comments']['Insert']>;
+        Update: Partial<Database["public"]["Tables"]["lesson_comments"]["Insert"]>;
         Relationships: [];
       };
     };
@@ -283,6 +285,29 @@ export interface Database {
           completed_count: number;
           total_watch_time: number;
         }[];
+      };
+      get_total_revenue: {
+        Args: Record<string, never>;
+        Returns: number;
+      };
+      get_completion_date: {
+        Args: { p_user_id: string };
+        Returns: string | null;
+      };
+      provision_cakto_purchase: {
+        Args: {
+          p_user_id: string;
+          p_email: string;
+          p_full_name: string | null;
+          p_payment_id: string;
+          p_amount: number;
+          p_payment_method: string | null;
+          p_approved_at: string;
+        };
+        Returns: {
+          order_id: string | null;
+          created: boolean;
+        };
       };
       is_admin: {
         Args: Record<string, never>;
