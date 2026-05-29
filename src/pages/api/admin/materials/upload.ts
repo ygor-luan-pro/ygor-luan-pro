@@ -13,6 +13,39 @@ const ALLOWED_EXTENSIONS: Record<string, string> = {
   xlsx: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
 };
 
+const ZIP_SIGNATURES = [
+  [0x50, 0x4b, 0x03, 0x04],
+  [0x50, 0x4b, 0x05, 0x06],
+  [0x50, 0x4b, 0x07, 0x08],
+];
+
+function startsWithBytes(bytes: Uint8Array, signature: number[]): boolean {
+  return signature.every((value, index) => bytes[index] === value);
+}
+
+async function hasValidFileSignature(file: File, extension: string): Promise<boolean> {
+  const buffer = await file.slice(0, 8).arrayBuffer();
+  const bytes = new Uint8Array(buffer);
+
+  if (extension === "pdf") {
+    return startsWithBytes(bytes, [0x25, 0x50, 0x44, 0x46]);
+  }
+
+  if (extension === "png") {
+    return startsWithBytes(bytes, [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+  }
+
+  if (extension === "jpg" || extension === "jpeg") {
+    return startsWithBytes(bytes, [0xff, 0xd8, 0xff]);
+  }
+
+  if (extension === "zip" || extension === "xlsx") {
+    return ZIP_SIGNATURES.some((signature) => startsWithBytes(bytes, signature));
+  }
+
+  return false;
+}
+
 export const POST: APIRoute = async ({ request, locals }) => {
   if (!locals.user) {
     return new Response(JSON.stringify({ error: "Não autenticado" }), { status: 401 });
@@ -58,6 +91,12 @@ export const POST: APIRoute = async ({ request, locals }) => {
   if (file.size > MAX_UPLOAD_BYTES) {
     return new Response(JSON.stringify({ error: "Arquivo excede o limite de 50 MB" }), {
       status: 413,
+    });
+  }
+
+  if (!(await hasValidFileSignature(file, fileExt))) {
+    return new Response(JSON.stringify({ error: "Assinatura do arquivo inválida" }), {
+      status: 400,
     });
   }
 
